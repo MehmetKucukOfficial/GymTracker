@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Dumbbell icon -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M30,48 L30,60 L78,60 L78,48 Z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M20,40 L32,40 L32,68 L20,68 Z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M76,40 L88,40 L88,68 L76,68 Z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M14,44 L22,44 L22,64 L14,64 Z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M86,44 L94,44 L94,64 L86,64 Z"/>
+</vector>
