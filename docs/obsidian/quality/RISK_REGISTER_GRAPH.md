@@ -2,7 +2,7 @@
 type: risk-register
 status: current
 implementation_status: current
-verified_commit: f9d6d75
+verified_commit: 341bf79
 updated: 2026-07-15
 tags: [gymtracker/risk, gymtracker/quality]
 ---

@@ -2,10 +2,10 @@
 type: handoff
 status: ready
 implementation_status: active
-code_baseline: 4d0cad8
+code_baseline: 341bf79
 updated: 2026-07-15
-active_phase: "Phase 4 - Nutrition + Measurement dikey dilimi"
-next_pr: "PR 9 - Nutrition + Measurement correctness and modernization"
+active_phase: "Phase 4 - PR10 Photos + Muscle Load hazırlığı"
+next_pr: "PR 10 - Progress Photos + Muscle Load modernization"
 primary_nodes:
   - FEATURE_NUTRITION
   - FEATURE_MEASUREMENTS
@@ -19,39 +19,42 @@ tags: [gymtracker/workflow, gymtracker/session]
 
 ## Şu anki durum
 
-- Uygulama baseline: `4d0cad8`; PR1–PR7 commitlendi, bu handoff doğrulanmış PR8 yayın kapsamını taşıyor.
+- Uygulama baseline: `f9d6d75`; PR8 `codex/workout-lifecycle` dalında draft PR #1 olarak yayınlandı.
+- PR9 baseline: `341bf79`; `codex/nutrition-measurements` dalı PR8’i hedefleyen stacked draft PR #2 olarak yayınlandı.
 - Room v6; explicit 5→6 workout migration aktif, destructive fallback yok, program seed transaction/idempotent, yeni fotoğraflar app-owned storage’da kalıcı.
 - Telefon navigation shell’i 5 ana hedefe indi; workout/program detail ID + SavedStateHandle + repository Flow kullanıyor.
 - Home completed/active workout, measurement ve nutrition kaynaklarına reaktif; aktif workout varsa CTA doğrudan session ID’ye devam ediyor.
 - Workout tek aktif seans, status-korumalı mutation, COMPLETED salt-okunur geçmiş ve adaptive modern UI kullanıyor.
+- Nutrition DST-safe tarih aralığı, SavedStateHandle tarih seçimi, locale sayı doğrulaması, zero/over-goal güvenliği ve adaptive modern UI kullanıyor.
+- Measurements boş/aralık dışı kayıtları engelliyor; latest/history tekrarını kaldırıyor, en yeni iki kilo trendini üretiyor ve adaptive modern UI kullanıyor.
 - Light/dark tasarım sistemi token temeli ve ortak Home bileşenleri aktif; Home loading/content/error, retry, midnight period tick ve adaptive kolon kullanıyor.
-- Test temeli aktif: 11 JVM + 23 API 34 instrumentation testi geçiyor.
-- Debug build başarılı; lint 0 error / 53 warning.
+- Test temeli aktif: 17 JVM + 27 API 34 instrumentation testi geçiyor.
+- Debug build başarılı; lint 0 error / 63 warning.
 
 ## Sıradaki önerilen iş
 
-[[ROADMAP_EXECUTION_GRAPH#Sonraki dikey dilimler]] — [[FEATURE_NUTRITION]] + [[FEATURE_MEASUREMENTS]]:
+PR #1 → PR #2 inceleme sırasını koru. Geliştirmede [[ROADMAP_EXECUTION_GRAPH#Sonraki dikey dilimler]] — [[FEATURE_PROGRESS_PHOTOS]] + [[FEATURE_MUSCLE_LOAD]]:
 
-1. Nutrition tarih aralığı, DST ve zero-goal kurallarını Clock/ZoneId + validator ile sabitle.
-2. Nutrition selected-day state’ini lifecycle/process recreation boyunca koru; add/delete/error akışını testle.
-3. Measurement input doğrulama, sıralama ve trend hesabını repository/use-case sınırına taşı.
-4. İki ekranı PR7/PR8 token ve adaptive yerleşim diliyle modernleştir; hardcoded kullanıcı metinlerini resource’a taşı.
-5. Home reaktivitesi, navigation/back, light/dark, %200 font, semantics ve screenshot kabulünü çalıştır.
+1. Legacy `storageVersion=0`, backup/reconciliation ve EXIF/thumbnail politikasını netleştir.
+2. Fotoğraf viewer/import hata durumlarını token/adaptive tasarım diline taşı.
+3. Muscle Load adlandırma/metodoloji riskini çöz; tamamlanmış setler için reaktif dönem Flow’u kur.
+4. Harita/list erişilebilirliği, dark/light ve %200 font kabulünü ekle.
+5. İlgili repository, migration gerekirse explicit schema ve test etki haritasını uygula.
 
 ## Açık P0/P1
 
 - Legacy `storageVersion=0` fotoğraflar ve backup politikası
 - CI kalite kapısı
-- Uygulamanın Home/Workout dışındaki hardcoded string/accessibility/adaptive layout borcu
+- Programs, Photos ve Muscle Load hardcoded string/accessibility/adaptive layout borcu
 - Harici deep link ve navigation rail
 
 ## Son doğrulama
 
-- `testDebugUnitTest`: success, 11/11.
-- `connectedDebugAndroidTest`: success, 23/23, Pixel 6 Pro API 34.
-- `lintDebug`: success, 0 error / 53 warning.
+- `testDebugUnitTest`: success, 17/17.
+- `connectedDebugAndroidTest`: success, 27/27, Pixel 6 Pro API 34.
+- `lintDebug`: success, 0 error / 63 warning.
 - `assembleDebug`: success.
-- Görsel smoke: `app/build/pr8-active-light2.png`, `pr8-active-dark-font200.png`, `pr8-readonly-dark-font200.png`; test sonrası final APK yeniden kurulmalıdır.
+- Görsel smoke: PR8 görselleri + `app/build/pr9-nutrition-light-final.png`, `pr9-nutrition-dark-font200-final.png`, `pr9-measurements-dark-font200-final.png`; connected test sonrası final APK yeniden kurulmalıdır.
 
 ## Handoff güncelleme şablonu
 
@@ -417,3 +420,44 @@ Next concrete action:
 
 Blockers:
 - None. True OS process-death smoke, permanent screenshot-golden infrastructure and DB-level single-active uniqueness remain explicit follow-ups.
+
+## 2026-07-15 - PR 9 Nutrition + Measurements correctness and modernization
+
+Completed:
+- Added shared finite comma/dot decimal parsing and explicit Nutrition/Measurement validation rules.
+- Replaced fixed 86,400,000 ms Nutrition boundaries with `LocalDate + Clock + ZoneId`; spring/autumn DST days are covered.
+- Persisted selected Nutrition date through `SavedStateHandle`, added previous/next/today navigation and preserved meaningful entry timestamps.
+- Prevented zero/negative goals and invalid food/amount writes; exposed finite raw progress so over-goal state is visible.
+- Prevented empty/unrealistic measurement rows, separated latest from history and added newest-two weight delta.
+- Rebuilt both screens with shared tokens, resources, empty/error states and adaptive normal/%200 font layouts.
+
+Files changed:
+- `domain/LocalizedDecimal.kt`, `di/TimeModule.kt`
+- `data/nutrition/NutritionRules.kt`, Nutrition Screen/ViewModel
+- `data/measurements/MeasurementRules.kt`, Measurements Screen/ViewModel
+- Nutrition/Measurement JVM and Compose tests, `strings.xml`
+- Related Obsidian feature/architecture/design/quality/roadmap/workflow nodes
+
+Tests run/results:
+- `testDebugUnitTest`: 17 tests, 0 failures.
+- `connectedDebugAndroidTest`: 27 tests, 0 failures on Pixel 6 Pro API 34.
+- `lintDebug`: 0 errors / 63 warnings.
+- `assembleDebug`: success.
+- Manual light normal-font Nutrition and dark %200 Nutrition/Measurements screenshots passed after fixing macro card width/adaptive layout.
+
+Risks changed:
+- R9 resolved: DST day range, zero-goal and over-goal behavior are deterministic and tested.
+- R11 partial+: Workout, Nutrition and Measurements now validate inputs before mutation.
+- R15 partial++: token/resource/light-dark/%200 coverage now includes Nutrition and Measurements.
+- No Room schema change in PR9; measurement date index remains coupled to the later chart/query slice.
+
+Graph notes updated:
+- [[FEATURE_NUTRITION]], [[FEATURE_MEASUREMENTS]], [[ARCH_STATE_DATA_FLOW]], [[DESIGN_SYSTEM_GRAPH]]
+- [[TEST_MATRIX]], [[RISK_REGISTER_GRAPH]], [[ROADMAP_EXECUTION_GRAPH]]
+- [[SOURCE_FILE_ATLAS]], [[CHANGE_IMPACT_MAP]], [[SESSION_HANDOFF]], [[00_START_HERE]]
+
+Next concrete action:
+- Keep draft PR #2 stacked on PR #1 during review, then start PR10 with [[FEATURE_PROGRESS_PHOTOS]] + [[FEATURE_MUSCLE_LOAD]].
+
+Blockers:
+- No code blocker. Draft PR #2 is stacked on draft PR #1 (`codex/workout-lifecycle`) and must keep that base until PR8 lands or be rebased afterward.

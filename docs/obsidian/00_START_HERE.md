@@ -3,7 +3,7 @@ aliases: [GymTracker Graph Start, Başlangıç]
 type: moc
 status: current
 implementation_status: mixed
-verified_commit: 4d0cad8
+verified_commit: 341bf79
 updated: 2026-07-15
 tags: [gymtracker/moc, gymtracker/graph]
 ---
@@ -21,7 +21,7 @@ tags: [gymtracker/moc, gymtracker/graph]
 - Local-first; backend ve gerçek ödeme yok
 - 5 ana navigation hedefi, 3 İlerleme alt hedefi, ID tabanlı workout/program detayları
 - 82 benzersiz egzersiz, 108 hazır program egzersiz referansı
-- Debug build başarılı; 11 JVM + 23 cihaz testi geçiyor; lint 0 hata/53 uyarı
+- Debug build başarılı; 17 JVM + 27 cihaz testi geçiyor; lint 0 hata/63 uyarı
 - Destructive migration, yeni fotoğraf URI kaybı, seed race ve temel navigation/state riskleri kapatıldı veya azaltıldı
 
 ## Ana haritalar
@@ -67,8 +67,8 @@ tags: [gymtracker/moc, gymtracker/graph]
 
 ## Grafın güncellik durumu
 
-- Kod baseline: `4d0cad8`
-- Kod değişikliği: PR1–PR7 checkpoint’i commitlendi; bu graf sürümü doğrulanmış PR8 kapsamını taşıyor
-- Dokümanlar: PR8 Workout/Room v6 çalışma ağacıyla senkron
+- Kod baseline: `341bf79` (`codex/nutrition-measurements`, stacked draft PR #2)
+- Kod değişikliği: PR9 Nutrition/Measurements commitlendi ve PR8 dalını hedefleyen draft PR #2 olarak yayınlandı
+- Dokümanlar: PR9 doğruluk/state/adaptive UI commit’iyle senkron
 - Son tam doğrulama: 2026-07-15
-- Aktif önerilen iş: [[ROADMAP_EXECUTION_GRAPH#Sonraki dikey dilimler]] — [[FEATURE_NUTRITION]] + [[FEATURE_MEASUREMENTS]] dikey dilimi
+- Aktif önerilen iş: PR #1 → PR #2 inceleme sırasını koru; geliştirmede [[FEATURE_PROGRESS_PHOTOS]] + [[FEATURE_MUSCLE_LOAD]] dikey dilimine geç

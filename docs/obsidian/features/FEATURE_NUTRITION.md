@@ -2,7 +2,7 @@
 type: feature
 status: current
 implementation_status: current
-verified_commit: f9d6d75
+verified_commit: 341bf79
 updated: 2026-07-15
 source_files:
   - app/src/main/java/com/gymtracker/ui/screens/nutrition/NutritionScreen.kt
