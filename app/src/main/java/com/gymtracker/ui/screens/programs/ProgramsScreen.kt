@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -19,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gymtracker.data.entities.Program
 import com.gymtracker.data.entities.ProgramDifficulty
 import com.gymtracker.data.entities.ProgramWorkout
@@ -26,23 +28,15 @@ import com.gymtracker.domain.ProgramExercise
 import com.gymtracker.domain.ProgramExerciseSerializer
 
 @Composable
-fun ProgramsScreen(viewModel: ProgramsViewModel = hiltViewModel()) {
-    val programs by viewModel.programs.collectAsState()
-    var selectedProgram by remember { mutableStateOf<Program?>(null) }
+fun ProgramsScreen(
+    onProgramSelected: (Long) -> Unit,
+    viewModel: ProgramsViewModel = hiltViewModel()
+) {
+    val programs by viewModel.programs.collectAsStateWithLifecycle()
     var showPurchaseDialog by remember { mutableStateOf<Program?>(null) }
 
     val freePrograms = programs.filter { !it.isPaid }
     val paidPrograms = programs.filter { it.isPaid }
-
-    if (selectedProgram != null) {
-        ProgramDetailScreen(
-            program = selectedProgram!!,
-            viewModel = viewModel,
-            onBack = { selectedProgram = null },
-            onPurchase = { showPurchaseDialog = it }
-        )
-        return
-    }
 
     Column(
         modifier = Modifier
@@ -65,7 +59,7 @@ fun ProgramsScreen(viewModel: ProgramsViewModel = hiltViewModel()) {
                         style = MaterialTheme.typography.titleMedium)
                 }
                 items(freePrograms) { program ->
-                    ProgramCard(program, onClick = { selectedProgram = program }, onPurchase = {})
+                    ProgramCard(program, onClick = { onProgramSelected(program.id) }, onPurchase = {})
                 }
             }
             if (paidPrograms.isNotEmpty()) {
@@ -78,7 +72,7 @@ fun ProgramsScreen(viewModel: ProgramsViewModel = hiltViewModel()) {
                 items(paidPrograms) { program ->
                     ProgramCard(
                         program = program,
-                        onClick = { selectedProgram = program },
+                        onClick = { onProgramSelected(program.id) },
                         onPurchase = { showPurchaseDialog = it }
                     )
                 }
@@ -191,12 +185,28 @@ private fun DifficultyTag(difficulty: ProgramDifficulty) {
 
 @Composable
 fun ProgramDetailScreen(
-    program: Program,
-    viewModel: ProgramsViewModel,
     onBack: () -> Unit,
-    onPurchase: (Program) -> Unit
+    viewModel: ProgramsViewModel = hiltViewModel()
 ) {
-    val workouts by viewModel.getWorkoutsForProgram(program.id).collectAsState(initial = emptyList())
+    val state by viewModel.detailState.collectAsStateWithLifecycle()
+    var showPurchaseDialog by remember { mutableStateOf<Program?>(null) }
+    if (state.isLoading) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+        return
+    }
+    val program = state.program
+    if (program == null) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text("Program bulunamadı", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                TextButton(onClick = onBack) { Text("Geri dön") }
+            }
+        }
+        return
+    }
+    val workouts = state.workouts
     val locked = program.isPaid && !program.isPurchased
 
     Column(
@@ -207,7 +217,7 @@ fun ProgramDetailScreen(
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = onBack) {
-                Icon(Icons.Default.ArrowBack, null, tint = MaterialTheme.colorScheme.onBackground)
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = MaterialTheme.colorScheme.onBackground)
             }
             Text(program.name, style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
@@ -255,7 +265,7 @@ fun ProgramDetailScreen(
                 }
                 item {
                     Button(
-                        onClick = { onPurchase(program) },
+                        onClick = { showPurchaseDialog = program },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) {
@@ -277,6 +287,17 @@ fun ProgramDetailScreen(
                 }
             }
         }
+    }
+
+    showPurchaseDialog?.let { selectedProgram ->
+        PurchaseDialog(
+            program = selectedProgram,
+            onDismiss = { showPurchaseDialog = null },
+            onConfirm = {
+                viewModel.purchaseProgram(selectedProgram)
+                showPurchaseDialog = null
+            }
+        )
     }
 }
 

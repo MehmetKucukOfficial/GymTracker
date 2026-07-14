@@ -39,10 +39,11 @@ class Converters {
         ProgressPhoto::class,
         Program::class,
         ProgramWorkout::class,
-        NutritionGoal::class
+        NutritionGoal::class,
+        SeedMetadata::class
     ],
-    version = 3,
-    exportSchema = false
+    version = 5,
+    exportSchema = true
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {

@@ -1,4 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">GymTracker</string>
+    <string name="nav_home">Özet</string>
+    <string name="nav_workout">Antrenman</string>
+    <string name="nav_programs">Programlar</string>
+    <string name="nav_nutrition">Beslenme</string>
+    <string name="nav_progress">İlerleme</string>
+
+    <string name="home_greeting_morning">Günaydın</string>
+    <string name="home_greeting_afternoon">İyi günler</string>
+    <string name="home_greeting_evening">İyi akşamlar</string>
+    <string name="home_eyebrow">GYMTRACKER</string>
+    <string name="home_welcome">Bugünkü gelişimin için hazırsın.</string>
+    <string name="home_start_workout">Antrenmana başla</string>
+    <string name="home_start_workout_support">Yeni bir seans oluştur veya kaldığın yerden devam et.</string>
+    <string name="home_loading">Özetin hazırlanıyor…</string>
+    <string name="home_error_title">Özet yüklenemedi</string>
+    <string name="home_error_body">Kayıtların güvende. Bağlantıyı yenileyip tekrar deneyebilirsin.</string>
+    <string name="action_retry">Tekrar dene</string>
+
+    <string name="home_section_metrics">Haftalık özet</string>
+    <string name="home_section_metrics_support">Son yedi gün ve bugünkü kayıtların.</string>
+    <string name="home_metric_total_workouts">Toplam antrenman</string>
+    <string name="home_metric_week_workouts">Bu hafta</string>
+    <string name="home_metric_weight">Son kilo</string>
+    <string name="home_metric_calories">Bugün kalori</string>
+    <string name="home_value_workout_count">%1$d</string>
+    <string name="home_value_weight">%1$.1f kg</string>
+    <plurals name="home_value_calories">
+        <item quantity="one">%1$d kcal</item>
+        <item quantity="other">%1$d kcal</item>
+    </plurals>
+    <string name="home_value_no_workout">Henüz yok</string>
+    <string name="home_value_no_measurement">Ölçüm yok</string>
+    <string name="home_value_no_meal">Öğün yok</string>
+    <string name="home_support_all_time">Tüm zamanlar</string>
+    <string name="home_support_last_seven_days">Son 7 gün</string>
+    <string name="home_support_latest_measurement">Son ölçüm</string>
+    <string name="home_support_today">Bugün</string>
+
+    <string name="home_empty_title">İlk adımı birlikte atalım</string>
+    <string name="home_empty_body">Bir antrenman başlattığında, ölçüm veya öğün eklediğinde özetin burada anlamlı içgörülere dönüşecek.</string>
+    <string name="home_empty_action">İlk antrenmanı başlat</string>
+    <string name="home_section_quick_actions">Hızlı işlemler</string>
+    <string name="home_section_quick_actions_support">Sık kullandığın kayıt araçlarına ulaş.</string>
+    <string name="home_action_measurement">Ölçüm ekle</string>
+    <string name="home_action_meal">Öğün ekle</string>
+    <string name="home_action_photo">Fotoğraf ekle</string>
+    <string name="home_action_programs">Programları gör</string>
+    <string name="home_action_muscle_map">Kas yükünü incele</string>
+
+    <string name="home_section_last_workout">Son antrenman</string>
+    <string name="home_last_workout_support">En son tamamlanan seansın.</string>
 </resources>

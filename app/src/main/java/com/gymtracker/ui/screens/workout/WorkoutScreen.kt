@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -20,6 +21,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gymtracker.data.entities.WorkoutSession
 import com.gymtracker.data.entities.WorkoutSet
 import com.gymtracker.domain.ExerciseDefinition
@@ -28,16 +30,11 @@ import java.util.*
 
 @Composable
 fun WorkoutScreen(
+    onOpenSession: (Long) -> Unit,
     viewModel: WorkoutViewModel = hiltViewModel()
 ) {
-    val sessions by viewModel.sessions.collectAsState()
-    val uiState by viewModel.uiState.collectAsState()
+    val sessions by viewModel.sessions.collectAsStateWithLifecycle()
     var showNewSessionDialog by remember { mutableStateOf(false) }
-
-    if (uiState.activeSession != null) {
-        ActiveSessionScreen(viewModel)
-        return
-    }
 
     Column(
         modifier = Modifier
@@ -72,9 +69,7 @@ fun WorkoutScreen(
         } else {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(sessions) { session ->
-                    SessionCard(session) {
-                        viewModel.loadSession(session.id)
-                    }
+                    SessionCard(session, onClick = { onOpenSession(session.id) })
                 }
             }
         }
@@ -84,7 +79,7 @@ fun WorkoutScreen(
         NewSessionDialog(
             onDismiss = { showNewSessionDialog = false },
             onConfirm = { name ->
-                viewModel.startSession(name)
+                viewModel.startSession(name, onCreated = onOpenSession)
                 showNewSessionDialog = false
             }
         )
@@ -163,9 +158,28 @@ private fun NewSessionDialog(onDismiss: () -> Unit, onConfirm: (String) -> Unit)
 }
 
 @Composable
-fun ActiveSessionScreen(viewModel: WorkoutViewModel) {
-    val uiState by viewModel.uiState.collectAsState()
-    val session = uiState.activeSession ?: return
+fun WorkoutDetailScreen(
+    onBack: () -> Unit,
+    onFinished: () -> Unit,
+    viewModel: WorkoutViewModel = hiltViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    if (uiState.isLoading) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+        return
+    }
+    val session = uiState.activeSession
+    if (session == null) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text("Antrenman bulunamadı", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                TextButton(onClick = onBack) { Text("Geri dön") }
+            }
+        }
+        return
+    }
     val sets = uiState.activeSets
     var showAddSetDialog by remember { mutableStateOf(false) }
     var showFinishDialog by remember { mutableStateOf(false) }
@@ -183,10 +197,15 @@ fun ActiveSessionScreen(viewModel: WorkoutViewModel) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column {
-                Text(session.name, style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
-                Text("Aktif Antrenman", color = MaterialTheme.colorScheme.primary, fontSize = 13.sp)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onClick = onBack) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Geri")
+                }
+                Column {
+                    Text(session.name, style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
+                    Text("Antrenman Detayı", color = MaterialTheme.colorScheme.primary, fontSize = 13.sp)
+                }
             }
             Button(
                 onClick = { showFinishDialog = true },
@@ -235,7 +254,7 @@ fun ActiveSessionScreen(viewModel: WorkoutViewModel) {
         FinishSessionDialog(
             onDismiss = { showFinishDialog = false },
             onConfirm = { duration, notes ->
-                viewModel.finishSession(duration, notes)
+                viewModel.finishSession(duration, notes, onFinished)
                 showFinishDialog = false
             }
         )

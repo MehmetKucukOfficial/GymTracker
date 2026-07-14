@@ -19,6 +19,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gymtracker.data.entities.FoodEntry
 import com.gymtracker.data.entities.FoodItem
 import com.gymtracker.data.entities.MealType
@@ -26,8 +27,8 @@ import kotlin.math.min
 
 @Composable
 fun NutritionScreen(viewModel: NutritionViewModel = hiltViewModel()) {
-    val daily by viewModel.dailyNutrition.collectAsState()
-    val foodItems by viewModel.foodItems.collectAsState()
+    val daily by viewModel.dailyNutrition.collectAsStateWithLifecycle()
+    val foodItems by viewModel.foodItems.collectAsStateWithLifecycle()
     var showAddEntry by remember { mutableStateOf(false) }
     var showAddFood by remember { mutableStateOf(false) }
     var showGoalDialog by remember { mutableStateOf(false) }

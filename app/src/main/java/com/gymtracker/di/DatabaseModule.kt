@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.gymtracker.data.dao.*
 import com.gymtracker.data.database.AppDatabase
+import com.gymtracker.data.database.DatabaseMigrations
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,7 +20,7 @@ object DatabaseModule {
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): AppDatabase =
         Room.databaseBuilder(context, AppDatabase::class.java, "gymtracker.db")
-            .fallbackToDestructiveMigration()
+            .addMigrations(*DatabaseMigrations.ALL)
             .build()
 
     @Provides fun provideWorkoutDao(db: AppDatabase): WorkoutDao = db.workoutDao()

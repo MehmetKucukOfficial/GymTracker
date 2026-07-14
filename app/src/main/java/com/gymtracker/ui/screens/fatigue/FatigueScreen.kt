@@ -11,12 +11,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gymtracker.domain.MuscleGroup
 import com.gymtracker.ui.components.MuscleBodyMap
 
 @Composable
 fun FatigueScreen(viewModel: FatigueViewModel = hiltViewModel()) {
-    val fatigueData by viewModel.fatigueData.collectAsState()
+    val fatigueData by viewModel.fatigueData.collectAsStateWithLifecycle()
     var showFront by remember { mutableStateOf(true) }
     var selectedMuscle by remember { mutableStateOf<MuscleGroup?>(null) }
 

@@ -2,63 +2,64 @@ package com.gymtracker.ui.screens.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gymtracker.data.dao.MeasurementDao
-import com.gymtracker.data.dao.NutritionDao
-import com.gymtracker.data.dao.WorkoutDao
+import com.gymtracker.data.home.HomeDashboardRepository
+import com.gymtracker.data.home.homeDashboardPeriod
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
-import java.util.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
-data class HomeStats(
-    val totalWorkouts: Int = 0,
-    val weekWorkouts: Int = 0,
-    val latestWeight: Float? = null,
-    val todayCalories: Int = 0,
-    val lastWorkoutName: String? = null,
-    val lastWorkoutDate: Long? = null
-)
+sealed interface HomeUiState {
+    data object Loading : HomeUiState
+    data class Content(val dashboard: com.gymtracker.data.home.HomeDashboardData) : HomeUiState
+    data object Error : HomeUiState
+}
 
 @HiltViewModel
+@OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModel @Inject constructor(
-    private val workoutDao: WorkoutDao,
-    private val measurementDao: MeasurementDao,
-    private val nutritionDao: NutritionDao
+    private val repository: HomeDashboardRepository
 ) : ViewModel() {
+    private val retryGeneration = MutableStateFlow(0)
 
-    private val _stats = MutableStateFlow(HomeStats())
-    val stats = _stats.asStateFlow()
+    val uiState = retryGeneration.flatMapLatest { observeCurrentDashboard() }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = HomeUiState.Loading
+    )
 
-    init {
-        loadStats()
+    fun retry() {
+        retryGeneration.update { it + 1 }
     }
 
-    private fun loadStats() {
-        viewModelScope.launch {
-            val weekAgo = System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000L
-            val todayStart = Calendar.getInstance().apply {
-                set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0)
-                set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
-            }.timeInMillis
+    private fun observeCurrentDashboard(): Flow<HomeUiState> = dashboardPeriods()
+        .flatMapLatest { period ->
+            repository.observeDashboard(
+                weekStartMillis = period.weekStartMillis,
+                dayStartMillis = period.dayStartMillis,
+                nextDayStartMillis = period.nextDayStartMillis
+            )
+        }
+        .map<com.gymtracker.data.home.HomeDashboardData, HomeUiState>(HomeUiState::Content)
+        .onStart { emit(HomeUiState.Loading) }
+        .catch { emit(HomeUiState.Error) }
 
-            workoutDao.getAllSessions().collect { sessions ->
-                val weekSessions = sessions.filter { it.date >= weekAgo }
-                val latestMeasurement = measurementDao.getLatest()
-                val todayEntries = nutritionDao.getEntriesForDay(
-                    todayStart, todayStart + 86_400_000L
-                ).first()
-                val todayCalories = todayEntries.sumOf { it.calories.toDouble() }.toInt()
-
-                _stats.value = HomeStats(
-                    totalWorkouts = sessions.size,
-                    weekWorkouts = weekSessions.size,
-                    latestWeight = latestMeasurement?.weightKg,
-                    todayCalories = todayCalories,
-                    lastWorkoutName = sessions.firstOrNull()?.name,
-                    lastWorkoutDate = sessions.firstOrNull()?.date
-                )
-            }
+    private fun dashboardPeriods() = flow {
+        while (true) {
+            val period = homeDashboardPeriod()
+            emit(period)
+            val remainingToday = period.nextDayStartMillis - System.currentTimeMillis()
+            delay(remainingToday.coerceAtLeast(1_000L))
         }
     }
 }

@@ -27,6 +27,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.gymtracker.data.entities.PhotoAngle
 import com.gymtracker.data.entities.ProgressPhoto
@@ -35,7 +36,9 @@ import java.util.*
 
 @Composable
 fun ProgressScreen(viewModel: ProgressViewModel = hiltViewModel()) {
-    val photos by viewModel.photos.collectAsState()
+    val photos by viewModel.photos.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
     var selectedAngle by remember { mutableStateOf<PhotoAngle?>(null) }
     var showAddDialog by remember { mutableStateOf(false) }
     var selectedUri by remember { mutableStateOf<Uri?>(null) }
@@ -46,12 +49,20 @@ fun ProgressScreen(viewModel: ProgressViewModel = hiltViewModel()) {
 
     val filtered = if (selectedAngle != null) photos.filter { it.angle == selectedAngle } else photos
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(16.dp)
-    ) {
+    LaunchedEffect(uiState.message) {
+        uiState.message?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.messageShown()
+        }
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(16.dp)
+        ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -105,6 +116,29 @@ fun ProgressScreen(viewModel: ProgressViewModel = hiltViewModel()) {
             ) {
                 items(filtered) { photo ->
                     PhotoGridItem(photo, onDelete = { viewModel.deletePhoto(photo) })
+                }
+            }
+        }
+        }
+
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
+
+        if (uiState.isSaving) {
+            Surface(
+                modifier = Modifier.align(Alignment.Center),
+                shape = RoundedCornerShape(16.dp),
+                tonalElevation = 8.dp
+            ) {
+                Row(
+                    modifier = Modifier.padding(20.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                    Text("Fotoğraf güvenli alana kopyalanıyor…")
                 }
             }
         }

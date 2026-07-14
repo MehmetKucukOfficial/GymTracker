@@ -1,18 +1,24 @@
 package com.gymtracker.ui.screens.workout
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gymtracker.data.dao.WorkoutDao
 import com.gymtracker.data.entities.WorkoutSession
 import com.gymtracker.data.entities.WorkoutSet
+import com.gymtracker.data.workout.WorkoutRepository
 import com.gymtracker.domain.ExerciseLibrary
+import com.gymtracker.ui.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class WorkoutUiState(
-    val sessions: List<WorkoutSession> = emptyList(),
     val activeSession: WorkoutSession? = null,
     val activeSets: List<WorkoutSet> = emptyList(),
     val isLoading: Boolean = false
@@ -20,65 +26,69 @@ data class WorkoutUiState(
 
 @HiltViewModel
 class WorkoutViewModel @Inject constructor(
-    private val workoutDao: WorkoutDao
+    private val repository: WorkoutRepository,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(WorkoutUiState())
-    val uiState = _uiState.asStateFlow()
+    private val sessionId: Long? = savedStateHandle[Screen.WorkoutDetail.ARG_SESSION_ID]
 
-    val sessions = workoutDao.getAllSessions()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    val sessions = repository.sessions
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    fun startSession(name: String) {
-        viewModelScope.launch {
-            val session = WorkoutSession(name = name)
-            val id = workoutDao.insertSession(session)
-            val created = workoutDao.getSessionById(id)
-            _uiState.update { it.copy(activeSession = created, activeSets = emptyList()) }
+    val uiState: StateFlow<WorkoutUiState> = sessionId?.let { id ->
+        combine(
+            repository.observeSession(id),
+            repository.observeSets(id)
+        ) { session, sets ->
+            WorkoutUiState(activeSession = session, activeSets = sets)
+        }.onStart {
+            emit(WorkoutUiState(isLoading = true))
         }
-    }
+    }?.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5_000),
+        WorkoutUiState(isLoading = true)
+    ) ?: flowOf(WorkoutUiState()).stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5_000),
+        WorkoutUiState()
+    )
 
-    fun loadSession(sessionId: Long) {
+    fun startSession(name: String, onCreated: (Long) -> Unit) {
+        if (name.isBlank()) return
         viewModelScope.launch {
-            val session = workoutDao.getSessionById(sessionId)
-            val sets = workoutDao.getSetsBySessionSync(sessionId)
-            _uiState.update { it.copy(activeSession = session, activeSets = sets) }
+            onCreated(repository.startSession(name))
         }
     }
 
     fun addSet(exerciseName: String, setNumber: Int, reps: Int, weightKg: Float) {
-        val sessionId = _uiState.value.activeSession?.id ?: return
+        val id = sessionId ?: return
         viewModelScope.launch {
-            val set = WorkoutSet(
-                sessionId = sessionId,
-                exerciseName = exerciseName,
-                setNumber = setNumber,
-                reps = reps,
-                weightKg = weightKg
+            repository.addSet(
+                WorkoutSet(
+                    sessionId = id,
+                    exerciseName = exerciseName,
+                    setNumber = setNumber,
+                    reps = reps,
+                    weightKg = weightKg
+                )
             )
-            workoutDao.insertSet(set)
-            val updatedSets = workoutDao.getSetsBySessionSync(sessionId)
-            _uiState.update { it.copy(activeSets = updatedSets) }
         }
     }
 
     fun deleteSet(set: WorkoutSet) {
-        viewModelScope.launch {
-            workoutDao.deleteSet(set)
-            val sessionId = _uiState.value.activeSession?.id ?: return@launch
-            val updatedSets = workoutDao.getSetsBySessionSync(sessionId)
-            _uiState.update { it.copy(activeSets = updatedSets) }
-        }
+        viewModelScope.launch { repository.deleteSet(set) }
     }
 
-    fun finishSession(durationMinutes: Int, notes: String) {
-        val session = _uiState.value.activeSession ?: return
+    fun finishSession(durationMinutes: Int, notes: String, onFinished: () -> Unit) {
+        val session = uiState.value.activeSession ?: return
         viewModelScope.launch {
-            workoutDao.updateSession(session.copy(durationMinutes = durationMinutes, notes = notes))
-            _uiState.update { it.copy(activeSession = null, activeSets = emptyList()) }
+            repository.finishSession(session, durationMinutes, notes)
+            onFinished()
         }
     }
 
     fun getExerciseCategories() = ExerciseLibrary.getCategories()
-    fun getExercisesForCategory(cat: String) = ExerciseLibrary.getByCategory(cat)
+
+    fun getExercisesForCategory(category: String) = ExerciseLibrary.getByCategory(category)
 }

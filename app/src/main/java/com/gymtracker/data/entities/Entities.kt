@@ -1,6 +1,7 @@
 package com.gymtracker.data.entities
 
 import androidx.room.Entity
+import androidx.room.ColumnInfo
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
@@ -91,7 +92,10 @@ data class ProgressPhoto(
     val photoUri: String,
     val weightKg: Float? = null,
     val notes: String = "",
-    val angle: PhotoAngle = PhotoAngle.FRONT
+    val angle: PhotoAngle = PhotoAngle.FRONT,
+    @ColumnInfo(defaultValue = "'image/*'") val mimeType: String = "image/*",
+    @ColumnInfo(defaultValue = "0") val sizeBytes: Long = 0,
+    @ColumnInfo(defaultValue = "0") val storageVersion: Int = 0
 )
 
 enum class PhotoAngle(val displayName: String) {
@@ -148,4 +152,10 @@ data class NutritionGoal(
     val dailyProteinG: Int = 180,
     val dailyCarbsG: Int = 300,
     val dailyFatG: Int = 80
+)
+
+@Entity(tableName = "seed_metadata")
+data class SeedMetadata(
+    @PrimaryKey val seedKey: String,
+    val contentVersion: Int
 )
