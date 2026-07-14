@@ -2,7 +2,7 @@
 type: quality
 status: current
 implementation_status: mixed
-verified_commit: 4d0cad8
+verified_commit: f9d6d75
 updated: 2026-07-15
 tags: [gymtracker/quality, gymtracker/testing]
 ---
@@ -25,7 +25,9 @@ tags: [gymtracker/quality, gymtracker/testing]
 - `HomeScreenTest` light/dark render, %200 font empty state, sahte sıfır yokluğu, birleşik metric semantics ve error retry davranışını doğrular.
 - `WorkoutRepositoryTest` eşzamanlı start/resume çağrılarının tek aktif ID üretmesini ve tamamlanan seansın mutation’lara kapanmasını doğrular.
 - `WorkoutScreenTest` aktif/geçmiş ayrımını, tamamlanan detayın salt okunurluğunu ve light/dark + %200 font yerleşimini doğrular.
-- Pixel 6 Pro API 34 emülatöründe 23 instrumentation testi ve 11 JVM testi, 0 failure ile geçer.
+- `LocalizedDecimalTest`, `NutritionRulesTest` ve `MeasurementRulesTest` virgül/nokta parse, DST 23/25 saat, zero/over-goal, input aralıkları ve en yeni iki kilo trendini doğrular.
+- `NutritionScreenTest` over-goal/empty state’i; `MeasurementsScreenTest` latest/history ayrımını ve empty state’i dark + %200 font koşulunda doğrular.
+- Pixel 6 Pro API 34 emülatöründe 27 instrumentation testi ve 17 JVM testi, 0 failure ile geçer.
 
 ## Feature matrisi
 
@@ -33,8 +35,8 @@ tags: [gymtracker/quality, gymtracker/testing]
 |---|---|---|---|---|
 | Home | aggregate + clock + adaptive policy | summary queries | empty/content/error, semantics, light/dark, %200 font | dashboard açılış |
 | Workout | state/validation | v3→v6, transaction/cascade/single-active/read-only | active/history, light/dark, %200 font | Activity recreation; process death bekliyor |
-| Nutrition | totals/date/parser | day query/goal | add/delete/undo | DST day |
-| Measurements | validation/trend | order/update | form/chart | Home update |
+| Nutrition | totals/DST/parser/goal | day query/goal | over-goal/empty/dark/%200 | delete undo + Home update bekliyor |
+| Measurements | validation/trend | order/update bekliyor | latest/history/empty/dark/%200 | Home update bekliyor |
 | Photos | metadata/limit policy | migration/import/delete rollback | picker/progress/error/viewer | process kill/restart/reboot |
 | Programs | seed/content | idempotency/migration | detail/purchase | program→workout |
 | Muscle load | formula/time decay | recent sets query | map/list/accessibility | new set update |
@@ -57,7 +59,7 @@ tags: [gymtracker/quality, gymtracker/testing]
 - Event consumption/undo
 - Clock injection
 
-Home’un takvim sınırı saf fonksiyonla testlidir; canlı rollover akışına Clock/ZoneId injection henüz eklenmedi.
+Home’un takvim sınırı saf fonksiyonla testlidir; canlı rollover akışına Clock/ZoneId injection henüz eklenmedi. Nutrition Clock kullanır ve seçili tarihi SavedStateHandle’da korur; gerçek OS process-death kabulü bekler.
 
 ## CI sırası
 

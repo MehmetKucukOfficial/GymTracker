@@ -2,11 +2,14 @@
 type: feature
 status: current
 implementation_status: current
-verified_commit: a8e019e
-updated: 2026-07-14
+verified_commit: f9d6d75
+updated: 2026-07-15
 source_files:
   - app/src/main/java/com/gymtracker/ui/screens/nutrition/NutritionScreen.kt
   - app/src/main/java/com/gymtracker/ui/screens/nutrition/NutritionViewModel.kt
+  - app/src/main/java/com/gymtracker/data/nutrition/NutritionRules.kt
+  - app/src/main/java/com/gymtracker/domain/LocalizedDecimal.kt
+  - app/src/main/java/com/gymtracker/di/TimeModule.kt
   - app/src/main/java/com/gymtracker/data/dao/NutritionDao.kt
 related_data: [FoodItem, FoodEntry, NutritionGoal, MealType]
 tags: [gymtracker/feature, gymtracker/feature/nutrition]
@@ -16,28 +19,28 @@ tags: [gymtracker/feature, gymtracker/feature/nutrition]
 
 ## Mevcut yetenek
 
-Özel besin, öğün kaydı, kalori/makro toplamı ve günlük hedef. `selectedDate` StateFlow vardır ancak UI tarih değiştiremez.
+Özel besin, öğün kaydı, kalori/makro toplamı ve günlük hedef. UI önceki gün, sonraki gün ve bugün arasında dolaşır; gelecek gün engellenir. Kalori aşımı, güvenli makro ilerlemesi, boş durum ve işlem hataları açık state olarak gösterilir.
 
 ## Mevcut akış
 
-Selected day → `flatMapLatest(getEntriesForDay)` + goal Flow → `DailyNutrition`. Yeni entry gün başlangıcı timestamp’iyle yazılır.
+`SavedStateHandle` içindeki ISO `LocalDate` → `nutritionDayRange(date, Clock.zone)` → `flatMapLatest(getEntriesForDay)` + goal Flow → `DailyNutrition`. Takvim günü başlangıç/bitişi DST-safe hesaplanır. Bugünkü entry `Clock.instant()`, geçmiş gün entry’si seçilen günün yerel saatiyle yazılır.
 
-## Bilinen sorunlar
+Ondalık girdiler ortak `LocalizedDecimal` ile virgül/nokta destekli parse edilir. Besin miktarı, besin değerleri ve pozitif hedefler yazmadan önce doğrulanır; başarısız Room işlemi dialogu kapatmaz.
 
-- Gün sonu `start + 86_400_000`; DST-safe değil.
-- Gerçek öğün saati kaybolur.
-- Hedef sıfır/negatif olabilir; bölme NaN/Infinity.
-- Progress clamp sonrası aşım rengi asla çalışmaz.
-- Silent numeric defaults ve Türkçe ondalık virgül sorunu.
+## Kalan kapsam
+
 - Food search DAO var, UI kullanmaz.
-- Home beslenme değişikliğine reaktif değil.
+- Entry silme için undo yok.
+- FoodEntry besin değerini snapshot olarak tutar; ürün güncellemesi geçmiş kayıtları değiştirmez. Bu domain sözleşmesi ileride ADR ile sabitlenmelidir.
+- Seçili gün process recreation’da korunur; uygulama açıkken gece yarısı seçimi otomatik ilerlemez.
+- İkinci locale ve gerçek process-death testi bekliyor.
 
 ## Hedef durum
 
-`LocalDate + Clock + ZoneId`, tarih pager, öğün kartlarında hızlı ekleme, recent/favorite search, locale validation, undo. FoodEntry besin değerini snapshot tutar; bu bilinçli domain kararı olarak belgelenir.
+Recent/favorite food search, öğün kartında hızlı ekleme, silme undo’su, snapshot ADR’si ve ikinci locale kapsamı. Home beslenme Flow’una zaten reaktiftir.
 
 ## Zorunlu testler
 
-DST day range; goal 0 validation; aşım görünümü; decimal comma; entry change → Home update; delete undo.
+Uygulandı: 23/25 saat DST day range, goal 0 güvenliği, aşım görünümü, decimal comma ve dark/%200 font Compose kabulü. Kalan: entry change → Home entegrasyon testi, delete undo, ikinci locale ve gerçek process-death.
 
 Bağlar: [[FEATURE_HOME]], [[ARCH_STATE_DATA_FLOW]], [[ARCH_DATABASE]], [[DESIGN_SYSTEM_GRAPH]].

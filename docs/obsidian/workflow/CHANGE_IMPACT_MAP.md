@@ -2,7 +2,7 @@
 type: workflow
 status: current
 implementation_status: active
-verified_commit: 4d0cad8
+verified_commit: f9d6d75
 updated: 2026-07-15
 tags: [gymtracker/workflow, gymtracker/impact]
 ---
@@ -54,9 +54,15 @@ Graf: [[FEATURE_PROGRESS_PHOTOS]], [[ADR_004_PERSISTENT_PHOTO_STORAGE]].
 
 ## Tarih veya zaman hesabı
 
-Oku: Home, Nutrition, Fatigue/Load, Measurement date queries.
-Test: Istanbul DST geçmiş örnekleri, midnight, zone change, inclusive/exclusive boundary.
+Oku: `TimeModule.kt`, `HomeDashboardPeriod.kt`, `NutritionRules.kt`, ilgili ViewModel, Fatigue/Load ve Measurement date queries.
+Test: Istanbul/Berlin DST geçmiş örnekleri, 23/25 saat, midnight, zone change, inclusive/exclusive boundary, SavedStateHandle/process recreation.
 Graf: [[ARCH_STATE_DATA_FLOW]], feature notları.
+
+## Nutrition veya Measurements input/state
+
+Oku: ilgili Screen/ViewModel/DAO, `LocalizedDecimal.kt`, `NutritionRules.kt` veya `MeasurementRules.kt`, Home aggregate çağıranları ve string resources.
+Test: `LocalizedDecimalTest`, `NutritionRulesTest`, `MeasurementRulesTest`, `NutritionScreenTest`, `MeasurementsScreenTest`; empty, comma/dot, min/max, zero/over-goal, latest/history, 0/1/2+ trend, light/dark ve %200 font.
+Graf: [[FEATURE_NUTRITION]], [[FEATURE_MEASUREMENTS]], [[ARCH_STATE_DATA_FLOW]], [[DESIGN_SYSTEM_GRAPH]].
 
 ## Gradle/dependency/SDK
 
