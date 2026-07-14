@@ -15,22 +15,24 @@ tags: [gymtracker/quality, gymtracker/testing]
 - [[FatigueCalculatorTest]] bilinen egzersiz aktivasyon dagilimini, cap davranisini ve bilinmeyen egzersiz davranisini korur.
 - Room instrumentation test altyapisi AndroidJUnitRunner ve `room-testing` ile aktiftir.
 - [[WorkoutDaoTest]] tarih sinirli set sorgusunu ve session -> set cascade davranisini cihaz/emulator calistirmasi icin tanimlar.
-- [[DatabaseMigrationTest]] v3→v5 migration’ında workout ve legacy fotoğraf satırlarının korunmasını, yeni metadata varsayılanlarını doğrular.
+- [[DatabaseMigrationTest]] v3→v6 migration’ında workout ve legacy fotoğraf satırlarının korunmasını, fotoğraf metadata varsayılanlarını ve legacy workout’ın güvenli `COMPLETED/completedAt` dönüşümünü doğrular.
 - [[ProgramSeedInitializerTest]] tekrarlı, eşzamanlı ve legacy seed durumlarını kapsar.
 - [[ProgressPhotoRepositoryTest]] app-owned dosya kopyası, metadata, storage yeniden oluşturma, delete cleanup, kaynak/DB hata rollback ve 25 MB sınırında geçici dosya temizliğini kapsar.
 - [[NavigationContractTest]] 5 hedef sırasını, nested route sahipliğini, detail görünürlük politikasını ve pozitif ID kuralını doğrular.
-- [[HomeDashboardPeriodTest]] Istanbul takvim/DST gün sınırını; [[HomeDashboardRepositoryTest]] üç Room kaynağının reaktif birleşimini doğrular.
+- [[HomeDashboardPeriodTest]] Istanbul takvim/DST gün sınırını; [[HomeDashboardRepositoryTest]] completed/active workout, measurement ve nutrition Flow’larının reaktif birleşimini doğrular.
 - [[NavigationSmokeTest]] back, selected tab, workout/program ID detail ve Activity recreation davranışını gerçek Compose UI üzerinde doğrular.
 - `HomeLayoutConfigTest` compact/expanded ve %200 font kolon politikasını JVM’de doğrular.
 - `HomeScreenTest` light/dark render, %200 font empty state, sahte sıfır yokluğu, birleşik metric semantics ve error retry davranışını doğrular.
-- Pixel 6 Pro API 34 emülatöründe 18 instrumentation testi ve 11 JVM testi, 0 failure ile geçer.
+- `WorkoutRepositoryTest` eşzamanlı start/resume çağrılarının tek aktif ID üretmesini ve tamamlanan seansın mutation’lara kapanmasını doğrular.
+- `WorkoutScreenTest` aktif/geçmiş ayrımını, tamamlanan detayın salt okunurluğunu ve light/dark + %200 font yerleşimini doğrular.
+- Pixel 6 Pro API 34 emülatöründe 23 instrumentation testi ve 11 JVM testi, 0 failure ile geçer.
 
 ## Feature matrisi
 
 | Alan | Unit | Room/instrumentation | Compose/UI | Smoke |
 |---|---|---|---|---|
 | Home | aggregate + clock + adaptive policy | summary queries | empty/content/error, semantics, light/dark, %200 font | dashboard açılış |
-| Workout | state/validation | transaction/cascade/active | start-add-resume-finish | process death |
+| Workout | state/validation | v3→v6, transaction/cascade/single-active/read-only | active/history, light/dark, %200 font | Activity recreation; process death bekliyor |
 | Nutrition | totals/date/parser | day query/goal | add/delete/undo | DST day |
 | Measurements | validation/trend | order/update | form/chart | Home update |
 | Photos | metadata/limit policy | migration/import/delete rollback | picker/progress/error/viewer | process kill/restart/reboot |
@@ -39,7 +41,7 @@ tags: [gymtracker/quality, gymtracker/testing]
 
 ## Room ve migration
 
-- v3→latest doğrulandı; v1/v2 tarihi şema kanıtı olmadığı için destek iddiası yok
+- v3→latest (v6) doğrulandı; v1/v2 tarihi şema kanıtı olmadığı için destek iddiası yok
 - Seed repeated/concurrent
 - Transaction rollback
 - Cascade and unique constraint

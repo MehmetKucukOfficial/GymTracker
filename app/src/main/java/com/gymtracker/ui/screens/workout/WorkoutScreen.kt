@@ -2,84 +2,106 @@
 
 package com.gymtracker.ui.screens.workout
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.FitnessCenter
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.gymtracker.R
 import com.gymtracker.data.entities.WorkoutSession
 import com.gymtracker.data.entities.WorkoutSet
+import com.gymtracker.data.entities.WorkoutStatus
 import com.gymtracker.domain.ExerciseDefinition
+import com.gymtracker.ui.components.GtEmptyState
+import com.gymtracker.ui.components.GtLoadingState
+import com.gymtracker.ui.components.GtSectionHeader
+import com.gymtracker.ui.theme.GtSize
+import com.gymtracker.ui.theme.GtSpacing
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun WorkoutScreen(
     onOpenSession: (Long) -> Unit,
     viewModel: WorkoutViewModel = hiltViewModel()
 ) {
-    val sessions by viewModel.sessions.collectAsStateWithLifecycle()
+    val activeSession by viewModel.activeSession.collectAsStateWithLifecycle()
+    val completedSessions by viewModel.completedSessions.collectAsStateWithLifecycle()
     var showNewSessionDialog by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(16.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                "Antrenmanlar",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            FloatingActionButton(
-                onClick = { showNewSessionDialog = true },
-                containerColor = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(48.dp)
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Yeni Antrenman")
-            }
-        }
-
-        Spacer(Modifier.height(16.dp))
-
-        if (sessions.isEmpty()) {
-            EmptyWorkoutState { showNewSessionDialog = true }
-        } else {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                items(sessions) { session ->
-                    SessionCard(session, onClick = { onOpenSession(session.id) })
-                }
-            }
-        }
-    }
+    WorkoutListContent(
+        activeSession = activeSession,
+        completedSessions = completedSessions,
+        onNewSession = {
+            if (activeSession != null) onOpenSession(activeSession!!.id)
+            else showNewSessionDialog = true
+        },
+        onOpenSession = onOpenSession
+    )
 
     if (showNewSessionDialog) {
         NewSessionDialog(
             onDismiss = { showNewSessionDialog = false },
             onConfirm = { name ->
-                viewModel.startSession(name, onCreated = onOpenSession)
+                viewModel.startOrResumeSession(name, onOpened = onOpenSession)
                 showNewSessionDialog = false
             }
         )
@@ -87,52 +109,228 @@ fun WorkoutScreen(
 }
 
 @Composable
-private fun EmptyWorkoutState(onStart: () -> Unit) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Icon(
-                Icons.Default.FitnessCenter,
-                contentDescription = null,
-                modifier = Modifier.size(72.dp),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
+fun WorkoutListContent(
+    activeSession: WorkoutSession?,
+    completedSessions: List<WorkoutSession>,
+    onNewSession: () -> Unit,
+    onOpenSession: (Long) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(horizontal = GtSpacing.md, vertical = GtSpacing.lg)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(GtSpacing.md),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            GtSectionHeader(
+                title = stringResource(R.string.workout_title),
+                supportingText = stringResource(R.string.workout_subtitle),
+                modifier = Modifier.weight(1f)
             )
-            Spacer(Modifier.height(16.dp))
-            Text("Henüz antrenman yok", color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.titleMedium)
-            Spacer(Modifier.height(8.dp))
-            Button(onClick = onStart) { Text("İlk Antrenmanı Başlat") }
+            FloatingActionButton(
+                onClick = onNewSession,
+                containerColor = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(GtSize.minimumTouchTarget)
+            ) {
+                Icon(
+                    imageVector = if (activeSession == null) Icons.Default.Add else Icons.Default.PlayArrow,
+                    contentDescription = stringResource(
+                        if (activeSession == null) R.string.workout_new_content_description
+                        else R.string.workout_resume_content_description
+                    )
+                )
+            }
+        }
+
+        Spacer(Modifier.height(GtSpacing.lg))
+
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(GtSpacing.sm)
+        ) {
+            if (activeSession != null) {
+                item {
+                    GtSectionHeader(
+                        title = stringResource(R.string.workout_active_section),
+                        supportingText = stringResource(R.string.workout_active_section_support)
+                    )
+                }
+                item {
+                    SessionCard(
+                        session = activeSession,
+                        isActive = true,
+                        onClick = { onOpenSession(activeSession.id) },
+                        modifier = Modifier.testTag("workout-active-card")
+                    )
+                }
+                item { Spacer(Modifier.height(GtSpacing.sm)) }
+            }
+
+            if (activeSession == null && completedSessions.isEmpty()) {
+                item {
+                    GtEmptyState(
+                        title = stringResource(R.string.workout_empty_title),
+                        body = stringResource(R.string.workout_empty_body),
+                        actionLabel = stringResource(R.string.workout_empty_action),
+                        onAction = onNewSession
+                    )
+                }
+            } else {
+                item {
+                    GtSectionHeader(
+                        title = stringResource(R.string.workout_history_section),
+                        supportingText = stringResource(R.string.workout_history_section_support)
+                    )
+                }
+                if (completedSessions.isEmpty()) {
+                    item {
+                        Text(
+                            text = stringResource(R.string.workout_no_completed),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(vertical = GtSpacing.sm)
+                        )
+                    }
+                } else {
+                    items(completedSessions, key = { it.id }) { session ->
+                        SessionCard(
+                            session = session,
+                            isActive = false,
+                            onClick = { onOpenSession(session.id) }
+                        )
+                    }
+                }
+            }
         }
     }
 }
 
 @Composable
-private fun SessionCard(session: WorkoutSession, onClick: () -> Unit) {
-    val fmt = SimpleDateFormat("dd MMM yyyy - HH:mm", Locale("tr"))
+private fun SessionCard(
+    session: WorkoutSession,
+    isActive: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val formatter = remember { SimpleDateFormat("dd MMM yyyy - HH:mm", Locale("tr")) }
+    val largeFont = LocalDensity.current.fontScale >= 1.6f
     Card(
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick, role = Role.Button)
+            .semantics(mergeDescendants = true) { role = Role.Button },
+        colors = CardDefaults.cardColors(
+            containerColor = if (isActive) MaterialTheme.colorScheme.primaryContainer
+            else MaterialTheme.colorScheme.surface
+        ),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
     ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(Icons.Default.FitnessCenter, contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(40.dp))
-            Spacer(Modifier.width(12.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(session.name, fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface)
-                Text(fmt.format(Date(session.date)), fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant)
-                if (session.durationMinutes > 0) {
-                    Text("${session.durationMinutes} dakika", fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.primary)
+        if (largeFont) {
+            Column(
+                modifier = Modifier.padding(GtSpacing.md),
+                verticalArrangement = Arrangement.spacedBy(GtSpacing.sm)
+            ) {
+                SessionIdentity(
+                    session = session,
+                    isActive = isActive,
+                    formattedDate = formatter.format(Date(session.date))
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    SessionStatus(isActive = isActive)
                 }
             }
-            Icon(Icons.Default.ChevronRight, contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant)
+        } else {
+            Row(
+                modifier = Modifier.padding(GtSpacing.md),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                SessionIdentity(
+                    session = session,
+                    isActive = isActive,
+                    formattedDate = formatter.format(Date(session.date)),
+                    modifier = Modifier.weight(1f)
+                )
+                SessionStatus(isActive = isActive)
+            }
         }
     }
+}
+
+@Composable
+private fun SessionIdentity(
+    session: WorkoutSession,
+    isActive: Boolean,
+    formattedDate: String,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(GtSize.minimumTouchTarget)
+                .background(
+                    color = if (isActive) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.surfaceVariant,
+                    shape = CircleShape
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = if (isActive) Icons.Default.PlayArrow else Icons.Default.CheckCircle,
+                contentDescription = null,
+                tint = if (isActive) MaterialTheme.colorScheme.onPrimary
+                else MaterialTheme.colorScheme.primary
+            )
+        }
+        Spacer(Modifier.width(GtSpacing.sm))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(text = session.name, style = MaterialTheme.typography.titleMedium)
+            Text(
+                text = formattedDate,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            if (session.durationMinutes > 0) {
+                Text(
+                    text = pluralStringResource(
+                        R.plurals.workout_duration_minutes,
+                        session.durationMinutes,
+                        session.durationMinutes
+                    ),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SessionStatus(isActive: Boolean) {
+    Text(
+        text = stringResource(
+            if (isActive) R.string.workout_continue else R.string.workout_completed
+        ),
+        style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.primary
+    )
+    Spacer(Modifier.width(GtSpacing.xs))
+    Icon(
+        Icons.Default.ChevronRight,
+        contentDescription = null,
+        tint = MaterialTheme.colorScheme.onSurfaceVariant
+    )
 }
 
 @Composable
@@ -140,20 +338,26 @@ private fun NewSessionDialog(onDismiss: () -> Unit, onConfirm: (String) -> Unit)
     var name by remember { mutableStateOf("") }
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Yeni Antrenman") },
+        title = { Text(stringResource(R.string.workout_new_dialog_title)) },
         text = {
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("Antrenman Adı") },
-                placeholder = { Text("örn: Göğüs & Triceps") },
+                label = { Text(stringResource(R.string.workout_name_label)) },
+                placeholder = { Text(stringResource(R.string.workout_name_placeholder)) },
+                singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
         },
         confirmButton = {
-            Button(onClick = { if (name.isNotBlank()) onConfirm(name) }) { Text("Başlat") }
+            Button(
+                enabled = name.isNotBlank(),
+                onClick = { onConfirm(name) }
+            ) { Text(stringResource(R.string.workout_start)) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("İptal") } }
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
+        }
     )
 }
 
@@ -164,93 +368,53 @@ fun WorkoutDetailScreen(
     viewModel: WorkoutViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    if (uiState.isLoading) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
-        return
-    }
-    val session = uiState.activeSession
-    if (session == null) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("Antrenman bulunamadı", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                TextButton(onClick = onBack) { Text("Geri dön") }
-            }
-        }
-        return
-    }
-    val sets = uiState.activeSets
     var showAddSetDialog by remember { mutableStateOf(false) }
     var showFinishDialog by remember { mutableStateOf(false) }
 
-    val groupedSets = sets.groupBy { it.exerciseName }
+    when {
+        uiState.isLoading -> GtLoadingState(
+            title = stringResource(R.string.workout_loading),
+            modifier = Modifier.fillMaxSize()
+        )
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(16.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+        uiState.activeSession == null -> Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(GtSpacing.md),
+            contentAlignment = Alignment.Center
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = onBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Geri")
-                }
-                Column {
-                    Text(session.name, style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
-                    Text("Antrenman Detayı", color = MaterialTheme.colorScheme.primary, fontSize = 13.sp)
-                }
-            }
-            Button(
-                onClick = { showFinishDialog = true },
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-            ) {
-                Text("Bitir")
-            }
+            GtEmptyState(
+                title = stringResource(R.string.workout_not_found),
+                body = stringResource(R.string.workout_not_found),
+                actionLabel = stringResource(R.string.action_back_long),
+                onAction = onBack
+            )
         }
 
-        Spacer(Modifier.height(16.dp))
-
-        LazyColumn(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            groupedSets.forEach { (exerciseName, exerciseSets) ->
-                item {
-                    ExerciseSetGroup(exerciseName, exerciseSets, onDeleteSet = viewModel::deleteSet)
-                }
-            }
-        }
-
-        Button(
-            onClick = { showAddSetDialog = true },
-            modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
-        ) {
-            Icon(Icons.Default.Add, contentDescription = null)
-            Spacer(Modifier.width(8.dp))
-            Text("Set Ekle")
-        }
+        else -> WorkoutDetailContent(
+            session = requireNotNull(uiState.activeSession),
+            sets = uiState.activeSets,
+            onBack = onBack,
+            onFinishRequest = { showFinishDialog = true },
+            onAddSetRequest = { showAddSetDialog = true },
+            onDeleteSet = viewModel::deleteSet
+        )
     }
 
-    if (showAddSetDialog) {
+    if (showAddSetDialog && uiState.activeSession?.status == WorkoutStatus.ACTIVE) {
         AddSetDialog(
             categories = viewModel.getExerciseCategories(),
-            exercisesForCategory = { viewModel.getExercisesForCategory(it) },
+            exercisesForCategory = viewModel::getExercisesForCategory,
             onDismiss = { showAddSetDialog = false },
-            onConfirm = { exercise, setNum, reps, weight ->
-                viewModel.addSet(exercise, setNum, reps, weight)
+            onConfirm = { exercise, setNumber, reps, weight ->
+                viewModel.addSet(exercise, setNumber, reps, weight)
                 showAddSetDialog = false
             }
         )
     }
 
-    if (showFinishDialog) {
+    if (showFinishDialog && uiState.activeSession?.status == WorkoutStatus.ACTIVE) {
         FinishSessionDialog(
             onDismiss = { showFinishDialog = false },
             onConfirm = { duration, notes ->
@@ -259,49 +423,287 @@ fun WorkoutDetailScreen(
             }
         )
     }
+
+    uiState.mutationError?.let { error ->
+        AlertDialog(
+            onDismissRequest = viewModel::clearMutationError,
+            title = { Text(stringResource(R.string.workout_title)) },
+            text = { Text(error.userMessage()) },
+            confirmButton = {
+                TextButton(onClick = viewModel::clearMutationError) {
+                    Text(stringResource(R.string.action_ok))
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun WorkoutDetailContent(
+    session: WorkoutSession,
+    sets: List<WorkoutSet>,
+    onBack: () -> Unit,
+    onFinishRequest: () -> Unit,
+    onAddSetRequest: () -> Unit,
+    onDeleteSet: (WorkoutSet) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val isActive = session.status == WorkoutStatus.ACTIVE
+    val largeFont = LocalDensity.current.fontScale >= 1.6f
+    val groupedSets = sets.groupBy { it.exerciseName }
+
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(horizontal = GtSpacing.md, vertical = GtSpacing.sm)
+            .testTag(if (isActive) "workout-detail-active" else "workout-detail-read-only")
+    ) {
+        if (largeFont) {
+            Column(verticalArrangement = Arrangement.spacedBy(GtSpacing.xs)) {
+                WorkoutDetailTitle(session = session, isActive = isActive, onBack = onBack)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    WorkoutStatusBadge(isActive = isActive)
+                }
+            }
+        } else {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                WorkoutDetailTitle(
+                    session = session,
+                    isActive = isActive,
+                    onBack = onBack,
+                    modifier = Modifier.weight(1f)
+                )
+                WorkoutStatusBadge(isActive = isActive)
+            }
+        }
+
+        if (isActive) {
+            Spacer(Modifier.height(GtSpacing.sm))
+            Button(
+                onClick = onFinishRequest,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = GtSize.minimumTouchTarget)
+                    .testTag("workout-finish-action")
+            ) {
+                Icon(Icons.Default.CheckCircle, contentDescription = null)
+                Spacer(Modifier.width(GtSpacing.xs))
+                Text(stringResource(R.string.workout_finish))
+            }
+        }
+
+        Spacer(Modifier.height(GtSpacing.md))
+
+        LazyColumn(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(GtSpacing.sm)
+        ) {
+            if (groupedSets.isEmpty()) {
+                item {
+                    GtEmptyState(
+                        title = stringResource(
+                            if (isActive) R.string.workout_add_set else R.string.workout_detail_summary
+                        ),
+                        body = stringResource(
+                            if (isActive) R.string.workout_no_sets_active
+                            else R.string.workout_no_sets_completed
+                        ),
+                        actionLabel = if (isActive) stringResource(R.string.workout_add_set) else null,
+                        onAction = if (isActive) onAddSetRequest else null
+                    )
+                }
+            } else {
+                groupedSets.forEach { (exerciseName, exerciseSets) ->
+                    item(key = exerciseName) {
+                        ExerciseSetGroup(
+                            exerciseName = exerciseName,
+                            sets = exerciseSets,
+                            editable = isActive,
+                            onDeleteSet = onDeleteSet
+                        )
+                    }
+                }
+            }
+        }
+
+        if (isActive && groupedSets.isNotEmpty()) {
+            Button(
+                onClick = onAddSetRequest,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = GtSpacing.xs)
+                    .heightIn(min = GtSize.minimumTouchTarget)
+                    .testTag("workout-add-set-action"),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            ) {
+                Icon(Icons.Default.Add, contentDescription = null)
+                Spacer(Modifier.width(GtSpacing.xs))
+                Text(stringResource(R.string.workout_add_set))
+            }
+        }
+    }
+}
+
+@Composable
+private fun WorkoutDetailTitle(
+    session: WorkoutSession,
+    isActive: Boolean,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        IconButton(onClick = onBack) {
+            Icon(
+                Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = stringResource(R.string.action_back)
+            )
+        }
+        Column(modifier = Modifier.weight(1f)) {
+            Text(text = session.name, style = MaterialTheme.typography.headlineSmall)
+            Text(
+                text = stringResource(
+                    if (isActive) R.string.workout_detail_active
+                    else R.string.workout_detail_summary
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+private fun WorkoutStatusBadge(isActive: Boolean) {
+    Surface(
+        color = if (isActive) MaterialTheme.colorScheme.primaryContainer
+        else MaterialTheme.colorScheme.surfaceVariant,
+        shape = MaterialTheme.shapes.small
+    ) {
+        Text(
+            text = stringResource(if (isActive) R.string.workout_active else R.string.workout_completed),
+            style = MaterialTheme.typography.labelMedium,
+            color = if (isActive) MaterialTheme.colorScheme.onPrimaryContainer
+            else MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = GtSpacing.sm, vertical = GtSpacing.xs)
+        )
+    }
 }
 
 @Composable
 private fun ExerciseSetGroup(
     exerciseName: String,
     sets: List<WorkoutSet>,
+    editable: Boolean,
     onDeleteSet: (WorkoutSet) -> Unit
 ) {
-    Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Text(exerciseName, fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary)
-            Spacer(Modifier.height(8.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+    Card(
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+    ) {
+        Column(
+            modifier = Modifier.padding(GtSpacing.md),
+            verticalArrangement = Arrangement.spacedBy(GtSpacing.sm)
+        ) {
+            Text(
+                text = exerciseName,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+            sets.forEach { set ->
+                WorkoutSetRow(set = set, editable = editable, onDelete = { onDeleteSet(set) })
+            }
+        }
+    }
+}
+
+@Composable
+private fun WorkoutSetRow(
+    set: WorkoutSet,
+    editable: Boolean,
+    onDelete: () -> Unit
+) {
+    val largeFont = LocalDensity.current.fontScale >= 1.6f
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+        shape = MaterialTheme.shapes.small
+    ) {
+        if (largeFont) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(GtSpacing.sm),
+                verticalArrangement = Arrangement.spacedBy(GtSpacing.xs)
             ) {
-                listOf("Set", "Tekrar", "Ağırlık (kg)", "").forEach { header ->
-                    Text(header, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.weight(1f))
+                Text(stringResource(R.string.workout_set_value, set.setNumber))
+                Text(stringResource(R.string.workout_reps_value, set.reps))
+                Text(stringResource(R.string.workout_weight_value, set.weightKg))
+                if (editable) {
+                    TextButton(onClick = onDelete) {
+                        Icon(Icons.Default.Delete, contentDescription = null)
+                        Spacer(Modifier.width(GtSpacing.xs))
+                        Text(stringResource(R.string.action_delete))
+                    }
                 }
             }
-            sets.forEach { set ->
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("${set.setNumber}", modifier = Modifier.weight(1f),
-                        color = MaterialTheme.colorScheme.onSurface)
-                    Text("${set.reps}", modifier = Modifier.weight(1f),
-                        color = MaterialTheme.colorScheme.onSurface)
-                    Text("${set.weightKg} kg", modifier = Modifier.weight(1f),
-                        color = MaterialTheme.colorScheme.onSurface)
-                    IconButton(
-                        onClick = { onDeleteSet(set) },
-                        modifier = Modifier.weight(1f).size(24.dp)
-                    ) {
-                        Icon(Icons.Default.Delete, contentDescription = "Sil",
-                            tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(16.dp))
+        } else {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(GtSpacing.sm),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(GtSpacing.sm)
+            ) {
+                MetricValue(
+                    label = stringResource(R.string.workout_set_label),
+                    value = set.setNumber.toString(),
+                    modifier = Modifier.weight(1f)
+                )
+                MetricValue(
+                    label = stringResource(R.string.workout_reps_label),
+                    value = set.reps.toString(),
+                    modifier = Modifier.weight(1f)
+                )
+                MetricValue(
+                    label = stringResource(R.string.workout_weight_label),
+                    value = stringResource(R.string.workout_weight_value, set.weightKg),
+                    modifier = Modifier.weight(1.4f)
+                )
+                if (editable) {
+                    IconButton(onClick = onDelete) {
+                        Icon(
+                            Icons.Default.Delete,
+                            contentDescription = stringResource(R.string.action_delete),
+                            tint = MaterialTheme.colorScheme.error
+                        )
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun MetricValue(label: String, value: String, modifier: Modifier = Modifier) {
+    Column(modifier = modifier) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Text(text = value, style = MaterialTheme.typography.bodyLarge)
     }
 }
 
@@ -312,7 +714,7 @@ private fun AddSetDialog(
     onDismiss: () -> Unit,
     onConfirm: (String, Int, Int, Float) -> Unit
 ) {
-    var selectedCategory by remember { mutableStateOf(categories.firstOrNull() ?: "") }
+    var selectedCategory by remember { mutableStateOf(categories.firstOrNull().orEmpty()) }
     var exercisesInCategory by remember { mutableStateOf(exercisesForCategory(selectedCategory)) }
     var selectedExercise by remember { mutableStateOf(exercisesInCategory.firstOrNull()) }
     var setNumber by remember { mutableStateOf("1") }
@@ -320,22 +722,33 @@ private fun AddSetDialog(
     var weight by remember { mutableStateOf("0") }
     var categoryExpanded by remember { mutableStateOf(false) }
     var exerciseExpanded by remember { mutableStateOf(false) }
+    val setNumberValue = setNumber.toIntOrNull()
+    val repsValue = reps.toIntOrNull()
+    val weightValue = weight.toFloatOrNull()
+    val isValid = selectedExercise != null && setNumberValue != null && setNumberValue > 0 &&
+        repsValue != null && repsValue > 0 && weightValue != null && weightValue >= 0f
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Set Ekle") },
+        title = { Text(stringResource(R.string.workout_add_set_title)) },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                ExposedDropdownMenuBox(expanded = categoryExpanded, onExpandedChange = { categoryExpanded = it }) {
+            Column(verticalArrangement = Arrangement.spacedBy(GtSpacing.xs)) {
+                ExposedDropdownMenuBox(
+                    expanded = categoryExpanded,
+                    onExpandedChange = { categoryExpanded = it }
+                ) {
                     OutlinedTextField(
                         value = selectedCategory,
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Kas Grubu") },
+                        label = { Text(stringResource(R.string.workout_muscle_group)) },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(categoryExpanded) },
                         modifier = Modifier.menuAnchor().fillMaxWidth()
                     )
-                    ExposedDropdownMenu(expanded = categoryExpanded, onDismissRequest = { categoryExpanded = false }) {
+                    ExposedDropdownMenu(
+                        expanded = categoryExpanded,
+                        onDismissRequest = { categoryExpanded = false }
+                    ) {
                         categories.forEach { category ->
                             DropdownMenuItem(
                                 text = { Text(category) },
@@ -349,65 +762,86 @@ private fun AddSetDialog(
                         }
                     }
                 }
-                ExposedDropdownMenuBox(expanded = exerciseExpanded, onExpandedChange = { exerciseExpanded = it }) {
+                ExposedDropdownMenuBox(
+                    expanded = exerciseExpanded,
+                    onExpandedChange = { exerciseExpanded = it }
+                ) {
                     OutlinedTextField(
-                        value = selectedExercise?.name ?: "",
+                        value = selectedExercise?.name.orEmpty(),
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Egzersiz") },
-                        supportingText = selectedExercise?.let { ex -> { Text(ex.equipment) } },
+                        label = { Text(stringResource(R.string.workout_exercise)) },
+                        supportingText = selectedExercise?.let { exercise ->
+                            { Text(exercise.equipment) }
+                        },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(exerciseExpanded) },
                         modifier = Modifier.menuAnchor().fillMaxWidth()
                     )
-                    ExposedDropdownMenu(expanded = exerciseExpanded, onDismissRequest = { exerciseExpanded = false }) {
+                    ExposedDropdownMenu(
+                        expanded = exerciseExpanded,
+                        onDismissRequest = { exerciseExpanded = false }
+                    ) {
                         exercisesInCategory.forEach { exercise ->
                             DropdownMenuItem(
                                 text = {
                                     Column {
                                         Text(exercise.name)
-                                        Text(exercise.equipment, fontSize = 11.sp,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                        Text(
+                                            exercise.equipment,
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
                                     }
                                 },
-                                onClick = { selectedExercise = exercise; exerciseExpanded = false }
+                                onClick = {
+                                    selectedExercise = exercise
+                                    exerciseExpanded = false
+                                }
                             )
                         }
                     }
                 }
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(horizontalArrangement = Arrangement.spacedBy(GtSpacing.xs)) {
                     OutlinedTextField(
-                        value = setNumber, onValueChange = { setNumber = it },
-                        label = { Text("Set") },
+                        value = setNumber,
+                        onValueChange = { setNumber = it },
+                        label = { Text(stringResource(R.string.workout_set_label)) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.weight(1f)
                     )
                     OutlinedTextField(
-                        value = reps, onValueChange = { reps = it },
-                        label = { Text("Tekrar") },
+                        value = reps,
+                        onValueChange = { reps = it },
+                        label = { Text(stringResource(R.string.workout_reps_label)) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.weight(1f)
                     )
                 }
                 OutlinedTextField(
-                    value = weight, onValueChange = { weight = it },
-                    label = { Text("Ağırlık (kg)") },
+                    value = weight,
+                    onValueChange = { weight = it },
+                    label = { Text(stringResource(R.string.workout_weight_kg)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     modifier = Modifier.fillMaxWidth()
                 )
             }
         },
         confirmButton = {
-            Button(onClick = {
-                val exercise = selectedExercise ?: return@Button
-                onConfirm(
-                    exercise.name,
-                    setNumber.toIntOrNull() ?: 1,
-                    reps.toIntOrNull() ?: 0,
-                    weight.toFloatOrNull() ?: 0f
-                )
-            }) { Text("Ekle") }
+            Button(
+                enabled = isValid,
+                onClick = {
+                    onConfirm(
+                        requireNotNull(selectedExercise).name,
+                        requireNotNull(setNumberValue),
+                        requireNotNull(repsValue),
+                        requireNotNull(weightValue)
+                    )
+                }
+            ) { Text(stringResource(R.string.action_add)) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("İptal") } }
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
+        }
     )
 }
 
@@ -418,28 +852,45 @@ private fun FinishSessionDialog(
 ) {
     var duration by remember { mutableStateOf("60") }
     var notes by remember { mutableStateOf("") }
+    val durationValue = duration.toIntOrNull()
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Antrenmanı Bitir") },
+        title = { Text(stringResource(R.string.workout_finish_title)) },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(GtSpacing.xs)) {
                 OutlinedTextField(
-                    value = duration, onValueChange = { duration = it },
-                    label = { Text("Süre (dakika)") },
+                    value = duration,
+                    onValueChange = { duration = it },
+                    label = { Text(stringResource(R.string.workout_duration_label)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
-                    value = notes, onValueChange = { notes = it },
-                    label = { Text("Notlar (opsiyonel)") },
+                    value = notes,
+                    onValueChange = { notes = it },
+                    label = { Text(stringResource(R.string.workout_notes_optional)) },
                     modifier = Modifier.fillMaxWidth(),
                     minLines = 2
                 )
             }
         },
         confirmButton = {
-            Button(onClick = { onConfirm(duration.toIntOrNull() ?: 0, notes) }) { Text("Kaydet") }
+            Button(
+                enabled = durationValue != null && durationValue >= 0,
+                onClick = { onConfirm(requireNotNull(durationValue), notes) }
+            ) { Text(stringResource(R.string.action_save)) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("İptal") } }
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
+        }
     )
 }
+
+@Composable
+private fun WorkoutMutationError.userMessage(): String = stringResource(
+    when (this) {
+        WorkoutMutationError.INVALID_SET -> R.string.workout_error_invalid_set
+        WorkoutMutationError.READ_ONLY_SESSION -> R.string.workout_error_read_only
+        WorkoutMutationError.FINISH_FAILED -> R.string.workout_error_finish
+    }
+)

@@ -19,11 +19,11 @@ tags: [gymtracker/feature, gymtracker/feature/home]
 
 ## Amaç ve mevcut çıktı
 
-Route `home`, başlangıç destination’dır. Ana antrenman CTA’sı; açıklayıcı empty state; toplam/haftalık workout, son kilo, bugünkü kalori ve son workout özeti; beş hızlı işlem sunar. Kayıt yokken sahte `0` yerine “Henüz yok/Ölçüm yok/Öğün yok” gösterir.
+Route `home`, başlangıç destination’dır. Ana antrenman CTA’sı aktif seans yoksa yeni akışa, varsa doğrudan o session ID’sine gider. Açıklayıcı empty state; yalnızca tamamlanan kayıtlardan toplam/haftalık workout ve son workout, ayrıca son kilo, bugünkü kalori ve beş hızlı işlem sunar. Kayıt yokken sahte `0` yerine “Henüz yok/Ölçüm yok/Öğün yok” gösterir.
 
 ## Mevcut akış
 
-Workout, measurement ve günün nutrition Room Flow’ları → `HomeDashboardRepository.combine` → `HomeViewModel` `Loading/Content/Error` → lifecycle-aware `HomeScreen`. Her veri kaynağındaki değişim aynı açık ekranda dashboard’u yeniler. ViewModel, sonraki yerel gün başlangıcına kadar bekleyip `flatMapLatest` ile sorgu aralığını yeniden kurar; retry aynı akışı yeniden başlatır.
+Workout completed/active, measurement ve günün nutrition Room Flow’ları → `HomeDashboardRepository.combine` → `HomeViewModel` `Loading/Content/Error` → lifecycle-aware `HomeScreen`. Her veri kaynağındaki değişim aynı açık ekranda dashboard’u yeniler. ViewModel, sonraki yerel gün başlangıcına kadar bekleyip `flatMapLatest` ile sorgu aralığını yeniden kurar; retry aynı akışı yeniden başlatır.
 
 ## Bağımlılıklar
 
@@ -35,14 +35,13 @@ Workout, measurement ve günün nutrition Room Flow’ları → `HomeDashboardRe
 
 ## Kalan sınırlar
 
-- CTA, şemada ACTIVE/COMPLETED durumu olmadığı için henüz “Devam et” seçeneğine dönüşmez.
 - Gece yarısı ticker’ı uygulanmış olsa da Clock/ZoneId injection ve zone-change testi bekliyor.
 - Compact/expanded içerik kolonları var; uygulama geneli navigation rail ve list-detail henüz yok.
 - Kalıcı screenshot golden/diff altyapısı yok; PR7 kanıtları build artifact olarak tutuluyor.
 
 ## Hedef durum
 
-Üç Room Flow’unun reaktif özeti ve tasarım sistemi tüketimi tamamlandı. Sonraki hedef, [[FEATURE_WORKOUT]] status sözleşmesinden aktif seansı alıp CTA’yı “Devam et/Antrenmana başla” olarak üretmek ve gerçek trend datası geldiğinde mini grafiği eklemektir.
+Reaktif özet, tasarım sistemi ve [[FEATURE_WORKOUT]] aktif-seans CTA entegrasyonu tamamlandı. Sonraki hedef, gerçek trend datası geldiğinde mini grafiği eklemek ve Clock/ZoneId bağımlılıklarını test için enjekte etmektir.
 
 ## Değişiklik dosya kümesi
 
@@ -50,7 +49,7 @@ Workout, measurement ve günün nutrition Room Flow’ları → `HomeDashboardRe
 
 ## Zorunlu testler
 
-- Workout/measurement/nutrition ayrı ayrı değişince state yenilenir: API 34 repository testi geçiyor.
+- Completed workout/active workout/measurement/nutrition ayrı ayrı değişince state yenilenir; aktif kayıt toplam ve son-workout metriklerini şişirmez: API 34 repository testi geçiyor.
 - Tarihsel Istanbul DST sınırı unit testte doğrulandı; ViewModel otomatik rollover yapıyor, enjekte Clock ile deterministik ticker testi bekliyor.
 - Empty/content/error ve retry Compose testleri geçiyor; loading state açıkça modelleniyor.
 - Light/dark, %200 font ve compact davranışı API 34 test/görselleriyle doğrulandı; kolon politikası JVM testlidir.

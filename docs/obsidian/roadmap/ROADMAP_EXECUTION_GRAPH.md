@@ -71,13 +71,19 @@ Durum: temel ve Home referans uygulaması tamamlandı.
 Çıktı: light/dark tema, type/spacing/shape/size tokenları, ortak metric/action/section/state bileşenleri, loading/content/error, midnight period tick, sahte sıfırsız empty state, font-aware compact/expanded Home.
 Kabul: 11 JVM + 18 cihaz testi; lint 0 hata; light/dark/%200 font gerçek API 34 görsel kontrolü. Kalıcı golden altyapısı, navigation rail ve uygulama geneli bileşen dönüşümü sonraki dilimlerde.
 
+## PR 8 — Workout lifecycle + modern kritik akış
+
+Node: [[FEATURE_WORKOUT]], [[ADR_006_WORKOUT_SESSION_LIFECYCLE]], [[ARCH_DATABASE]].
+Durum: uygulama ve kalite kapısı tamamlandı; PR8 yayın kapsamına alındı.
+Çıktı: Room v6 status/completedAt migration, legacy completed politikası, tek aktif start/resume transaction’ı, status-korumalı mutation’lar, salt-okunur geçmiş, aktif Home CTA ve adaptive modern Workout ekranları.
+Kabul: 11 JVM + 23 cihaz testi; lint 0 hata; v3→v6 migration; light/dark/%200 font gerçek API 34 kontrolü.
+
 ## Sonraki dikey dilimler
 
-1. [[FEATURE_WORKOUT]] status/active-session + modern kritik akış
-2. [[FEATURE_NUTRITION]] + [[FEATURE_MEASUREMENTS]]
-3. [[FEATURE_PROGRESS_PHOTOS]] + [[FEATURE_MUSCLE_LOAD]]
-4. [[FEATURE_PROGRAMS]] normalizasyon/integration
-5. Uygulama geneli adaptive navigation/accessibility/golden
-6. Performance/release
+1. [[FEATURE_NUTRITION]] + [[FEATURE_MEASUREMENTS]]
+2. [[FEATURE_PROGRESS_PHOTOS]] + [[FEATURE_MUSCLE_LOAD]]
+3. [[FEATURE_PROGRAMS]] normalizasyon/integration
+4. Uygulama geneli adaptive navigation/accessibility/golden
+5. Performance/release
 
 Detaylı süre: [[GELISTIRME_MASTER_PLANI#18. Fazlar ve süre tahmini]]. Aktif durum: [[SESSION_HANDOFF]].

@@ -17,11 +17,11 @@ tags: [gymtracker/moc, gymtracker/graph]
 
 - Android/Kotlin, tek `:app` modülü
 - Jetpack Compose + Navigation Compose
-- Room v5 + Hilt + KSP
+- Room v6 + Hilt + KSP
 - Local-first; backend ve gerçek ödeme yok
 - 5 ana navigation hedefi, 3 İlerleme alt hedefi, ID tabanlı workout/program detayları
 - 82 benzersiz egzersiz, 108 hazır program egzersiz referansı
-- Debug build başarılı; 11 JVM + 18 cihaz testi geçiyor; lint 0 hata/52 uyarı
+- Debug build başarılı; 11 JVM + 23 cihaz testi geçiyor; lint 0 hata/53 uyarı
 - Destructive migration, yeni fotoğraf URI kaybı, seed race ve temel navigation/state riskleri kapatıldı veya azaltıldı
 
 ## Ana haritalar
@@ -68,7 +68,7 @@ tags: [gymtracker/moc, gymtracker/graph]
 ## Grafın güncellik durumu
 
 - Kod baseline: `4d0cad8`
-- Kod değişikliği: PR1–PR7 uygulama checkpoint’i commitlendi
-- Dokümanlar: kod baseline ile senkron; ayrı graf commit’inde tutulur
+- Kod değişikliği: PR1–PR7 checkpoint’i commitlendi; bu graf sürümü doğrulanmış PR8 kapsamını taşıyor
+- Dokümanlar: PR8 Workout/Room v6 çalışma ağacıyla senkron
 - Son tam doğrulama: 2026-07-15
-- Aktif önerilen iş: [[ROADMAP_EXECUTION_GRAPH#Sonraki dikey dilimler]] — [[FEATURE_WORKOUT]] dikey dilimi
+- Aktif önerilen iş: [[ROADMAP_EXECUTION_GRAPH#Sonraki dikey dilimler]] — [[FEATURE_NUTRITION]] + [[FEATURE_MEASUREMENTS]] dikey dilimi

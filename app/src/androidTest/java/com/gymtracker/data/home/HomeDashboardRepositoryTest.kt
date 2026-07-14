@@ -8,6 +8,7 @@ import com.gymtracker.data.entities.BodyMeasurement
 import com.gymtracker.data.entities.FoodEntry
 import com.gymtracker.data.entities.MealType
 import com.gymtracker.data.entities.WorkoutSession
+import com.gymtracker.data.entities.WorkoutStatus
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -57,11 +58,30 @@ class HomeDashboardRepositoryTest {
         assertEquals(HomeDashboardData(), emissions.receiveMatching { it.totalWorkouts == 0 })
 
         database.workoutDao().insertSession(
-            WorkoutSession(name = "Reactive workout", date = dayStart + 1_000)
+            WorkoutSession(
+                name = "Reactive workout",
+                date = dayStart + 1_000,
+                status = WorkoutStatus.COMPLETED,
+                completedAt = dayStart + 2_000
+            )
         )
         val workoutUpdate = emissions.receiveMatching { it.totalWorkouts == 1 }
         assertEquals(1, workoutUpdate.weekWorkouts)
         assertEquals("Reactive workout", workoutUpdate.lastWorkoutName)
+
+        val activeWorkoutId = database.workoutDao().insertSession(
+            WorkoutSession(
+                name = "Ongoing workout",
+                date = dayStart + 1_500,
+                status = WorkoutStatus.ACTIVE
+            )
+        )
+        val activeWorkoutUpdate = emissions.receiveMatching {
+            it.activeWorkoutId == activeWorkoutId
+        }
+        assertEquals("Ongoing workout", activeWorkoutUpdate.activeWorkoutName)
+        assertEquals(1, activeWorkoutUpdate.totalWorkouts)
+        assertEquals("Reactive workout", activeWorkoutUpdate.lastWorkoutName)
 
         database.measurementDao().insert(
             BodyMeasurement(date = dayStart + 2_000, weightKg = 81.5f)

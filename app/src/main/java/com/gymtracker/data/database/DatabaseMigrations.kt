@@ -32,5 +32,26 @@ object DatabaseMigrations {
         }
     }
 
-    val ALL: Array<Migration> = arrayOf(MIGRATION_3_4, MIGRATION_4_5)
+    val MIGRATION_5_6 = object : Migration(5, 6) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL(
+                "ALTER TABLE `workout_sessions` ADD COLUMN `status` TEXT NOT NULL DEFAULT 'ACTIVE'"
+            )
+            db.execSQL(
+                "ALTER TABLE `workout_sessions` ADD COLUMN `completedAt` INTEGER"
+            )
+            db.execSQL(
+                """
+                UPDATE `workout_sessions`
+                SET `status` = 'COMPLETED',
+                    `completedAt` = `date` + (`durationMinutes` * 60000)
+                """.trimIndent()
+            )
+            db.execSQL(
+                "CREATE INDEX IF NOT EXISTS `index_workout_sessions_status` ON `workout_sessions` (`status`)"
+            )
+        }
+    }
+
+    val ALL: Array<Migration> = arrayOf(MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
 }

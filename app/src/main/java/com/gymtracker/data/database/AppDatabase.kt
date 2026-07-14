@@ -27,6 +27,12 @@ class Converters {
 
     @TypeConverter
     fun toDifficulty(value: String): ProgramDifficulty = ProgramDifficulty.valueOf(value)
+
+    @TypeConverter
+    fun fromWorkoutStatus(value: WorkoutStatus): String = value.name
+
+    @TypeConverter
+    fun toWorkoutStatus(value: String): WorkoutStatus = WorkoutStatus.valueOf(value)
 }
 
 @Database(
@@ -42,7 +48,7 @@ class Converters {
         NutritionGoal::class,
         SeedMetadata::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = true
 )
 @TypeConverters(Converters::class)
