@@ -43,7 +43,10 @@ data class WorkoutSet(
     val reps: Int,
     val weightKg: Float,
     val isCompleted: Boolean = true,
-    val notes: String = ""
+    val notes: String = "",
+    @ColumnInfo(defaultValue = "NULL") val exerciseId: String? = null,
+    @ColumnInfo(defaultValue = "NULL") val targetReps: String? = null,
+    @ColumnInfo(defaultValue = "0") val exerciseOrder: Int = 0
 )
 
 @Entity(tableName = "body_measurements")
@@ -152,7 +155,33 @@ data class ProgramWorkout(
     val weekNumber: Int,
     val dayNumber: Int,
     val dayName: String,
-    val exercises: String  // JSON serialized list of exercises
+    /** Kept only as a lossless v6 migration fallback; active reads use ProgramDayExercise. */
+    val exercises: String = ""
+)
+
+@Entity(
+    tableName = "program_day_exercises",
+    foreignKeys = [ForeignKey(
+        entity = ProgramWorkout::class,
+        parentColumns = ["id"],
+        childColumns = ["programWorkoutId"],
+        onDelete = ForeignKey.CASCADE
+    )],
+    indices = [
+        Index("programWorkoutId"),
+        Index(value = ["programWorkoutId", "position"], unique = true),
+        Index("exerciseId")
+    ]
+)
+data class ProgramDayExercise(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val programWorkoutId: Long,
+    val exerciseId: String,
+    val exerciseName: String,
+    val position: Int,
+    val targetSets: Int,
+    val targetReps: String,
+    val restSeconds: Int
 )
 
 @Entity(tableName = "nutrition_goals")

@@ -45,10 +45,11 @@ class Converters {
         ProgressPhoto::class,
         Program::class,
         ProgramWorkout::class,
+        ProgramDayExercise::class,
         NutritionGoal::class,
         SeedMetadata::class
     ],
-    version = 6,
+    version = 7,
     exportSchema = true
 )
 @TypeConverters(Converters::class)

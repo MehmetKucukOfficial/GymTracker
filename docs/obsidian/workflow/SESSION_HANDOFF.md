@@ -2,15 +2,14 @@
 type: handoff
 status: ready
 implementation_status: active
-code_baseline: 341bf79
+code_baseline: 2ad7ad8
 updated: 2026-07-15
-active_phase: "Phase 4 - PR10 review/publish; PR11 Programs hazırlığı"
-next_pr: "PR 11 - Programs normalization and integration"
+active_phase: "Phase 4 - PR11 review/publish; PR12 Nutrition/Measurements depth"
+next_pr: "PR 12 - Nutrition/Measurements edit, undo, chart and second locale"
 primary_nodes:
-  - FEATURE_PROGRESS_PHOTOS
-  - FEATURE_MUSCLE_LOAD
-  - ADR_004_PERSISTENT_PHOTO_STORAGE
-  - ADR_005_MUSCLE_LOAD_NAMING
+  - FEATURE_PROGRAMS
+  - ADR_007_RELATIONAL_PROGRAM_PLANS
+  - ARCH_DATABASE
   - ARCH_STATE_DATA_FLOW
   - DESIGN_SYSTEM_GRAPH
   - ROADMAP_EXECUTION_GRAPH
@@ -23,7 +22,8 @@ tags: [gymtracker/workflow, gymtracker/session]
 
 - Uygulama baseline: `f9d6d75`; PR8 `codex/workout-lifecycle` dalında draft PR #1 olarak yayınlandı.
 - PR9 baseline: `341bf79`; `codex/nutrition-measurements` dalı PR8’i hedefleyen stacked draft PR #2 olarak yayınlandı.
-- Room v6; explicit 5→6 workout migration aktif, destructive fallback yok, program seed transaction/idempotent, yeni fotoğraflar app-owned storage’da kalıcı.
+- PR10 baseline: `2ad7ad8`; `codex/progress-load` dalı PR9’u hedefleyen stacked draft PR #3 olarak yayınlandı.
+- Room v7; explicit 6→7 program migration aktif, destructive fallback yok; ilişkisel program planı + legacy JSON fallback, stable exercise ID ve planlanan WorkoutSet sözleşmesi aktiftir.
 - Telefon navigation shell’i 5 ana hedefe indi; workout/program detail ID + SavedStateHandle + repository Flow kullanıyor.
 - Home completed/active workout, measurement ve nutrition kaynaklarına reaktif; aktif workout varsa CTA doğrudan session ID’ye devam ediyor.
 - Workout tek aktif seans, status-korumalı mutation, COMPLETED salt-okunur geçmiş ve adaptive modern UI kullanıyor.
@@ -31,34 +31,34 @@ tags: [gymtracker/workflow, gymtracker/session]
 - Measurements boş/aralık dışı kayıtları engelliyor; latest/history tekrarını kaldırıyor, en yeni iki kilo trendini üretiyor ve adaptive modern UI kullanıyor.
 - Progress fotoğrafları cihaz-yerel backup politikası, orphan/missing reconciliation, doğrulama, viewer ve adaptive grid kullanıyor.
 - Muscle Load yalnız completed setlerden reaktif ve günlük yenilenen Flow üretir; recency/bodyweight/unknown sözleşmesi, metodoloji ve erişilebilir liste aktiftir.
+- Programs locked/ownership/target kurallarını repository’de doğrular; program günü atomik ACTIVE workout’a planlanan set olarak kopyalanır, tamamlanmayan set Muscle Load’a girmez ve finish’i kilitler.
 - Light/dark tasarım sistemi token temeli ve ortak Home bileşenleri aktif; Home loading/content/error, retry, midnight period tick ve adaptive kolon kullanıyor.
-- Test temeli aktif: 20 JVM + 33 API 34 instrumentation testi geçiyor.
-- Debug build başarılı; lint 0 error / 67 warning.
+- Test temeli aktif: 22 JVM + 41 API 34 instrumentation testi geçiyor.
+- Debug build başarılı; lint 0 error / 71 warning.
 
 ## Sıradaki önerilen iş
 
-Önce `codex/progress-load` çalışma ağacını incele, commit/push et ve PR #2’yi hedefleyen stacked draft PR aç. Ardından [[ROADMAP_EXECUTION_GRAPH#Sonraki dikey dilimler]] — [[FEATURE_PROGRAMS]]:
+Önce `codex/programs-normalization` çalışma ağacını commit/push et ve PR #3’ü hedefleyen stacked draft PR aç. Ardından [[ROADMAP_EXECUTION_GRAPH#Sonraki dikey dilimler]] PR12:
 
-1. Program JSON modelinin mevcut veri/migration etkisini çıkar; kararlı exercise ID ve relational hedefi ADR ile netleştir.
-2. Purchase/detail state ve program→workout entegrasyonunu gerçek repository/use-case sınırına taşı.
-3. Program list/detail UI’ını token, resource, adaptive ve erişilebilir bileşenlere geçir.
-4. Seed/migration/program→active-workout testlerini genişlet.
-5. Light/dark/%200 font ve navigation/back/process recreation kabulünü çalıştır.
+1. Nutrition/Measurements edit ve undo veri sözleşmesini çıkar; DAO/repository mutation’larını typed result ile güvenli yap.
+2. Measurement tarih index’i ve dönem query’siyle gerçek chart veri modelini kur; migration/test zorunluluklarını uygula.
+3. Nutrition/Measurements ekranlarını ikinci locale ve plural/birim formatlarıyla doğrula.
+4. Compose chart/undo/edit erişilebilirliğini, light/dark/%200 font ve Home reaktivitesini test et.
 
 ## Açık P0/P1
 
 - Legacy `storageVersion=0` fotoğraflar ve backup politikası
 - CI kalite kapısı
-- Programs hardcoded string/accessibility/adaptive layout ve JSON model borcu
+- Nutrition/Measurements edit-undo-chart ve ikinci locale
 - Harici deep link ve navigation rail
 
 ## Son doğrulama
 
-- `testDebugUnitTest`: success, 20/20.
-- `connectedDebugAndroidTest`: success, 33/33, Pixel 6 Pro API 34.
-- `lintDebug`: success, 0 error / 67 warning.
+- `testDebugUnitTest`: success, 22/22.
+- `connectedDebugAndroidTest`: success, 41/41, Pixel 6 Pro API 34.
+- `lintDebug`: success, 0 error / 71 warning.
 - `assembleDebug`: success.
-- Görsel smoke: `app/build/pr10-progress-hub-light.png`, `pr10-progress-hub-dark-font200.png`, `pr10-photos-empty-light2.png`, `pr10-photos-dark-font200.png`, `pr10-muscle-load-dark-font200.png`; connected test sonrası final APK yeniden kurulmalıdır.
+- Görsel smoke: `app/build/pr11-programs-light.png`, `pr11-program-detail-light2.png`, `pr11-programs-dark-font200c.png`, `pr11-program-detail-dark-font200.png`, `pr11-planned-workout-dark-font200.png`; connected test sonrası final APK yeniden kurulmalıdır.
 
 ## Handoff güncelleme şablonu
 
@@ -508,3 +508,44 @@ Next concrete action:
 
 Blockers:
 - No code blocker. PR10 is intentionally uncommitted and stacked on PR #2 until the user requests publication.
+
+## 2026-07-15 - PR 11 Programs normalization and workout integration
+
+Completed:
+- Added Room v7 `ProgramDayExercise` with ordered relational targets, stable exercise IDs and explicit `MIGRATION_6_7`.
+- Migrated valid v6 JSON to relational rows while preserving malformed legacy payloads without crashing or silent deletion.
+- Added atomic locked/ownership/target-validated program-day→ACTIVE-workout copy; existing active sessions resume without duplicate sets.
+- Added planned WorkoutSet semantics (`exerciseId`, `targetReps`, `exerciseOrder`, incomplete state), preserved prescription order, real reps/kg completion and finish blocking until planned sets are completed or deleted.
+- Rebuilt Programs list/detail with resource/token-based adaptive UI, demo-access language, relational plan cards and accessible light/dark/%200-font behavior.
+
+Files changed:
+- Room entities, AppDatabase v7, `MIGRATION_6_7`, schema 7 JSON, Program/Workout DAOs and repositories
+- `ProgramWorkoutPlan.kt`, stable ID/legacy serializer domain model and versioned seed writer
+- Programs and Workout Screen/ViewModel integration, MainActivity navigation callback and strings/plurals
+- Migration/seed/repository/Compose/navigation tests and related Obsidian nodes
+
+Tests run/results:
+- `testDebugUnitTest`: 22 tests, 0 failures.
+- `connectedDebugAndroidTest`: 41 tests, 0 failures on Pixel 6 Pro API 34 from a clean package state.
+- `lintDebug`: 0 errors / 71 warnings after the final modifier-order cleanup.
+- `assembleDebug`: success.
+- Manual visual acceptance passed for light Programs/detail and dark %200 Programs/detail/planned-workout screens.
+
+Risks changed:
+- R12 core resolved: active program reads are relational and malformed JSON no longer crashes UI; legacy payload removal remains a later evidence-backed migration.
+- R11 partial++: Programs locked/ownership/target and planned-set mutations are validated at repository/transaction boundaries.
+- R15 mitigated-core: all current core feature surfaces now have resource/token/light-dark/%200-font coverage; app-wide adaptive/golden work remains.
+- New schema v7 is explicit and tested from v3 and v6; no v1/v2 support claim is made.
+
+Graph notes updated:
+- [[FEATURE_PROGRAMS]], [[ADR_007_RELATIONAL_PROGRAM_PLANS]], [[ADR_INDEX]]
+- [[ARCH_DATABASE]], [[ARCH_STATE_DATA_FLOW]], [[DESIGN_SYSTEM_GRAPH]], [[SCREEN_BLUEPRINT_GRAPH]]
+- [[TEST_MATRIX]], [[RISK_REGISTER_GRAPH]], [[ROADMAP_EXECUTION_GRAPH]]
+- [[SOURCE_FILE_ATLAS]], [[CHANGE_IMPACT_MAP]], [[SESSION_HANDOFF]], [[00_START_HERE]]
+
+Next concrete action:
+- Rerun lint/diff checks, commit and push `codex/programs-normalization`, then open a stacked draft PR targeting `codex/progress-load`.
+- Start PR12 Nutrition/Measurements edit-undo-chart and second-locale work without waiting for an additional prompt.
+
+Blockers:
+- No code blocker. PR11 is intentionally uncommitted until its final lint/diff verification completes.

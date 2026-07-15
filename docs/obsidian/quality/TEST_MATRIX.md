@@ -2,7 +2,7 @@
 type: quality
 status: current
 implementation_status: mixed
-verified_commit: 341bf79
+verified_commit: 2ad7ad8
 updated: 2026-07-15
 tags: [gymtracker/quality, gymtracker/testing]
 ---
@@ -15,7 +15,7 @@ tags: [gymtracker/quality, gymtracker/testing]
 - [[FatigueCalculatorTest]] bilinen egzersiz aktivasyon dagilimini, cap davranisini ve bilinmeyen egzersiz davranisini korur.
 - Room instrumentation test altyapisi AndroidJUnitRunner ve `room-testing` ile aktiftir.
 - [[WorkoutDaoTest]] tarih sinirli set sorgusunu ve session -> set cascade davranisini cihaz/emulator calistirmasi icin tanimlar.
-- [[DatabaseMigrationTest]] v3→v6 migration’ında workout ve legacy fotoğraf satırlarının korunmasını, fotoğraf metadata varsayılanlarını ve legacy workout’ın güvenli `COMPLETED/completedAt` dönüşümünü doğrular.
+- [[DatabaseMigrationTest]] v3→v7 satır korumasını; legacy workout/photo varsayılanlarını; v6 program JSON→ilişkisel satır dönüşümünü; bozuk JSON fallback’ini ve yeni WorkoutSet kolonlarını doğrular.
 - [[ProgramSeedInitializerTest]] tekrarlı, eşzamanlı ve legacy seed durumlarını kapsar.
 - [[ProgressPhotoRepositoryTest]] app-owned dosya kopyası, metadata, storage yeniden oluşturma, delete cleanup, kaynak/DB hata rollback ve 25 MB sınırında geçici dosya temizliğini kapsar.
 - [[NavigationContractTest]] 5 hedef sırasını, nested route sahipliğini, detail görünürlük politikasını ve pozitif ID kuralını doğrular.
@@ -29,23 +29,24 @@ tags: [gymtracker/quality, gymtracker/testing]
 - `NutritionScreenTest` over-goal/empty state’i; `MeasurementsScreenTest` latest/history ayrımını ve empty state’i dark + %200 font koşulunda doğrular.
 - `ProgressPhotoRulesTest`, `ProgressPhotoRepositoryTest` ve `ProgressPhotoScreenTest` fotoğraf input aralığı, import/rollback/limit, orphan/missing reconciliation, legacy badge ve %200 font empty state’ini doğrular.
 - `MuscleLoadCalculatorTest`, `WorkoutDaoTest` ve `MuscleLoadScreenTest` recency/bodyweight/unknown/cap kurallarını, completed-only reaktif query’yi ve renk bağımsız adaptive UI’ı doğrular.
-- Pixel 6 Pro API 34 emülatöründe 33 instrumentation testi ve 20 JVM testi, 0 failure ile geçer.
+- `ExerciseIdentityTest`, `ProgramSeedInitializerTest`, `ProgramRepositoryTest`, `WorkoutRepositoryTest` ve `ProgramsScreenTest`; unique/locale-independent ID, 5/23/108 seed, locked guard, atomic plan copy, incomplete-set finish engeli ve adaptive UI’yı doğrular.
+- Pixel 6 Pro API 34 emülatöründe 41 instrumentation testi ve 22 JVM testi, 0 failure ile geçer.
 
 ## Feature matrisi
 
 | Alan | Unit | Room/instrumentation | Compose/UI | Smoke |
 |---|---|---|---|---|
 | Home | aggregate + clock + adaptive policy | summary queries | empty/content/error, semantics, light/dark, %200 font | dashboard açılış |
-| Workout | state/validation | v3→v6, transaction/cascade/single-active/read-only | active/history, light/dark, %200 font | Activity recreation; process death bekliyor |
+| Workout | state/validation | v3→v7, transaction/cascade/single-active/read-only/planned set | active/history/planned completion, light/dark, %200 font | Activity recreation; process death bekliyor |
 | Nutrition | totals/DST/parser/goal | day query/goal | over-goal/empty/dark/%200 | delete undo + Home update bekliyor |
 | Measurements | validation/trend | order/update bekliyor | latest/history/empty/dark/%200 | Home update bekliyor |
 | Photos | input/limit/backup policy | migration/import/delete/reconcile rollback | empty/legacy/viewer/dark/%200 | process kill/restart/reboot bekliyor |
-| Programs | seed/content | idempotency/migration | detail/purchase | program→workout |
+| Programs | stable ID/content | idempotent 5/23/108 seed, v6→v7 JSON migration, atomic plan copy | list/detail/locked/start, dark/%200 | program→workout + Activity recreation |
 | Muscle load | activation/decay/bodyweight/unknown | completed-only set Flow | map/list/methodology/dark/%200 | midnight + TalkBack bekliyor |
 
 ## Room ve migration
 
-- v3→latest (v6) doğrulandı; v1/v2 tarihi şema kanıtı olmadığı için destek iddiası yok
+- v3→latest (v7) doğrulandı; v1/v2 tarihi şema kanıtı olmadığı için destek iddiası yok
 - Seed repeated/concurrent
 - Transaction rollback
 - Cascade and unique constraint

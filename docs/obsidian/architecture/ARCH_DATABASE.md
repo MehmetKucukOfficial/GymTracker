@@ -2,7 +2,7 @@
 type: architecture
 status: current
 implementation_status: current
-verified_commit: a8e019e
+verified_commit: 2ad7ad8
 updated: 2026-07-15
 source_files:
   - app/src/main/java/com/gymtracker/data/entities/Entities.kt
@@ -20,6 +20,8 @@ tags: [gymtracker/architecture, gymtracker/data]
 
 > Update (2026-07-15, v6): `WorkoutSession.status`, nullable `completedAt` ve status index’i eklendi. `MIGRATION_5_6` legacy workout’ları veri kaybetmeden `COMPLETED` yapar; v3→v6 fixture ve repository transaction testleri API 34’te geçer. Karar: [[ADR_006_WORKOUT_SESSION_LIFECYCLE]].
 
+> Update (2026-07-15, v7): `ProgramDayExercise`, `WorkoutSet.exerciseId` ve nullable `targetReps` eklendi. `MIGRATION_6_7` geçerli program JSON’unu ilişkisel satırlara taşır, bozuk payload’ı kayıpsız legacy fallback olarak korur. Program→ACTIVE workout copy ve planlanan-set completion transaction/state sözleşmesi [[ADR_007_RELATIONAL_PROGRAM_PLANS]] ile aktiftir.
+
 > Implementation update (2026-07-14): `exportSchema=true`; v3 schema hash `bb80650678afbc615c5dec81809ab042` is stored under `app/schemas`; `fallbackToDestructiveMigration()` is removed; migrations are registered through `DatabaseMigrations.ALL`. [[DatabaseMigrationTest]] and [[WorkoutDaoTest]] pass on the API 34 emulator. v3 is the minimum evidence-backed migration baseline.
 
 # Mimari — Room Veritabanı
@@ -30,6 +32,7 @@ tags: [gymtracker/architecture, gymtracker/data]
 erDiagram
     WorkoutSession ||--o{ WorkoutSet : CASCADE
     Program ||--o{ ProgramWorkout : CASCADE
+    ProgramWorkout ||--o{ ProgramDayExercise : CASCADE
     FoodItem ||..o{ FoodEntry : "logical id, no FK"
     WorkoutSession {
       long id PK
@@ -46,6 +49,9 @@ erDiagram
       int setNumber
       int reps
       float weightKg
+      string exerciseId
+      string targetReps
+      int exerciseOrder
     }
     BodyMeasurement { long id PK }
     FoodItem { long id PK }
@@ -59,6 +65,14 @@ erDiagram
     }
     Program { long id PK }
     ProgramWorkout { long id PK }
+    ProgramDayExercise {
+      long id PK
+      long programWorkoutId FK
+      string exerciseId
+      int position
+      int targetSets
+      string targetReps
+    }
     NutritionGoal { int id PK }
 ```
 
@@ -74,11 +88,11 @@ erDiagram
 
 ## Kritik mevcut gerçekler
 
-- DB version 6, `exportSchema=true`; v3, v4, v5 ve v6 schema JSON’ları version control altında.
+- DB version 7, `exportSchema=true`; v3–v7 schema JSON’ları version control altında.
 - Destructive fallback kaldırıldı; bilinmeyen sürümler veri silmek yerine fail-closed davranır.
-- `DatabaseMigrations.ALL`, 3→4, 4→5 ve 5→6 kenarlarını kaydeder; v3→latest satır koruma/status testi API 34’te geçer.
+- `DatabaseMigrations.ALL`, 3→4→5→6→7 kenarlarını kaydeder; v3→latest satır koruma/status ve v6 JSON normalizasyon testleri API 34’te geçer.
 - Workout yazma yolu tek transaction içinde start-or-resume uygular; set/finish mutation’ları `status='ACTIVE'` koşuluyla korunur.
-- `ProgramWorkout.exercises` JSON string.
+- Programların aktif okuma modeli `ProgramWorkout → ProgramDayExercise` ilişkisidir. `ProgramWorkout.exercises` yalnız v6 migration fallback payload’ıdır; UI parse etmez.
 - Tarih kolonlarında index yok.
 - `WorkoutDao.getSetsSince()` içindeki `date(sessionId)` semantik olarak yanlış ve kullanılmıyor.
 - Program seed tek Room transaction’ı ve `seed_metadata` claim’i ile idempotenttir.
@@ -88,7 +102,7 @@ erDiagram
 
 - [[ADR_003_EXPLICIT_ROOM_MIGRATIONS]]
 - Workout için `startedAt` adlandırmasını netleştirme, exerciseId/position ve gerekirse DB seviyesinde partial unique active index
-- ProgramDayExercise ilişkisel tablo
+- Legacy program JSON kolonunu kanıtlı destek penceresi sonrasında kaldırma
 - Program seedKey/contentVersion unique
 - Photo thumbnail/dimension/media-transform metadata ve legacy re-import UX
 - Tarih ve compound index’ler

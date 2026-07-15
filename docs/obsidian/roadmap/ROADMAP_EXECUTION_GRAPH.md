@@ -2,7 +2,7 @@
 type: roadmap
 status: current
 implementation_status: active
-verified_commit: 341bf79
+verified_commit: 2ad7ad8
 updated: 2026-07-15
 tags: [gymtracker/roadmap, gymtracker/workflow]
 ---
@@ -88,16 +88,22 @@ Kabul: 17 JVM + 27 cihaz testi geçti; lint 0 hata; light/dark/%200 font gerçek
 ## PR 10 — Progress Photos + Muscle Load modernizasyonu
 
 Node: [[FEATURE_PROGRESS_PHOTOS]], [[FEATURE_MUSCLE_LOAD]], [[ADR_004_PERSISTENT_PHOTO_STORAGE]], [[ADR_005_MUSCLE_LOAD_NAMING]].
-Durum: uygulama, tam kalite kapısı ve görsel kabul `codex/progress-load` çalışma ağacında tamamlandı; henüz commit/push edilmedi.
+Durum: `2ad7ad8` commit’i `codex/progress-load` dalında stacked draft PR #3 olarak yayınlandı ve PR #2’yi hedefliyor.
 Çıktı: device-local backup politikası, orphan/missing reconciliation, photo input validation/viewer/adaptive grid; completed-only reaktif load Flow, recency/bodyweight/unknown kuralları, metodoloji ve erişilebilir liste; modern Progress Hub.
 Kabul: 20 JVM + 33 cihaz testi, lint 0 hata/67 uyarı, assemble ve light/dark/%200 API 34 görsel kontrolü.
 
+## PR 11 — Programs normalizasyonu ve workout entegrasyonu
+
+Node: [[FEATURE_PROGRAMS]], [[ADR_007_RELATIONAL_PROGRAM_PLANS]], [[ARCH_DATABASE]].
+Durum: uygulama, tam kalite kapısı ve görsel kabul `codex/programs-normalization` çalışma ağacında tamamlandı; yayın bekliyor.
+Çıktı: Room v7 ilişkisel `ProgramDayExercise`, legacy JSON backfill/fallback, kararlı egzersiz ID, locked/ownership/target repository guard, atomic program→ACTIVE workout copy, planlanan-set completion/finish sözleşmesi ve modern adaptive Programs list/detail.
+Kabul: 22 JVM + 41 cihaz testi; lint 0 hata/71 uyarı; assemble; light normal ve dark %200 Programs/detail/planned-workout API 34 görsel kontrolü.
+
 ## Sonraki dikey dilimler
 
-1. [[FEATURE_PROGRAMS]] normalizasyon/integration
-2. Nutrition/Measurements edit-undo-chart ve ikinci locale takibi
-3. Photo EXIF/thumbnail + stable exercise ID/personal load calibration
-4. Uygulama geneli adaptive navigation/accessibility/golden
-5. Performance/release
+1. Nutrition/Measurements edit-undo-chart ve ikinci locale takibi
+2. Photo EXIF/thumbnail + personal load calibration
+3. Uygulama geneli adaptive navigation/accessibility/golden
+4. Performance/release
 
 Detaylı süre: [[GELISTIRME_MASTER_PLANI#18. Fazlar ve süre tahmini]]. Aktif durum: [[SESSION_HANDOFF]].

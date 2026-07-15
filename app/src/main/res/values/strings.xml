@@ -263,4 +263,62 @@
     <string name="muscle_load_list_support">Renkten bağımsız seviye ve skor karşılığı.</string>
     <string name="muscle_load_score">Skor %1$.2f</string>
     <string name="muscle_load_row_description">%1$s kas yükü %2$s, skor %3$.2f</string>
+
+    <string name="programs_title">Programlar</string>
+    <string name="programs_subtitle">Hedefine uygun planı incele ve antrenmana hazır setlerle başla.</string>
+    <string name="programs_loading">Programlar hazırlanıyor…</string>
+    <string name="programs_error_title">Programlar alınamadı</string>
+    <string name="programs_error_body">Program kütüphanesi okunamadı. Tekrar deneyebilirsin.</string>
+    <string name="programs_empty_title">Henüz program yok</string>
+    <string name="programs_empty_body">Yeni bir program eklendiğinde burada görünecek.</string>
+    <string name="program_creator">Hazırlayan: %1$s</string>
+    <string name="program_access_free">Ücretsiz</string>
+    <string name="program_access_locked">Kilitli demo</string>
+    <string name="program_access_purchased">Demo erişimi açık</string>
+    <string name="program_card_description">%1$s. %2$s. %3$d hafta, haftada %4$d gün.</string>
+    <string name="program_purchase_price">Demo erişimini aç · %1$s</string>
+    <string name="program_difficulty_label">Seviye: %1$s</string>
+    <string name="program_difficulty_beginner">Başlangıç</string>
+    <string name="program_difficulty_intermediate">Orta</string>
+    <string name="program_difficulty_advanced">İleri</string>
+    <string name="program_detail_loading">Program ayrıntıları hazırlanıyor…</string>
+    <string name="program_not_found_title">Program bulunamadı</string>
+    <string name="program_not_found_body">Program kaldırılmış veya bağlantı geçersiz olabilir.</string>
+    <string name="program_locked_title">Bu plan demo erişimi gerektiriyor</string>
+    <string name="program_locked_body">Plan günlerini görmek ve antrenmana aktarmak için demo erişimini aç.</string>
+    <string name="program_plan_title">Haftalık antrenman planı</string>
+    <string name="program_plan_repeat">Bu plan %1$d hafta boyunca tekrarlanır.</string>
+    <string name="program_plan_empty_title">Plan günleri kullanılamıyor</string>
+    <string name="program_plan_empty_body">Eski program verisi dönüştürülememiş olabilir. Programı güncelleyip tekrar dene.</string>
+    <string name="program_day_number">%1$d. gün</string>
+    <string name="program_start_workout">Bu antrenmana başla</string>
+    <string name="program_exercise_target">%1$d set × %2$s tekrar</string>
+    <string name="program_rest_seconds">%1$d sn</string>
+    <string name="program_purchase_title">Demo program erişimi</string>
+    <string name="program_purchase_question">“%1$s” programının demo erişimini %2$s karşılığında açmak istiyor musun?</string>
+    <string name="program_purchase_demo_notice">Bu uygulamada gerçek ödeme yapılmaz. Erişim yalnızca yerel demo durumunu değiştirir.</string>
+    <string name="program_purchase_demo_action">Demo erişimini aç</string>
+    <string name="program_start_failed">Program antrenmanı başlatılamadı. Aktif antrenmanı veya plan verisini kontrol et.</string>
+    <string name="program_expand_exercises">Hareketleri göster</string>
+    <string name="program_collapse_exercises">Hareketleri gizle</string>
+    <string name="program_exercise_description">%1$s, %2$d set, %3$s tekrar, %4$d saniye dinlenme</string>
+    <string name="workout_planned_set">Planlanan %1$d. set</string>
+    <string name="workout_planned_target">Hedef: %1$s tekrar</string>
+    <string name="workout_planned_target_unspecified">belirtilmedi</string>
+    <string name="workout_complete_planned_set">Seti kaydet</string>
+    <string name="workout_complete_planned_title">Planlanan seti tamamla</string>
+    <string name="workout_finish_planned_sets_first">Antrenmanı bitirmeden önce planlanan setleri tamamla veya kullanmayacaklarını sil.</string>
+
+    <plurals name="program_weeks">
+        <item quantity="one">%1$d hafta</item>
+        <item quantity="other">%1$d hafta</item>
+    </plurals>
+    <plurals name="program_days_week">
+        <item quantity="one">Haftada %1$d gün</item>
+        <item quantity="other">Haftada %1$d gün</item>
+    </plurals>
+    <plurals name="program_exercises">
+        <item quantity="one">%1$d hareket</item>
+        <item quantity="other">%1$d hareket</item>
+    </plurals>
 </resources>

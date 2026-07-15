@@ -4,11 +4,11 @@ import androidx.room.withTransaction
 import com.gymtracker.data.dao.ProgramDao
 import com.gymtracker.data.database.AppDatabase
 import com.gymtracker.data.entities.Program
+import com.gymtracker.data.entities.ProgramDayExercise
 import com.gymtracker.data.entities.ProgramDifficulty
 import com.gymtracker.data.entities.ProgramWorkout
 import com.gymtracker.data.entities.SeedMetadata
 import com.gymtracker.domain.ProgramExercise
-import com.gymtracker.domain.ProgramExerciseSerializer
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -28,7 +28,10 @@ class ProgramSeedInitializer @Inject constructor(
 
         defaults.forEach { definition ->
             val programId = programDao.insertProgram(definition.program)
-            programDao.insertWorkouts(definition.days.map { it.toEntity(programId) })
+            definition.days.forEach { day ->
+                val workoutId = programDao.insertWorkout(day.toEntity(programId))
+                programDao.insertDayExercises(day.toExerciseEntities(workoutId))
+            }
         }
     }
 
@@ -47,8 +50,20 @@ class ProgramSeedInitializer @Inject constructor(
             weekNumber = 1,
             dayNumber = number,
             dayName = name,
-            exercises = ProgramExerciseSerializer.toJson(exercises)
+            exercises = ""
         )
+
+        fun toExerciseEntities(workoutId: Long) = exercises.mapIndexed { position, exercise ->
+            ProgramDayExercise(
+                programWorkoutId = workoutId,
+                exerciseId = exercise.exerciseId,
+                exerciseName = exercise.name,
+                position = position,
+                targetSets = exercise.sets,
+                targetReps = exercise.reps,
+                restSeconds = exercise.restSeconds
+            )
+        }
     }
 
     private fun exercise(name: String, sets: Int, reps: String, rest: Int = 90) =

@@ -9,6 +9,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.gymtracker.MainActivity
 import org.junit.Rule
@@ -53,7 +54,8 @@ class NavigationSmokeTest {
         composeRule.activityRule.scenario.recreate()
 
         composeRule.onNodeWithTag("bottom-nav-programs").assertIsSelected()
-        composeRule.onNodeWithText("Antrenman programları").assertIsDisplayed()
+        composeRule.onNodeWithText("Hedefine uygun planı incele ve antrenmana hazır setlerle başla.")
+            .assertIsDisplayed()
     }
 
     @Test
@@ -81,12 +83,12 @@ class NavigationSmokeTest {
         }
         composeRule.onNodeWithText("Full Body 3 Gün").performClick()
 
-        composeRule.onNodeWithText("Haftalık Antrenman Planı").assertIsDisplayed()
+        composeRule.onNodeWithText("Haftalık antrenman planı").performScrollTo().assertIsDisplayed()
         composeRule.onNodeWithTag("bottom-nav-programs").assertDoesNotExist()
 
         composeRule.activityRule.scenario.recreate()
 
-        composeRule.onNodeWithText("Haftalık Antrenman Planı").assertIsDisplayed()
+        composeRule.onNodeWithText("Haftalık antrenman planı").performScrollTo().assertIsDisplayed()
         composeRule.onNodeWithTag("bottom-nav-programs").assertDoesNotExist()
     }
 }

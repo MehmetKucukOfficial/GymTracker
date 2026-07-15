@@ -88,7 +88,8 @@ class WorkoutViewModel @Inject constructor(
                         exerciseName = exerciseName,
                         setNumber = setNumber,
                         reps = reps,
-                        weightKg = weightKg
+                        weightKg = weightKg,
+                        exerciseId = com.gymtracker.domain.ExerciseIdentity.fromLegacyName(exerciseName)
                     )
                 )
             }.onSuccess {
@@ -108,6 +109,20 @@ class WorkoutViewModel @Inject constructor(
             runCatching { repository.deleteSet(set) }
                 .onSuccess { mutationError.value = null }
                 .onFailure { mutationError.value = WorkoutMutationError.READ_ONLY_SESSION }
+        }
+    }
+
+    fun completePlannedSet(setId: Long, reps: Int, weightKg: Float) {
+        viewModelScope.launch {
+            runCatching { repository.completePlannedSet(setId, reps, weightKg) }
+                .onSuccess { mutationError.value = null }
+                .onFailure { error ->
+                    mutationError.value = if (error is IllegalArgumentException) {
+                        WorkoutMutationError.INVALID_SET
+                    } else {
+                        WorkoutMutationError.READ_ONLY_SESSION
+                    }
+                }
         }
     }
 

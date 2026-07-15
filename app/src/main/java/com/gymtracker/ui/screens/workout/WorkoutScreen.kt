@@ -370,6 +370,7 @@ fun WorkoutDetailScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showAddSetDialog by remember { mutableStateOf(false) }
     var showFinishDialog by remember { mutableStateOf(false) }
+    var plannedSet by remember { mutableStateOf<WorkoutSet?>(null) }
 
     when {
         uiState.isLoading -> GtLoadingState(
@@ -398,7 +399,8 @@ fun WorkoutDetailScreen(
             onBack = onBack,
             onFinishRequest = { showFinishDialog = true },
             onAddSetRequest = { showAddSetDialog = true },
-            onDeleteSet = viewModel::deleteSet
+            onDeleteSet = viewModel::deleteSet,
+            onCompletePlannedSet = { plannedSet = it }
         )
     }
 
@@ -420,6 +422,17 @@ fun WorkoutDetailScreen(
             onConfirm = { duration, notes ->
                 viewModel.finishSession(duration, notes, onFinished)
                 showFinishDialog = false
+            }
+        )
+    }
+
+    plannedSet?.let { set ->
+        CompletePlannedSetDialog(
+            set = set,
+            onDismiss = { plannedSet = null },
+            onConfirm = { reps, weight ->
+                viewModel.completePlannedSet(set.id, reps, weight)
+                plannedSet = null
             }
         )
     }
@@ -446,11 +459,13 @@ fun WorkoutDetailContent(
     onFinishRequest: () -> Unit,
     onAddSetRequest: () -> Unit,
     onDeleteSet: (WorkoutSet) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onCompletePlannedSet: (WorkoutSet) -> Unit = {}
 ) {
     val isActive = session.status == WorkoutStatus.ACTIVE
     val largeFont = LocalDensity.current.fontScale >= 1.6f
     val groupedSets = sets.groupBy { it.exerciseName }
+    val hasIncompleteSets = sets.any { !it.isCompleted }
 
     Column(
         modifier = modifier
@@ -488,6 +503,7 @@ fun WorkoutDetailContent(
             Spacer(Modifier.height(GtSpacing.sm))
             Button(
                 onClick = onFinishRequest,
+                enabled = !hasIncompleteSets,
                 modifier = Modifier
                     .fillMaxWidth()
                     .heightIn(min = GtSize.minimumTouchTarget)
@@ -496,6 +512,13 @@ fun WorkoutDetailContent(
                 Icon(Icons.Default.CheckCircle, contentDescription = null)
                 Spacer(Modifier.width(GtSpacing.xs))
                 Text(stringResource(R.string.workout_finish))
+            }
+            if (hasIncompleteSets) {
+                Text(
+                    text = stringResource(R.string.workout_finish_planned_sets_first),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
 
@@ -526,7 +549,8 @@ fun WorkoutDetailContent(
                             exerciseName = exerciseName,
                             sets = exerciseSets,
                             editable = isActive,
-                            onDeleteSet = onDeleteSet
+                            onDeleteSet = onDeleteSet,
+                            onCompletePlannedSet = onCompletePlannedSet
                         )
                     }
                 }
@@ -607,7 +631,8 @@ private fun ExerciseSetGroup(
     exerciseName: String,
     sets: List<WorkoutSet>,
     editable: Boolean,
-    onDeleteSet: (WorkoutSet) -> Unit
+    onDeleteSet: (WorkoutSet) -> Unit,
+    onCompletePlannedSet: (WorkoutSet) -> Unit
 ) {
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -623,7 +648,12 @@ private fun ExerciseSetGroup(
                 color = MaterialTheme.colorScheme.primary
             )
             sets.forEach { set ->
-                WorkoutSetRow(set = set, editable = editable, onDelete = { onDeleteSet(set) })
+                WorkoutSetRow(
+                    set = set,
+                    editable = editable,
+                    onDelete = { onDeleteSet(set) },
+                    onComplete = { onCompletePlannedSet(set) }
+                )
             }
         }
     }
@@ -633,14 +663,45 @@ private fun ExerciseSetGroup(
 private fun WorkoutSetRow(
     set: WorkoutSet,
     editable: Boolean,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    onComplete: () -> Unit
 ) {
     val largeFont = LocalDensity.current.fontScale >= 1.6f
     Surface(
         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
         shape = MaterialTheme.shapes.small
     ) {
-        if (largeFont) {
+        if (!set.isCompleted) {
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(GtSpacing.sm),
+                verticalArrangement = Arrangement.spacedBy(GtSpacing.xs)
+            ) {
+                Text(
+                    text = stringResource(R.string.workout_planned_set, set.setNumber),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    text = stringResource(
+                        R.string.workout_planned_target,
+                        set.targetReps ?: stringResource(R.string.workout_planned_target_unspecified)
+                    ),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                if (editable) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(GtSpacing.xs)) {
+                        Button(onClick = onComplete) {
+                            Icon(Icons.Default.CheckCircle, contentDescription = null)
+                            Spacer(Modifier.width(GtSpacing.xs))
+                            Text(stringResource(R.string.workout_complete_planned_set))
+                        }
+                        TextButton(onClick = onDelete) {
+                            Text(stringResource(R.string.action_delete))
+                        }
+                    }
+                }
+            }
+        } else if (largeFont) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -693,6 +754,52 @@ private fun WorkoutSetRow(
             }
         }
     }
+}
+
+@Composable
+private fun CompletePlannedSetDialog(
+    set: WorkoutSet,
+    onDismiss: () -> Unit,
+    onConfirm: (Int, Float) -> Unit
+) {
+    var reps by remember(set.id) { mutableStateOf("") }
+    var weight by remember(set.id) { mutableStateOf("0") }
+    val repsValue = reps.toIntOrNull()
+    val weightValue = weight.replace(',', '.').toFloatOrNull()
+    val valid = repsValue != null && repsValue > 0 &&
+        weightValue != null && weightValue.isFinite() && weightValue >= 0f
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.workout_complete_planned_title)) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(GtSpacing.xs)) {
+                Text(stringResource(R.string.workout_planned_target, set.targetReps.orEmpty()))
+                OutlinedTextField(
+                    value = reps,
+                    onValueChange = { reps = it },
+                    label = { Text(stringResource(R.string.workout_reps_label)) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = weight,
+                    onValueChange = { weight = it },
+                    label = { Text(stringResource(R.string.workout_weight_kg)) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                enabled = valid,
+                onClick = { onConfirm(requireNotNull(repsValue), requireNotNull(weightValue)) }
+            ) { Text(stringResource(R.string.action_save)) }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
+        }
+    )
 }
 
 @Composable

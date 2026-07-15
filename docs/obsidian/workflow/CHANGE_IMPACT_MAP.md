@@ -2,7 +2,7 @@
 type: workflow
 status: current
 implementation_status: active
-verified_commit: 341bf79
+verified_commit: 2ad7ad8
 updated: 2026-07-15
 tags: [gymtracker/workflow, gymtracker/impact]
 ---
@@ -41,10 +41,15 @@ Graf: [[ADR_006_WORKOUT_SESSION_LIFECYCLE]], [[FEATURE_WORKOUT]], [[FEATURE_HOME
 
 ## Exercise adı/kütüphanesi
 
-Oku: `MuscleGroup.kt`, program seed referansları, fatigue calculator.
-Kontrol: duplicate isim 0, missing program ref 0, activation validation.
-Hedef: string yerine kararlı ID.
+Oku: `MuscleGroup.kt`, `ProgramExercise.kt`, program seed/ProgramDayExercise, WorkoutSet ve Muscle Load eşlemesi.
+Kontrol: duplicate stable ID 0, missing program ref 0, activation validation; gösterim adı değişse de persisted ID değişmez.
 Graf: [[FEATURE_WORKOUT]], [[FEATURE_PROGRAMS]], [[FEATURE_MUSCLE_LOAD]].
+
+## Program planı veya program→workout
+
+Oku: `ProgramDao`, `ProgramRepository`, `ProgramSeedInitializer`, `ProgramWorkoutPlan`, `WorkoutDao/Repository`, entity/migration, Programs ve Workout Screen/ViewModel.
+Test: v6 JSON→v7 relation + bozuk payload fallback; 5/23/108 seed; locked/ownership/target guard; existing-active duplicate yok; planned set completion/finish; navigation recreation; dark/%200 font.
+Graf: [[FEATURE_PROGRAMS]], [[ADR_007_RELATIONAL_PROGRAM_PLANS]], [[ARCH_DATABASE]], [[FEATURE_WORKOUT]], [[FEATURE_MUSCLE_LOAD]].
 
 ## Fotoğraf saklama
 

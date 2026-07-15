@@ -48,6 +48,7 @@ class ProgramSeedInitializerTest {
         val dao = database.programDao()
         assertEquals(5, dao.getProgramCount())
         assertEquals(23, dao.getProgramWorkoutCount())
+        assertEquals(108, dao.getProgramDayExerciseCount())
         assertNotNull(dao.getSeedMetadata("default-programs-v1"))
     }
 
@@ -68,6 +69,7 @@ class ProgramSeedInitializerTest {
 
         assertEquals(1, dao.getProgramCount())
         assertEquals(0, dao.getProgramWorkoutCount())
+        assertEquals(0, dao.getProgramDayExerciseCount())
         assertNotNull(dao.getSeedMetadata("default-programs-v1"))
     }
 }

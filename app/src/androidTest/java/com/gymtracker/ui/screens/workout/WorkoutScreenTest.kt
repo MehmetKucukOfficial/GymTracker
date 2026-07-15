@@ -3,6 +3,7 @@ package com.gymtracker.ui.screens.workout
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -120,6 +121,36 @@ class WorkoutScreenTest {
         composeRule.onNodeWithTag("workout-finish-action").assertIsDisplayed()
         composeRule.onNodeWithTag("workout-add-set-action").assertIsDisplayed()
         composeRule.onNodeWithText("Sil").assertIsDisplayed()
+    }
+
+    @Test
+    fun plannedSet_disablesFinishAndExposesCompletionAction() {
+        val completedSetId = AtomicLong(0)
+        composeRule.setContent {
+            GymTrackerTheme(darkTheme = false) {
+                WorkoutDetailContent(
+                    session = session(id = 12, name = "Program Günü", status = WorkoutStatus.ACTIVE),
+                    sets = listOf(
+                        workoutSet(sessionId = 12).copy(
+                            id = 44,
+                            reps = 0,
+                            weightKg = 0f,
+                            isCompleted = false,
+                            targetReps = "8-10"
+                        )
+                    ),
+                    onBack = {},
+                    onFinishRequest = {},
+                    onAddSetRequest = {},
+                    onDeleteSet = {},
+                    onCompletePlannedSet = { completedSetId.set(it.id) }
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag("workout-finish-action").assertIsNotEnabled()
+        composeRule.onNodeWithText("Seti kaydet").performClick()
+        assertEquals(44L, completedSetId.get())
     }
 
     private fun session(

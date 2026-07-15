@@ -52,6 +52,7 @@ data class MuscleActivation(
 )
 
 data class ExerciseDefinition(
+    val id: String,
     val name: String,
     val category: String,
     val equipment: String,
@@ -65,7 +66,13 @@ object ExerciseLibrary {
         category: String,
         equipment: String,
         vararg activations: MuscleActivation
-    ) = ExerciseDefinition(name, category, equipment, activations.toList())
+    ) = ExerciseDefinition(
+        id = ExerciseIdentity.fromLegacyName(name),
+        name = name,
+        category = category,
+        equipment = equipment,
+        muscleActivations = activations.toList()
+    )
 
     val exercises: List<ExerciseDefinition> = listOf(
         // ===== GÖĞÜS =====
