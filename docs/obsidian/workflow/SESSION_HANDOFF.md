@@ -4,8 +4,8 @@ status: ready
 implementation_status: active
 code_baseline: 41c2ceb
 updated: 2026-07-16
-active_phase: "Phase 4 - PR14 verified"
-next_pr: "Publish PR14, then wait for user command"
+active_phase: "Phase 4 - PR14 published"
+next_pr: "Wait for user command before PR15"
 primary_nodes:
   - FEATURE_PROGRESS_PHOTOS
   - FEATURE_MUSCLE_LOAD
@@ -27,7 +27,7 @@ tags: [gymtracker/workflow, gymtracker/session]
 - PR11 baseline: `7917358`; `codex/programs-normalization` dalı PR10’u hedefleyen stacked draft PR #4 olarak yayınlandı.
 - PR12 baseline: `9c90471`; `codex/nutrition-measurements-depth` dalı PR11’i hedefleyen stacked draft PR #5 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/5
 - PR13 code baseline: `5c3ce35`; graph baseline `d189f6c`; `codex/photo-load-calibration` dalı PR12’yi hedefleyen stacked draft PR #6 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/6
-- PR14 code baseline: `41c2ceb`; `codex/adaptive-locale-goldens` dalı PR13 üstüne stacked ve yayınlanmaya hazır.
+- PR14 code baseline: `41c2ceb`; graph baseline `f65e162`; `codex/adaptive-locale-goldens` dalı PR13’ü hedefleyen stacked draft PR #7 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/7
 - Room v9; explicit 8→9 photo thumbnail/dimension metadata migration aktif, destructive fallback yok; v0/v1 fotoğraf satırları kayıpsız korunur.
 - Compact navigation shell’i 5 ana hedefli bottom bar, 600 dp+ shell aynı hedeflerle rail kullanıyor; workout/program detail ID + SavedStateHandle + repository Flow kullanıyor.
 - Home completed/active workout, measurement ve nutrition kaynaklarına reaktif; aktif workout varsa CTA doğrudan session ID’ye devam ediyor.
@@ -44,7 +44,7 @@ tags: [gymtracker/workflow, gymtracker/session]
 
 ## Sıradaki önerilen iş
 
-PR14 graph commit’ini pushla, PR13 dalını hedefleyen stacked draft PR’ı yayınla ve kullanıcının yeni komutunu bekle. PR15’e otomatik geçme.
+PR14 stacked draft PR #7 yayınlandı. Kullanıcının yeni komutunu bekle; PR15’e otomatik geçme.
 
 ## Açık P0/P1
 
@@ -665,7 +665,8 @@ Graph notes updated:
 - [[SOURCE_FILE_ATLAS]], [[CHANGE_IMPACT_MAP]], [[SESSION_HANDOFF]], [[00_START_HERE]]
 
 Next concrete action:
-- Publish `codex/adaptive-locale-goldens` as a stacked draft PR targeting `codex/photo-load-calibration`, record the URL, then wait for the user before PR15.
+- PR14 stacked draft PR #7 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/7
+- Stop and wait for the user before starting PR15.
 
 Blockers:
 - No code blocker. CI, external deep links, true OS process-death, feature list-detail and broader golden coverage remain explicit follow-ups.

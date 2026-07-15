@@ -67,8 +67,8 @@ tags: [gymtracker/moc, gymtracker/graph]
 
 ## Grafın güncellik durumu
 
-- Kod baseline: `41c2ceb` (`codex/adaptive-locale-goldens`, PR13 üstüne stacked)
+- Kod baseline: `41c2ceb` (`codex/adaptive-locale-goldens`, PR13 üstüne stacked draft PR #7)
 - Kod değişikliği: uygulama geneli TR/EN kaynak eşitliği, locale-aware gösterim, compact bottom bar + 600 dp+ rail, erişilebilir Progress Hub ve kalıcı golden baseline doğrulandı
 - Dokümanlar: PR14 navigation/design/locale/test/risk/roadmap sözleşmeleriyle senkron
 - Son tam doğrulama: 2026-07-16
-- Aktif önerilen iş: PR14’ü stacked draft PR olarak yayınla, ardından kullanıcı komutunu bekle
+- Aktif önerilen iş: kullanıcı komutunu bekle; PR15’e otomatik geçme

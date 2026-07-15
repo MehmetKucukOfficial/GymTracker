@@ -120,7 +120,7 @@ Kabul: 26 JVM + 50 API 34 instrumentation testi; lint 0 hata/78 uyarı; assemble
 ## PR 14 — App-wide locale + adaptive navigation + golden baseline
 
 Node: [[ARCH_NAVIGATION]], [[ADR_002_FIVE_TARGET_NAVIGATION]], [[DESIGN_SYSTEM_GRAPH]], [[TEST_MATRIX]].
-Durum: `41c2ceb` kod commit’i `codex/adaptive-locale-goldens` dalında doğrulandı; PR13 dalını hedefleyen stacked draft PR olarak yayınlanacak.
+Durum: `41c2ceb` kod + `f65e162` graph commit’leri `codex/adaptive-locale-goldens` dalında PR13’ü hedefleyen stacked draft PR #7 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/7
 Çıktı: 350/350 TR/EN kaynak eşitliği; locale-aware kas/para gösterimi; compact bottom bar + 600 dp+ rail; Progress Hub birleşik semantics; English light ve Turkish dark/%200 kalıcı golden baseline.
 Kabul: 28 JVM + 54 API 34 instrumentation testi; lint ve assemble başarılı.
 
