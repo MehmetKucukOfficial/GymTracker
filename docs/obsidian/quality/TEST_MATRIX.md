@@ -2,7 +2,7 @@
 type: quality
 status: current
 implementation_status: mixed
-verified_commit: 41c2ceb
+verified_commit: 21bc385
 updated: 2026-07-16
 tags: [gymtracker/quality, gymtracker/testing]
 ---
@@ -70,6 +70,6 @@ Home’un takvim sınırı saf fonksiyonla testlidir; canlı rollover akışına
 
 ## CI sırası
 
-Compile → unit → lint/format/detekt → Room/migration → Compose/screenshot → assemble. Release branch ayrıca instrumentation, R8 bundle ve smoke.
+`ciQuality`: unit → lintDebug → debug APK → minified/resource-shrunk release APK + AAB + mapping. GitHub Actions quality job’u geçtikten sonra API 34 Pixel 6 Pro üzerinde 54 Room/Compose/navigation/golden cihaz testi çalışır. Lint, release ve device raporları artifact olarak saklanır. Production signing ve fiziksel cihaz smoke’u ayrı release kapısıdır.
 
 Definition of Done ayrıntısı: [[GELISTIRME_MASTER_PLANI#Definition of Done]].

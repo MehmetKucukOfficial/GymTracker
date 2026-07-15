@@ -2,17 +2,14 @@
 type: handoff
 status: ready
 implementation_status: active
-code_baseline: 41c2ceb
+code_baseline: 21bc385
 updated: 2026-07-16
-active_phase: "Phase 4 - PR14 published"
-next_pr: "Wait for user command before PR15"
+active_phase: "Phase 5 - PR15 verified locally"
+next_pr: "Publish PR15 and verify hosted CI"
 primary_nodes:
-  - FEATURE_PROGRESS_PHOTOS
-  - FEATURE_MUSCLE_LOAD
-  - ARCH_DATABASE
-  - ARCH_STATE_DATA_FLOW
-  - DESIGN_SYSTEM_GRAPH
-  - ARCH_NAVIGATION
+  - ARCH_BUILD_DI
+  - TEST_MATRIX
+  - RISK_REGISTER_GRAPH
   - ROADMAP_EXECUTION_GRAPH
 tags: [gymtracker/workflow, gymtracker/session]
 ---
@@ -28,6 +25,7 @@ tags: [gymtracker/workflow, gymtracker/session]
 - PR12 baseline: `9c90471`; `codex/nutrition-measurements-depth` dalı PR11’i hedefleyen stacked draft PR #5 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/5
 - PR13 code baseline: `5c3ce35`; graph baseline `d189f6c`; `codex/photo-load-calibration` dalı PR12’yi hedefleyen stacked draft PR #6 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/6
 - PR14 code baseline: `41c2ceb`; graph baseline `f65e162`; `codex/adaptive-locale-goldens` dalı PR13’ü hedefleyen stacked draft PR #7 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/7
+- PR15 code baseline: `21bc385`; `codex/ci-release-hardening` dalı PR14 üstüne stacked ve yayınlanmaya hazır.
 - Room v9; explicit 8→9 photo thumbnail/dimension metadata migration aktif, destructive fallback yok; v0/v1 fotoğraf satırları kayıpsız korunur.
 - Compact navigation shell’i 5 ana hedefli bottom bar, 600 dp+ shell aynı hedeflerle rail kullanıyor; workout/program detail ID + SavedStateHandle + repository Flow kullanıyor.
 - Home completed/active workout, measurement ve nutrition kaynaklarına reaktif; aktif workout varsa CTA doğrudan session ID’ye devam ediyor.
@@ -41,17 +39,19 @@ tags: [gymtracker/workflow, gymtracker/session]
 - Uygulama geneli Türkçe/English kaynak kataloğu 350/350 eşit; muscle adları ve program para biçimi locale-aware.
 - Test temeli aktif: 28 JVM + 54 API 34 instrumentation testi geçiyor; Progress Hub için iki kalıcı golden baseline var.
 - Debug build başarılı; lint 0 error; assemble başarılı.
+- `ciQuality` JVM/lint/debug ile R8/resource-shrunk unsigned APK, AAB ve mapping üretir; GitHub Actions quality + API 34 device/golden workflow’u kaynakta.
 
 ## Sıradaki önerilen iş
 
-PR14 stacked draft PR #7 yayınlandı. Kullanıcının yeni komutunu bekle; PR15’e otomatik geçme.
+PR15 graph commit’ini pushla, PR14 dalını hedefleyen stacked draft PR’ı yayınla, hosted CI sonucunu düzeltme gerekirse yeşile getir ve ardından kullanıcı komutunu bekle.
 
 ## Açık P0/P1
 
 - Legacy `storageVersion=0` fotoğraflar için yeniden seçim ve v1 re-optimize UX’i
-- CI kalite kapısı
+- İlk hosted GitHub Actions koşusunun yeşil kabulü
 - Golden baseline’ı bütün kritik ekranlara genişletme
 - Harici deep link, gerçek OS process-death ve feature list-detail
+- Production signing/keystore ve mağaza dağıtım smoke’u
 
 ## Son doğrulama
 
@@ -59,6 +59,7 @@ PR14 stacked draft PR #7 yayınlandı. Kullanıcının yeni komutunu bekle; PR15
 - `connectedDebugAndroidTest`: success, 54/54, Pixel 6 Pro API 34.
 - `lintDebug`: success, 0 error.
 - `assembleDebug`: success.
+- `ciQuality`: success; minified APK 2,556,733 bayt, AAB 4,809,602 bayt ve R8 mapping üretildi.
 - Kalıcı görsel kapı: `progress_hub_light_en.png` ve `progress_hub_dark_tr_font200.png`, API 34 üzerinde pixel tolerance ile geçti.
 
 ## Handoff güncelleme şablonu
@@ -670,3 +671,37 @@ Next concrete action:
 
 Blockers:
 - No code blocker. CI, external deep links, true OS process-death, feature list-detail and broader golden coverage remain explicit follow-ups.
+
+## 2026-07-16 - PR 15 CI + minified release hardening
+
+Completed:
+- Added a Linux-executable Gradle wrapper and root `ciQuality` task as the single local/hosted JVM, lint, debug and release gate.
+- Added GitHub Actions quality and dependent API 34 Pixel 6 Pro device/golden jobs with concurrency cancellation and read-only permissions.
+- Added 14-day lint, device-report, unsigned APK/AAB and R8 mapping artifacts.
+- Enabled R8 code minification and resource shrinking without broad project keep rules.
+- Added minified release APK and AAB production to the same quality contract; production signing secrets remain outside the repository.
+
+Files changed:
+- `.github/workflows/android-ci.yml`, `gradlew`
+- root/app Gradle build files and `app/proguard-rules.pro`
+- Related build, quality, risk, roadmap, atlas, impact, start and handoff Obsidian nodes
+
+Tests run/results:
+- `ciQuality`: successful; 28 JVM tests, lint, debug APK, release APK, release AAB and mapping.
+- `connectedDebugAndroidTest`: 54 tests, 0 failures on Pixel 6 Pro API 34, including goldens.
+- Minified unsigned APK: 2,556,733 bytes versus 19,981,034-byte debug APK; release AAB: 4,809,602 bytes.
+- Release manifest inspection: package `com.gymtracker`, min SDK 26, target/compile SDK 34.
+
+Risks changed:
+- R3 mitigated-local: CI workflow and release/device gates exist; hosted execution must still pass after publication.
+- R16 added partial: production signing, keystore secret policy and store-distribution smoke are intentionally open.
+
+Graph notes updated:
+- [[ARCH_BUILD_DI]], [[TEST_MATRIX]], [[RISK_REGISTER_GRAPH]], [[ROADMAP_EXECUTION_GRAPH]]
+- [[SOURCE_FILE_ATLAS]], [[CHANGE_IMPACT_MAP]], [[SESSION_HANDOFF]], [[00_START_HERE]]
+
+Next concrete action:
+- Publish `codex/ci-release-hardening` as a stacked draft PR targeting `codex/adaptive-locale-goldens`, monitor both GitHub Actions jobs and fix any hosted-only drift before stopping.
+
+Blockers:
+- No local code blocker. Production signing requires an authorized keystore/secret decision and is outside this PR.

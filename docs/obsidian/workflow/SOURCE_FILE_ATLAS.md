@@ -2,7 +2,7 @@
 type: atlas
 status: current
 implementation_status: active
-verified_commit: 41c2ceb
+verified_commit: 21bc385
 updated: 2026-07-16
 tags: [gymtracker/workflow, gymtracker/source-map]
 ---
@@ -13,11 +13,13 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 
 | Dosya | Sorumluluk | Bağ |
 |---|---|---|
-| `build.gradle.kts` | root plugin alias | [[ARCH_BUILD_DI]] |
+| `.github/workflows/android-ci.yml` | PR/main quality + API 34 device/golden CI ve artifact’ler | [[ARCH_BUILD_DI]] |
+| `build.gradle.kts` | root plugin alias + tek `ciQuality` kapısı | [[ARCH_BUILD_DI]] |
 | `settings.gradle.kts` | repositories + `:app` | [[ARCH_BUILD_DI]] |
 | `gradle/libs.versions.toml` | dependency/plugin versions | [[ARCH_BUILD_DI]] |
-| `gradle/wrapper/gradle-wrapper.properties` | Gradle 8.4 URL | [[ARCH_BUILD_DI]] |
-| `app/build.gradle.kts` | Android/Compose/Hilt/Room config | [[ARCH_BUILD_DI]] |
+| `gradle/wrapper/gradle-wrapper.properties`, `gradlew` | Gradle 8.4 URL + Linux çalıştırılabilir wrapper | [[ARCH_BUILD_DI]] |
+| `app/build.gradle.kts` | Android/Compose/Hilt/Room + minified/resource-shrunk release config | [[ARCH_BUILD_DI]] |
+| `app/proguard-rules.pro` | yalnız kanıtla eklenecek proje R8 istisnaları | [[ARCH_BUILD_DI]] |
 | `AndroidManifest.xml` | permission/app/activity/backup | [[ARCH_BUILD_DI]] |
 | `GymTrackerApp.kt` | Hilt application | [[ARCH_CURRENT_SYSTEM]] |
 | `MainActivity.kt` | theme + compact bottom-bar / 600 dp+ rail adaptive scaffold + NavHost | [[ARCH_NAVIGATION]] |
