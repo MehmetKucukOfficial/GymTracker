@@ -4,6 +4,7 @@ import androidx.room.*
 import com.gymtracker.data.entities.WorkoutSession
 import com.gymtracker.data.entities.WorkoutSet
 import com.gymtracker.data.entities.WorkoutStatus
+import com.gymtracker.data.workout.CompletedSetForLoad
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -41,6 +42,22 @@ interface WorkoutDao {
         WHERE s.date >= :since
     """)
     suspend fun getSetsFromSessionsSince(since: Long): List<WorkoutSet>
+
+    @Query(
+        """
+        SELECT ws.exerciseName,
+               ws.reps,
+               ws.weightKg,
+               COALESCE(s.completedAt, s.date) AS completedAt
+        FROM workout_sets ws
+        INNER JOIN workout_sessions s ON ws.sessionId = s.id
+        WHERE s.status = 'COMPLETED'
+          AND ws.isCompleted = 1
+          AND COALESCE(s.completedAt, s.date) >= :since
+        ORDER BY completedAt DESC, ws.id DESC
+        """
+    )
+    fun observeCompletedSetsForLoadSince(since: Long): Flow<List<CompletedSetForLoad>>
 
     @Insert
     suspend fun insertSession(session: WorkoutSession): Long

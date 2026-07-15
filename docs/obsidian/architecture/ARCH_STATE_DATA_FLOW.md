@@ -12,6 +12,8 @@ source_files:
   - app/src/main/java/com/gymtracker/data/home/HomeDashboardRepository.kt
   - app/src/main/java/com/gymtracker/data/nutrition/NutritionRules.kt
   - app/src/main/java/com/gymtracker/data/measurements/MeasurementRules.kt
+  - app/src/main/java/com/gymtracker/ui/screens/fatigue/FatigueViewModel.kt
+  - app/src/main/java/com/gymtracker/domain/MuscleLoadCalculator.kt
   - app/src/main/java/com/gymtracker/data/workout/WorkoutRepository.kt
   - app/src/main/java/com/gymtracker/data/programs/ProgramRepository.kt
 tags: [gymtracker/architecture, gymtracker/state]
@@ -27,12 +29,12 @@ tags: [gymtracker/architecture, gymtracker/state]
 - Program list ve detail: repository Flow → ViewModel `stateIn(WhileSubscribed)`; detail ID `SavedStateHandle` kaynağındandır.
 - Nutrition: seçili `LocalDate` ISO biçiminde `SavedStateHandle` içinde korunur; `Clock`/dinamik sistem `ZoneId` ile takvim günü aralığı hesaplanır ve `flatMapLatest` yeni Room Flow’una geçer. Mutation validation/error state üzerinden yönetilir.
 - Measurements: DAO Flow’u `MeasurementsUiState(latest, history, weightTrend)` üretir; latest geçmişten ayrılır ve saf validation/trend kuralları yazma öncesinde çalışır.
+- Muscle Load: takvim tabanlı son yedi gün period Flow’u `flatMapLatest` ile completed-set Room Flow’una geçer; saf calculator loading/content/error state üretir ve gece yarısında query sınırını yeniler.
 - Bütün ana Compose ekranları `collectAsStateWithLifecycle()` kullanır.
 - Gün sınırı sabit 86.400.000 ms yerine `ZoneId` + takvim günü ile hesaplanır; tarihsel Istanbul DST unit testi vardır.
 
 ## Kalan desenler
 
-- Fatigue: init sırasında tek suspend query; reaktif değil.
 - Nutrition seçili gün process recreation’da korunur; gece yarısında otomatik bugün tick’i ve gerçek process-death testi bekler.
 - Home rollover çalışır; Clock/ZoneId injection, timezone-change gözlemi ve deterministik ViewModel testi bekler.
 
@@ -64,7 +66,7 @@ flowchart TD
 
 1. [[FEATURE_WORKOUT]] — status/read-only detail ve active session sözleşmesi tamamlandı.
 2. [[FEATURE_NUTRITION]] — selectedDate setter, SavedStateHandle, Clock ve DST-safe range tamamlandı.
-3. [[FEATURE_MUSCLE_LOAD]] — son N günlük tamamlanmış set Flow.
+3. [[FEATURE_MUSCLE_LOAD]] — son yedi günlük tamamlanmış set Flow + günlük rollover tamamlandı.
 4. [[FEATURE_HOME]] — Clock injection; aktif-seans CTA entegrasyonu tamamlandı.
 5. [[FEATURE_MEASUREMENTS]] — validation/latest/history/trend state’i tamamlandı; chart ve repository sınırı bekliyor.
 

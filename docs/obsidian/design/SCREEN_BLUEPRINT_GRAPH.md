@@ -27,7 +27,7 @@ Date pager; calorie budget; macro progress; dört meal card; recent/favorite foo
 
 ## İlerleme merkezi
 
-Overview / Measurements / Photos / Muscle Load. Compact scrollable tabs, expanded list-detail. Kaynaklar: [[FEATURE_MEASUREMENTS]], [[FEATURE_PROGRESS_PHOTOS]], [[FEATURE_MUSCLE_LOAD]].
+Uygulandı: token tabanlı Overview kartları; adaptive photo grid + scrollable angle filter + viewer; completed-set kaynaklı kas haritası + renk bağımsız erişilebilir liste/metodoloji. Expanded list-detail ve kalıcı karşılaştırma seçimi sonraki aşamadır. Kaynaklar: [[FEATURE_MEASUREMENTS]], [[FEATURE_PROGRESS_PHOTOS]], [[FEATURE_MUSCLE_LOAD]].
 
 ## Responsive kural
 

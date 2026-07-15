@@ -32,15 +32,17 @@ class NavigationSmokeTest {
     @Test
     fun progressChild_keepsProgressSelectedAndSystemBackReturnsToHub() {
         composeRule.onNodeWithTag("bottom-nav-progress").performClick()
-        composeRule.onNodeWithText("Gelişimini tek yerde takip et").assertIsDisplayed()
+        composeRule.onNodeWithText("Ölçümlerini, fotoğraflarını ve kas yükünü tek yerde izle.")
+            .assertIsDisplayed()
 
-        composeRule.onNodeWithText("Vücut Ölçümleri").performClick()
+        composeRule.onNodeWithText("Vücut ölçümleri").performClick()
         composeRule.onNodeWithTag("bottom-nav-progress").assertIsSelected()
 
         composeRule.activityRule.scenario.onActivity {
             it.onBackPressedDispatcher.onBackPressed()
         }
-        composeRule.onNodeWithText("Gelişimini tek yerde takip et").assertIsDisplayed()
+        composeRule.onNodeWithText("Ölçümlerini, fotoğraflarını ve kas yükünü tek yerde izle.")
+            .assertIsDisplayed()
     }
 
     @Test

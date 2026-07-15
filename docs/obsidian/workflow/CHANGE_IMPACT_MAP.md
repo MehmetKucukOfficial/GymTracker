@@ -48,9 +48,15 @@ Graf: [[FEATURE_WORKOUT]], [[FEATURE_PROGRAMS]], [[FEATURE_MUSCLE_LOAD]].
 
 ## Fotoğraf saklama
 
-Oku: Progress Screen/VM/DAO/entity, manifest, backup rules, Coil config.
-Test: provider, restart, reboot, bozuk dosya, low storage, delete cleanup.
+Oku: Progress Screen/VM/repository/DAO/entity, `PhotoFileStorage`, manifest, backup/data extraction rules, Coil config.
+Test: provider, import/DB rollback, limit, orphan/missing reconciliation, legacy v0, restart, reboot, bozuk dosya, low storage, delete cleanup, dark/%200 font.
 Graf: [[FEATURE_PROGRESS_PHOTOS]], [[ADR_004_PERSISTENT_PHOTO_STORAGE]].
+
+## Kas yükü hesabı veya haritası
+
+Oku: `WorkoutDao`, `CompletedSetForLoad`, `MuscleLoadCalculator`, Fatigue ViewModel/Screen, `MuscleBodyMap`, exercise library ve Workout lifecycle sözleşmesi.
+Test: completed/active/incomplete ayrımı, recency, bodyweight fallback, unknown exercise, cap/level, Flow reactivity, front/back map, renk bağımsız liste, dark/%200 font.
+Graf: [[FEATURE_MUSCLE_LOAD]], [[ADR_005_MUSCLE_LOAD_NAMING]], [[FEATURE_WORKOUT]], [[ARCH_STATE_DATA_FLOW]].
 
 ## Tarih veya zaman hesabı
 

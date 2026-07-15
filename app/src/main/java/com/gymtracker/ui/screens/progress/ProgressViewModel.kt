@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.gymtracker.data.entities.PhotoAngle
 import com.gymtracker.data.entities.ProgressPhoto
 import com.gymtracker.data.photos.ProgressPhotoRepository
+import com.gymtracker.data.photos.ProgressPhotoValidationError
+import com.gymtracker.data.photos.validateProgressPhotoInput
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -18,8 +20,18 @@ import javax.inject.Inject
 
 data class ProgressPhotoUiState(
     val isSaving: Boolean = false,
-    val message: String? = null
+    val message: ProgressPhotoMessage? = null
 )
+
+enum class ProgressPhotoMessage {
+    SAVED,
+    DELETED,
+    SAVE_FAILED,
+    DELETE_FAILED,
+    MAINTENANCE_FAILED,
+    WEIGHT_OUT_OF_RANGE,
+    NOTES_TOO_LONG
+}
 
 @HiltViewModel
 class ProgressViewModel @Inject constructor(
@@ -32,17 +44,43 @@ class ProgressViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ProgressPhotoUiState())
     val uiState: StateFlow<ProgressPhotoUiState> = _uiState.asStateFlow()
 
-    fun savePhoto(uri: Uri, angle: PhotoAngle, weightKg: Float?, notes: String) {
+    init {
+        viewModelScope.launch {
+            repository.reconcileStorage().onFailure {
+                _uiState.update { state -> state.copy(message = ProgressPhotoMessage.MAINTENANCE_FAILED) }
+            }
+        }
+    }
+
+    fun savePhoto(
+        uri: Uri,
+        angle: PhotoAngle,
+        weightKg: Float?,
+        notes: String,
+        onSaved: () -> Unit = {}
+    ) {
         if (_uiState.value.isSaving) return
+        when (validateProgressPhotoInput(weightKg, notes)) {
+            ProgressPhotoValidationError.WEIGHT_OUT_OF_RANGE -> {
+                _uiState.update { it.copy(message = ProgressPhotoMessage.WEIGHT_OUT_OF_RANGE) }
+                return
+            }
+            ProgressPhotoValidationError.NOTES_TOO_LONG -> {
+                _uiState.update { it.copy(message = ProgressPhotoMessage.NOTES_TOO_LONG) }
+                return
+            }
+            null -> Unit
+        }
         _uiState.update { it.copy(isSaving = true, message = null) }
         viewModelScope.launch {
             val result = repository.importPhoto(uri, angle, weightKg, notes)
+            if (result.isSuccess) onSaved()
             _uiState.update {
                 it.copy(
                     isSaving = false,
                     message = result.fold(
-                        onSuccess = { "Fotoğraf güvenli şekilde kaydedildi." },
-                        onFailure = { error -> error.message ?: "Fotoğraf kaydedilemedi." }
+                        onSuccess = { ProgressPhotoMessage.SAVED },
+                        onFailure = { ProgressPhotoMessage.SAVE_FAILED }
                     )
                 )
             }
@@ -55,8 +93,8 @@ class ProgressViewModel @Inject constructor(
             _uiState.update {
                 it.copy(
                     message = result.fold(
-                        onSuccess = { "Fotoğraf silindi." },
-                        onFailure = { error -> error.message ?: "Fotoğraf silinemedi." }
+                        onSuccess = { ProgressPhotoMessage.DELETED },
+                        onFailure = { ProgressPhotoMessage.DELETE_FAILED }
                     )
                 )
             }

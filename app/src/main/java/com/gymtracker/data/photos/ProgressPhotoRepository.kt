@@ -18,6 +18,19 @@ class ProgressPhotoRepository @Inject constructor(
 ) {
     val photos: Flow<List<ProgressPhoto>> = dao.getAll()
 
+    suspend fun reconcileStorage(): Result<PhotoReconciliationSummary> = withContext(Dispatchers.IO) {
+        runCatching {
+            val managedPhotos = dao.getAllSync().filter { it.storageVersion >= CURRENT_STORAGE_VERSION }
+            val reconciliation = fileStorage.reconcile(managedPhotos.mapTo(mutableSetOf(), ProgressPhoto::photoUri))
+            val missingPhotos = managedPhotos.filter { it.photoUri in reconciliation.missingManagedUris }
+            missingPhotos.forEach { dao.delete(it) }
+            PhotoReconciliationSummary(
+                orphanFilesDeleted = reconciliation.orphanFilesDeleted,
+                missingRowsDeleted = missingPhotos.size
+            )
+        }
+    }
+
     suspend fun importPhoto(
         sourceUri: Uri,
         angle: PhotoAngle,
@@ -65,3 +78,8 @@ class ProgressPhotoRepository @Inject constructor(
         const val CURRENT_STORAGE_VERSION = 1
     }
 }
+
+data class PhotoReconciliationSummary(
+    val orphanFilesDeleted: Int,
+    val missingRowsDeleted: Int
+)

@@ -15,6 +15,11 @@ data class StoredPhoto(
     val sizeBytes: Long
 )
 
+data class PhotoStorageReconciliation(
+    val orphanFilesDeleted: Int,
+    val missingManagedUris: Set<String>
+)
+
 @Singleton
 class PhotoFileStorage @Inject constructor(
     @ApplicationContext context: Context
@@ -55,6 +60,34 @@ class PhotoFileStorage @Inject constructor(
         val candidate = file.canonicalFile
         if (candidate.parentFile != managedRoot) return false
         return !candidate.exists() || candidate.delete()
+    }
+
+    fun reconcile(knownManagedUris: Set<String>): PhotoStorageReconciliation {
+        check(directory.exists() || directory.mkdirs()) { "Fotoğraf klasörü oluşturulamadı." }
+        val managedRoot = directory.canonicalFile
+        val knownFiles = knownManagedUris.associateWith { uriValue ->
+            runCatching {
+                val uri = Uri.parse(uriValue)
+                val path = uri.path ?: return@runCatching null
+                File(path).canonicalFile.takeIf { candidate ->
+                    uri.scheme == "file" && candidate.parentFile == managedRoot
+                }
+            }.getOrNull()
+        }
+        val missing = knownFiles
+            .filterValues { file -> file == null || !file.isFile }
+            .keys
+        val retainedPaths = knownFiles.values.filterNotNull().mapTo(mutableSetOf(), File::getPath)
+        var deleted = 0
+        directory.listFiles()?.forEach { file ->
+            val shouldDelete = file.isFile &&
+                (file.name.endsWith(TEMP_SUFFIX) || file.canonicalPath !in retainedPaths)
+            if (shouldDelete && file.delete()) deleted++
+        }
+        return PhotoStorageReconciliation(
+            orphanFilesDeleted = deleted,
+            missingManagedUris = missing
+        )
     }
 
     private fun copyWithLimit(input: InputStream, output: java.io.OutputStream): Long {

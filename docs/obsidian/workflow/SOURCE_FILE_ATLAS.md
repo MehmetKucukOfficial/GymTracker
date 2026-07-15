@@ -29,7 +29,7 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | `data/entities/Entities.kt` | 9 Room entity + status/meal enum’ları | bütün feature’lar |
 | `data/database/AppDatabase.kt` | DB v6 + converter + DAO registry | [[ARCH_DATABASE]] |
 | `data/database/DatabaseMigrations.kt` | explicit 3→4→5→6 migration zinciri | [[ARCH_DATABASE]] |
-| `data/dao/WorkoutDao.kt` | active/completed session, status-korumalı set/finish transaction’ları | Home, Workout, Load |
+| `data/dao/WorkoutDao.kt` | active/completed session, status-korumalı mutation ve completed-set load Flow | Home, Workout, Load |
 | `data/dao/MeasurementDao.kt` | measurement queries | Home, Measurements |
 | `data/dao/NutritionDao.kt` | food/entry/goal queries | Home, Nutrition |
 | `data/dao/ProgressPhotoDao.kt` | photo queries | Photos |
@@ -46,7 +46,8 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | Dosya | Sorumluluk | Kritik bağ |
 |---|---|---|
 | `domain/MuscleGroup.kt` | 31 kas + 82 egzersiz/activation | Workout, Load, Programs |
-| `domain/FatigueCalculator.kt` | hacim→kas skor hesabı | Load |
+| `domain/MuscleLoadCalculator.kt` | activation + recency + bodyweight fallback → kas yükü | Load |
+| `data/workout/CompletedSetForLoad.kt` | completed-set DAO projeksiyonu | Load |
 | `domain/ProgramExercise.kt` | program exercise + JSON | Programs |
 | `domain/LocalizedDecimal.kt` | virgül/nokta destekli sonlu sayı parser’ı | Nutrition, Measurements |
 
@@ -105,8 +106,10 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 
 | Dosya | Rol |
 |---|---|
-| `ui/screens/progress/ProgressViewModel.kt` | URI metadata save/delete |
-| `ui/screens/progress/ProgressScreen.kt` | picker/filter/grid/dialog |
+| `ui/screens/progress/ProgressViewModel.kt` | Fotoğraf doğrulama, kayıt/silme, typed mesajlar ve storage reconciliation |
+| `data/photos/ProgressPhotoRules.kt` | opsiyonel kilo/not validation |
+| `data/photos/PhotoFileStorage.kt` | atomik kopya + limit + managed reconciliation |
+| `ui/screens/progress/ProgressScreen.kt` | picker/adaptive filter-grid/viewer/legacy UI |
 
 ## Programs
 
@@ -119,8 +122,8 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 
 | Dosya | Rol |
 |---|---|
-| `ui/screens/fatigue/FatigueViewModel.kt` | son 7 gün tek sefer load |
-| `ui/screens/fatigue/FatigueScreen.kt` | front/back map + selection |
+| `ui/screens/fatigue/FatigueViewModel.kt` | completed-set Flow + takvim rollover → load state |
+| `ui/screens/fatigue/FatigueScreen.kt` | front/back map + methodology + accessible list |
 
 ## Kaynaklar
 
@@ -128,5 +131,6 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 - `res/drawable-nodpi/mask_*.png`: 38 kullanılan maske
 - `res/values/strings.xml`: app name + Home/navigation/Workout/Nutrition/Measurements metinleri
 - `res/values/themes.xml`, `res/values-night/themes.xml`: light/dark launch/platform theme
+- `res/xml/backup_rules.xml`, `data_extraction_rules.xml`: progress fotoğraflarını backup/transfer dışında tutar
 
 Dosya yolu ararken önce bu atlas, sonra ilgili feature node içindeki `source_files` kullanılmalıdır.
