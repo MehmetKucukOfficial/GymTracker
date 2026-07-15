@@ -2,7 +2,7 @@
 type: risk-register
 status: current
 implementation_status: current
-verified_commit: 5c3ce35
+verified_commit: 41c2ceb
 updated: 2026-07-16
 tags: [gymtracker/risk, gymtracker/quality]
 ---
@@ -23,8 +23,8 @@ tags: [gymtracker/risk, gymtracker/quality]
 | R10 | P1 | mitigated-core+ | UI kas yükü/seviye/skor olarak adlandırıldı; formül açık ve sıfır kilolu setler son ölçümle kalibre edilir. Stable-ID load projeksiyonu, hareket katsayısı ve kişisel hacim baseline’ı açık | [[FEATURE_MUSCLE_LOAD]] | [[ADR_005_MUSCLE_LOAD_NAMING]] |
 | R11 | P1 | mitigated-core | Workout, Nutrition, Measurements ve Programs input/mutation doğrulandı; Nutrition/Measurements edit-delete-undo kimliği ve snapshot’ı testli | bütün feature’lar | shared validator + [[ADR_008_SNAPSHOT_SAFE_EDIT_UNDO]] |
 | R12 | P2 | resolved-core (v7) | Program aktif okuma modeli ilişkisel; JSON yalnız kayıpsız legacy fallback ve bozuk payload UI’da güvenli boş state | [[ARCH_DATABASE]] | [[ADR_007_RELATIONAL_PROGRAM_PLANS]] |
-| R13 | P2 | resolved (phone) | 7 öğeli navigation; adaptive rail bekliyor | [[ARCH_NAVIGATION]] | [[ADR_002_FIVE_TARGET_NAVIGATION]] |
+| R13 | P2 | resolved-core | 5 hedefli compact bottom bar ve 600 dp+ adaptive rail aynı seçim/save-restore sözleşmesini kullanıyor; feature list-detail iyileştirmesi açık | [[ARCH_NAVIGATION]] | [[ADR_002_FIVE_TARGET_NAVIGATION]] |
 | R14 | P2 | mitigated+ | Permission azaltıldı; hassas progress fotoğrafları cloud backup/device transfer dışında | [[ARCH_BUILD_DI]] | permission + extraction rules |
-| R15 | P2 | mitigated-core+ | Çekirdek yüzeyler string, semantics, light/dark ve %200 font kullanıyor; Nutrition/Measurements İngilizce kapsamı ve plural/birim biçimi var; app-geneli ikinci locale/adaptive/golden açık | [[DESIGN_SYSTEM_GRAPH]] | design DoD |
+| R15 | P2 | mitigated+ | Uygulama geneli 350/350 TR/EN kaynak, locale-aware kas/para biçimi, adaptive shell, semantics ve ilk kalıcı golden baseline aktif; bütün ekranlara golden ve list-detail yayılımı açık | [[DESIGN_SYSTEM_GRAPH]] | design DoD |
 
 Aktif risk durumu [[SESSION_HANDOFF]] içinde tutulur; çözülen risk silinmez, `resolved` ve commit ile işaretlenir.

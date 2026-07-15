@@ -2,16 +2,17 @@
 type: handoff
 status: ready
 implementation_status: active
-code_baseline: 5c3ce35
+code_baseline: 41c2ceb
 updated: 2026-07-16
-active_phase: "Phase 4 - PR13 published"
-next_pr: "Wait for user command before PR14"
+active_phase: "Phase 4 - PR14 verified"
+next_pr: "Publish PR14, then wait for user command"
 primary_nodes:
   - FEATURE_PROGRESS_PHOTOS
   - FEATURE_MUSCLE_LOAD
   - ARCH_DATABASE
   - ARCH_STATE_DATA_FLOW
   - DESIGN_SYSTEM_GRAPH
+  - ARCH_NAVIGATION
   - ROADMAP_EXECUTION_GRAPH
 tags: [gymtracker/workflow, gymtracker/session]
 ---
@@ -26,8 +27,9 @@ tags: [gymtracker/workflow, gymtracker/session]
 - PR11 baseline: `7917358`; `codex/programs-normalization` dalı PR10’u hedefleyen stacked draft PR #4 olarak yayınlandı.
 - PR12 baseline: `9c90471`; `codex/nutrition-measurements-depth` dalı PR11’i hedefleyen stacked draft PR #5 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/5
 - PR13 code baseline: `5c3ce35`; graph baseline `d189f6c`; `codex/photo-load-calibration` dalı PR12’yi hedefleyen stacked draft PR #6 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/6
+- PR14 code baseline: `41c2ceb`; `codex/adaptive-locale-goldens` dalı PR13 üstüne stacked ve yayınlanmaya hazır.
 - Room v9; explicit 8→9 photo thumbnail/dimension metadata migration aktif, destructive fallback yok; v0/v1 fotoğraf satırları kayıpsız korunur.
-- Telefon navigation shell’i 5 ana hedefe indi; workout/program detail ID + SavedStateHandle + repository Flow kullanıyor.
+- Compact navigation shell’i 5 ana hedefli bottom bar, 600 dp+ shell aynı hedeflerle rail kullanıyor; workout/program detail ID + SavedStateHandle + repository Flow kullanıyor.
 - Home completed/active workout, measurement ve nutrition kaynaklarına reaktif; aktif workout varsa CTA doğrudan session ID’ye devam ediyor.
 - Workout tek aktif seans, status-korumalı mutation, COMPLETED salt-okunur geçmiş ve adaptive modern UI kullanıyor.
 - Nutrition DST-safe tarih aralığı, SavedStateHandle tarih seçimi, snapshot-safe amount/meal edit, delete undo, locale sayı/tarih ve TR/EN adaptive UI kullanıyor.
@@ -36,27 +38,28 @@ tags: [gymtracker/workflow, gymtracker/session]
 - Muscle Load completed-set Flow’unu latest-valid measurement Flow’uyla birleştirir; recency/personal-bodyweight/fallback/unknown sözleşmesi, kalibrasyon kaynağı, metodoloji ve erişilebilir liste aktiftir.
 - Programs locked/ownership/target kurallarını repository’de doğrular; program günü atomik ACTIVE workout’a planlanan set olarak kopyalanır, tamamlanmayan set Muscle Load’a girmez ve finish’i kilitler.
 - Light/dark tasarım sistemi token temeli ve ortak Home bileşenleri aktif; Home loading/content/error, retry, midnight period tick ve adaptive kolon kullanıyor.
-- Test temeli aktif: 26 JVM + 50 API 34 instrumentation testi geçiyor.
-- Debug build başarılı; lint 0 error / 78 warning.
+- Uygulama geneli Türkçe/English kaynak kataloğu 350/350 eşit; muscle adları ve program para biçimi locale-aware.
+- Test temeli aktif: 28 JVM + 54 API 34 instrumentation testi geçiyor; Progress Hub için iki kalıcı golden baseline var.
+- Debug build başarılı; lint 0 error; assemble başarılı.
 
 ## Sıradaki önerilen iş
 
-PR13 commit/push/draft PR yayınından sonra kullanıcının yeni komutunu bekle. PR14’e otomatik geçme.
+PR14 graph commit’ini pushla, PR13 dalını hedefleyen stacked draft PR’ı yayınla ve kullanıcının yeni komutunu bekle. PR15’e otomatik geçme.
 
 ## Açık P0/P1
 
 - Legacy `storageVersion=0` fotoğraflar için yeniden seçim ve v1 re-optimize UX’i
 - CI kalite kapısı
-- Tam uygulama ikinci locale + screenshot golden altyapısı
-- Harici deep link ve navigation rail
+- Golden baseline’ı bütün kritik ekranlara genişletme
+- Harici deep link, gerçek OS process-death ve feature list-detail
 
 ## Son doğrulama
 
-- `testDebugUnitTest`: success, 26/26.
-- `connectedDebugAndroidTest`: success, 50/50, Pixel 6 Pro API 34.
-- `lintDebug`: success, 0 error / 78 warning.
+- `testDebugUnitTest`: success, 28/28.
+- `connectedDebugAndroidTest`: success, 54/54, Pixel 6 Pro API 34.
+- `lintDebug`: success, 0 error.
 - `assembleDebug`: success.
-- Görsel smoke: `app/build/pr12-nutrition-light.png`, `pr12-measurements-light.png`, `pr12-nutrition-dark-font200.png`, `pr12-measurements-dark-font200.png`, `pr12-measurements-chart-dark-font200.png`; emulator light/font 1.0’a geri alındı.
+- Kalıcı görsel kapı: `progress_hub_light_en.png` ve `progress_hub_dark_tr_font200.png`, API 34 üzerinde pixel tolerance ile geçti.
 
 ## Handoff güncelleme şablonu
 
@@ -628,3 +631,41 @@ Next concrete action:
 
 Blockers:
 - No code blocker. PR13 is intentionally stacked on PR #5 until its base lands or is rebased.
+
+## 2026-07-16 - PR 14 App-wide locale + adaptive navigation + golden baseline
+
+Completed:
+- Expanded English resources from scoped coverage to exact app-wide parity with the Turkish default catalog.
+- Localized all 32 Muscle Load display names and made Programs currency formatting follow the active configuration locale.
+- Added a compact bottom-bar / 600 dp+ navigation-rail shell with shared top-level selection and save/restore behavior.
+- Added merged button semantics and stable test tags to Progress Hub destinations; decorative navigation/chevron icons no longer duplicate TalkBack labels.
+- Added permanent pixel-golden infrastructure with English light and Turkish dark/%200 Progress Hub baselines.
+- Reworked legacy Compose assertions to consume active-locale resources and made workout route smoke repeatable with or without a pre-existing active session.
+
+Files changed:
+- `MainActivity.kt`, `BottomNavigationBar.kt`, `ProgressHubScreen.kt`, `FatigueScreen.kt`, `ProgramsScreen.kt`, `WorkoutScreen.kt`
+- `res/values/strings.xml`, `res/values-en/strings.xml`
+- Resource coverage, adaptive navigation, localization, Progress Hub semantics, golden and existing language-independent Compose tests
+- Related navigation/ADR/design/quality/risk/roadmap/workflow Obsidian nodes
+
+Tests run/results:
+- `testDebugUnitTest`: 28 tests, 0 failures.
+- `connectedDebugAndroidTest`: 54 tests, 0 failures on Pixel 6 Pro API 34, including both golden comparisons.
+- `lintDebug`: success, 0 errors.
+- `assembleDebug`: success.
+- Resource contract: default 350, English 350, key diff 0.
+
+Risks changed:
+- R13 resolved-core: compact five-target navigation and 600 dp+ rail now share the same ownership and state contract; feature list-detail remains enhancement work.
+- R15 mitigated+: full TR/EN parity, locale-aware display values, adaptive shell, accessibility semantics and the first permanent golden baseline are active.
+
+Graph notes updated:
+- [[ARCH_NAVIGATION]], [[ADR_002_FIVE_TARGET_NAVIGATION]], [[DESIGN_SYSTEM_GRAPH]]
+- [[TEST_MATRIX]], [[RISK_REGISTER_GRAPH]], [[ROADMAP_EXECUTION_GRAPH]]
+- [[SOURCE_FILE_ATLAS]], [[CHANGE_IMPACT_MAP]], [[SESSION_HANDOFF]], [[00_START_HERE]]
+
+Next concrete action:
+- Publish `codex/adaptive-locale-goldens` as a stacked draft PR targeting `codex/photo-load-calibration`, record the URL, then wait for the user before PR15.
+
+Blockers:
+- No code blocker. CI, external deep links, true OS process-death, feature list-detail and broader golden coverage remain explicit follow-ups.

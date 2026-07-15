@@ -2,7 +2,7 @@
 type: workflow
 status: current
 implementation_status: active
-verified_commit: 5c3ce35
+verified_commit: 41c2ceb
 updated: 2026-07-16
 tags: [gymtracker/workflow, gymtracker/impact]
 ---
@@ -24,13 +24,13 @@ Graf: [[MOC_DATA]], ilgili feature.
 ## Navigation route değişikliği
 
 Oku: `MainActivity.kt`, `NavGraph.kt`, `BottomNavigationBar.kt`, `ProgressHubScreen.kt`, route ID alan ilgili ViewModel/repository ve çağıran hızlı erişim/kartlar.
-Test: `NavigationContractTest`, `NavigationSmokeTest`; back, detail alt barı, positive ID, selected tab, Activity/process recreation ve deep link.
+Test: `NavigationContractTest`, `AdaptiveNavigationTest`, `NavigationSmokeTest`; 599/600 dp, bottom bar/rail, back, detail ana navigasyonu, positive ID, selected tab, Activity/process recreation ve deep link.
 Graf: [[ARCH_NAVIGATION]], [[ADR_002_FIVE_TARGET_NAVIGATION]].
 
 ## Theme veya ortak Compose bileşeni
 
 Oku: `Theme.kt`, `DesignTokens.kt`, `GymTrackerComponents.kt`, platform `values(-night)/themes.xml`, tüm call site’lar, design note.
-Test: `HomeLayoutConfigTest`, `HomeScreenTest`; light/dark, font 200%, TalkBack, screenshot, compact/expanded.
+Test: `HomeLayoutConfigTest`, ilgili ScreenTest ve golden; light/dark, font 200%, TalkBack, screenshot, compact/expanded.
 Graf: [[DESIGN_SYSTEM_GRAPH]], [[SCREEN_BLUEPRINT_GRAPH]].
 
 ## Workout set/session modeli
@@ -84,5 +84,5 @@ Graf: [[ARCH_BUILD_DI]], [[ROADMAP_EXECUTION_GRAPH]].
 ## String/locale/birim
 
 Oku: tüm hardcoded kullanıcı metinleri, formatter, validation, setting DataStore.
-Test: Turkish + second locale, plural, decimal, kg/lb.
+Test: `ResourceCoverageTest`, `LocalizationResourcesTest`, locale bağımsız UI testleri ve ilgili golden; Türkçe + English anahtar eşitliği, plural, decimal, para ve kg/lb.
 Graf: [[DESIGN_SYSTEM_GRAPH]], ilgili feature.

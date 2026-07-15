@@ -1,9 +1,9 @@
 ---
 type: architecture
 status: current
-implementation_status: mixed
-verified_commit: a8e019e
-updated: 2026-07-15
+implementation_status: current
+verified_commit: 41c2ceb
+updated: 2026-07-16
 source_files:
   - app/src/main/java/com/gymtracker/MainActivity.kt
   - app/src/main/java/com/gymtracker/ui/navigation/NavGraph.kt
@@ -15,7 +15,7 @@ tags: [gymtracker/architecture, gymtracker/navigation]
 
 ## Mevcut
 
-Telefon alt barı: Özet, Antrenman, Programlar, Beslenme, İlerleme — toplam 5 öğe. `NavigationPolicy`, nested route’un sahibi olan ana hedefi ve detail ekranlarında alt bar görünürlüğünü tek yerden belirler.
+Compact genişlikte alt bar; 600 dp ve üzerinde navigation rail kullanılır. Her ikisi de Özet, Antrenman, Programlar, Beslenme, İlerleme olmak üzere aynı 5 hedefi, seçili hedef çözümünü ve save/restore navigasyon sözleşmesini paylaşır. `NavigationPolicy`, nested route’un sahibi olan ana hedefi ve detail ekranlarında ana navigasyon görünürlüğünü tek yerden belirler.
 
 Ölçüm (`progress/measurements`), fotoğraf (`progress/photos`) ve kas yükü (`progress/load`) İlerleme hub’ından açılır ve alt barda İlerleme seçili kalır. `workouts/{sessionId}` ve `programs/{programId}` detail ekranları alt barı gizler; Hilt ViewModel route ID’sini `SavedStateHandle` üzerinden alır ve repository Flow’dan veriyi yeniden çözer.
 
@@ -29,7 +29,7 @@ Telefon ana hedefleri:
 4. Beslenme
 5. İlerleme
 
-Ölçüm, fotoğraf ve kas yükü İlerleme altında destination olarak kalır. Aktif workout tam ekran olduğunda alt bar gizlenir. Tablet medium/expanded düzende navigation rail ve list-detail kullanılır.
+Ölçüm, fotoğraf ve kas yükü İlerleme altında destination olarak kalır. Aktif workout tam ekran olduğunda ana navigasyon gizlenir. Medium/expanded shell’de navigation rail uygulanmıştır; feature bazlı list-detail düzenleri sonraki iyileştirmedir.
 
 ## Route sözleşmesi
 
@@ -49,7 +49,7 @@ Telefon ana hedefleri:
 ## Değişiklik kontrol listesi
 
 - [[ADR_002_FIVE_TARGET_NAVIGATION]] kararı
-- System back/process recreation/selected-tab Compose testleri geçiyor; harici deep link bekliyor
+- System back/Activity recreation/selected-tab ve compact→rail Compose testleri geçiyor; harici deep link ve gerçek OS process-death bekliyor
 - `SavedStateHandle`
 - Bottom bar selected state
 - Ana destination’larda state restore

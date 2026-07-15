@@ -2,7 +2,7 @@
 type: roadmap
 status: current
 implementation_status: active
-verified_commit: 5c3ce35
+verified_commit: 41c2ceb
 updated: 2026-07-16
 tags: [gymtracker/roadmap, gymtracker/workflow]
 ---
@@ -21,9 +21,13 @@ flowchart TD
     PR5 --> PR6
     PR6 --> UI[Design system + Home]
     UI --> WO[Workout vertical slice]
-    WO --> N[Nutrition + Measurement]
-    N --> P[Photos + Load + Programs]
-    P --> B[Beta hardening]
+    WO --> N[PR 9 Nutrition + Measurements]
+    N --> P[PR 10 Photos + Load]
+    P --> PG[PR 11 Programs]
+    PG --> ND[PR 12 Nutrition + Measurements depth]
+    ND --> PC[PR 13 Photo pipeline + Load calibration]
+    PC --> AL[PR 14 Locale + Adaptive + Golden]
+    AL --> B[Beta hardening]
 ```
 
 ## PR 1 — Build hygiene
@@ -113,9 +117,16 @@ Durum: `5c3ce35` kod + `d189f6c` graph commit’leri `codex/photo-load-calibrati
 Çıktı: Room v9 photo thumbnail/dimension metadata; bounded decode, EXIF normalize, 2048 ana JPEG + 512 thumbnail ve iki dosyalı rollback/reconciliation; latest-valid measurement Flow’u ile kişisel bodyweight kalibrasyonu ve açık fallback UI.
 Kabul: 26 JVM + 50 API 34 instrumentation testi; lint 0 hata/78 uyarı; assemble başarılı.
 
+## PR 14 — App-wide locale + adaptive navigation + golden baseline
+
+Node: [[ARCH_NAVIGATION]], [[ADR_002_FIVE_TARGET_NAVIGATION]], [[DESIGN_SYSTEM_GRAPH]], [[TEST_MATRIX]].
+Durum: `41c2ceb` kod commit’i `codex/adaptive-locale-goldens` dalında doğrulandı; PR13 dalını hedefleyen stacked draft PR olarak yayınlanacak.
+Çıktı: 350/350 TR/EN kaynak eşitliği; locale-aware kas/para gösterimi; compact bottom bar + 600 dp+ rail; Progress Hub birleşik semantics; English light ve Turkish dark/%200 kalıcı golden baseline.
+Kabul: 28 JVM + 54 API 34 instrumentation testi; lint ve assemble başarılı.
+
 ## Sonraki dikey dilimler
 
-1. Uygulama geneli ikinci locale + adaptive navigation/accessibility/golden
-2. Performance/release
+1. Performance/release ve CI kalite kapısı
+2. Feature list-detail + golden kapsam genişletme
 
 Detaylı süre: [[GELISTIRME_MASTER_PLANI#18. Fazlar ve süre tahmini]]. Aktif durum: [[SESSION_HANDOFF]].

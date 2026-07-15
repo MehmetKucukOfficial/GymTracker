@@ -2,7 +2,7 @@
 type: quality
 status: current
 implementation_status: mixed
-verified_commit: 5c3ce35
+verified_commit: 41c2ceb
 updated: 2026-07-16
 tags: [gymtracker/quality, gymtracker/testing]
 ---
@@ -27,11 +27,14 @@ tags: [gymtracker/quality, gymtracker/testing]
 - `WorkoutScreenTest` aktif/geçmiş ayrımını, tamamlanan detayın salt okunurluğunu ve light/dark + %200 font yerleşimini doğrular.
 - `LocalizedDecimalTest`, `NutritionRulesTest` ve `MeasurementRulesTest` virgül/nokta parse, DST 23/25 saat, zero/over-goal, snapshot ölçekleme, input aralıkları, chart period sınırı ve en yeni iki kilo trendini doğrular.
 - `MutationContractTest` Nutrition/Measurement update-delete-aynı-ID restore ve indexed period query’yi; `HomeDashboardRepositoryTest` edit sonrası Home reaktivitesini doğrular.
-- `NutritionScreenTest` over-goal/empty state’i; `MeasurementsScreenTest` latest/history, gerçek chart semantics ve period action’ını dark + %200 font koşulunda doğrular. `LocalizationResourcesTest` Nutrition/Measurements English kapsamını doğrular.
+- `NutritionScreenTest` over-goal/empty state’i; `MeasurementsScreenTest` latest/history, gerçek chart semantics ve period action’ını dark + %200 font koşulunda doğrular.
+- `ResourceCoverageTest` Türkçe/İngilizce string ve plural anahtarlarının birebir eşitliğini; `LocalizationResourcesTest` bütün ana feature ailelerinin English karşılığını doğrular.
+- `AdaptiveNavigationTest` 599/600/840 dp sınırını; `NavigationSmokeTest` gerçek compact bottom bar ve expanded rail seçimini doğrular.
+- `ProgressHubScreenTest` %200 fontta birleşik button semantics/erişilebilirliği; `ProgressHubGoldenTest` English light ve Turkish dark/%200 pixel baseline’larını doğrular.
 - `ProgressPhotoRulesTest`, `ProgressPhotoRepositoryTest` ve `ProgressPhotoScreenTest` fotoğraf input aralığı, import/rollback/limit, orphan/missing reconciliation, legacy badge ve %200 font empty state’ini doğrular.
 - `MuscleLoadCalculatorTest`, `WorkoutDaoTest`, `MutationContractTest` ve `MuscleLoadScreenTest` recency/personal-bodyweight/fallback/invalid ölçüm/unknown/cap kurallarını, completed-only + latest-valid-weight reaktif query’lerini ve kalibrasyon kaynağı gösteren renk bağımsız adaptive UI’ı doğrular.
 - `ExerciseIdentityTest`, `ProgramSeedInitializerTest`, `ProgramRepositoryTest`, `WorkoutRepositoryTest` ve `ProgramsScreenTest`; unique/locale-independent ID, 5/23/108 seed, locked guard, atomic plan copy, incomplete-set finish engeli ve adaptive UI’yı doğrular.
-- Pixel 6 Pro API 34 emülatöründe 50 instrumentation testi ve 26 JVM testi, 0 failure ile geçer.
+- Pixel 6 Pro API 34 emülatöründe 54 instrumentation testi ve 28 JVM testi, 0 failure ile geçer.
 
 ## Feature matrisi
 
