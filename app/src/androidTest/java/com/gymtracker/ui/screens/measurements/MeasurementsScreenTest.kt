@@ -3,11 +3,13 @@ package com.gymtracker.ui.screens.measurements
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.unit.Density
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -51,9 +53,14 @@ class MeasurementsScreenTest {
 
         composeRule.onNodeWithTag("measurements-latest").assertIsDisplayed()
         composeRule.onNodeWithText("81.5 kg").assertIsDisplayed()
-        composeRule.onNodeWithText(text(R.string.measurements_history)).performScrollTo().assertIsDisplayed()
-        composeRule.onNodeWithText(text(R.string.measurements_cm_value, 84f), substring = true)
-            .performScrollTo()
+        val historyTitle = text(R.string.measurements_history)
+        composeRule.onNodeWithTag("measurements-content")
+            .performScrollToNode(hasText(historyTitle))
+        composeRule.onNodeWithText(historyTitle).assertIsDisplayed()
+        val waistValue = text(R.string.measurements_cm_value, 84f)
+        composeRule.onNodeWithTag("measurements-content")
+            .performScrollToNode(hasText(waistValue, substring = true))
+        composeRule.onNodeWithText(waistValue, substring = true)
             .fetchSemanticsNode()
     }
 
