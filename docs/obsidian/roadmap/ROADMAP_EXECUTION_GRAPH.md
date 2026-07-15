@@ -2,7 +2,7 @@
 type: roadmap
 status: current
 implementation_status: active
-verified_commit: 7917358
+verified_commit: 9c90471
 updated: 2026-07-15
 tags: [gymtracker/roadmap, gymtracker/workflow]
 ---
@@ -102,7 +102,7 @@ Kabul: 22 JVM + 41 cihaz testi; lint 0 hata/71 uyarı; assemble; light normal ve
 ## PR 12 — Nutrition/Measurements derinliği
 
 Node: [[FEATURE_NUTRITION]], [[FEATURE_MEASUREMENTS]], [[ADR_008_SNAPSHOT_SAFE_EDIT_UNDO]], [[ARCH_DATABASE]].
-Durum: uygulama ve kalite kapısı tamamlandı; yayın commit/PR bilgisi handoff follow-up commit’inde sabitlenecek.
+Durum: `9c90471` commit’i `codex/nutrition-measurements-depth` dalında stacked draft PR #5 olarak yayınlandı ve PR #4’ü hedefliyor.
 Çıktı: Room v8 measurement date index + period query/repository; 7/30/90/tümü gerçek kilo chart; özel tarih/edit/delete-undo; Nutrition snapshot-safe amount/meal edit + undo; scoped English resources, locale tarih, plural/birim ve dil-bağımsız testler.
 Kabul: 24 JVM + 46 cihaz testi; lint 0 hata/77 uyarı; assemble; light normal ve dark %200 Nutrition/Measurements/chart API 34 görsel kontrolü.
 

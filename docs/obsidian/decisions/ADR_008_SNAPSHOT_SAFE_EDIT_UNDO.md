@@ -2,7 +2,7 @@
 type: adr
 status: accepted
 implementation_status: current
-verified_commit: 7917358
+verified_commit: 9c90471
 updated: 2026-07-15
 source_files:
   - app/src/main/java/com/gymtracker/data/entities/Entities.kt

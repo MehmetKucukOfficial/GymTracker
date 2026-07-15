@@ -2,7 +2,7 @@
 type: handoff
 status: ready
 implementation_status: active
-code_baseline: 7917358
+code_baseline: 9c90471
 updated: 2026-07-15
 active_phase: "Phase 4 - PR12 publication"
 next_pr: "Wait for user command before PR13"
@@ -24,6 +24,7 @@ tags: [gymtracker/workflow, gymtracker/session]
 - PR9 baseline: `341bf79`; `codex/nutrition-measurements` dalı PR8’i hedefleyen stacked draft PR #2 olarak yayınlandı.
 - PR10 baseline: `2ad7ad8`; `codex/progress-load` dalı PR9’u hedefleyen stacked draft PR #3 olarak yayınlandı.
 - PR11 baseline: `7917358`; `codex/programs-normalization` dalı PR10’u hedefleyen stacked draft PR #4 olarak yayınlandı.
+- PR12 baseline: `9c90471`; `codex/nutrition-measurements-depth` dalı PR11’i hedefleyen stacked draft PR #5 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/5
 - Room v8; explicit 7→8 measurement date index migration aktif, destructive fallback yok; ilişkisel program planı ve indexed measurement period query aktiftir.
 - Telefon navigation shell’i 5 ana hedefe indi; workout/program detail ID + SavedStateHandle + repository Flow kullanıyor.
 - Home completed/active workout, measurement ve nutrition kaynaklarına reaktif; aktif workout varsa CTA doğrudan session ID’ye devam ediyor.
@@ -581,8 +582,8 @@ Graph notes updated:
 - [[SOURCE_FILE_ATLAS]], [[CHANGE_IMPACT_MAP]], [[SESSION_HANDOFF]], [[00_START_HERE]]
 
 Next concrete action:
-- Commit/push PR12 and open a stacked draft PR targeting `codex/programs-normalization`.
-- Then stop and wait for the user; do not start PR13 without a new command.
+- PR12 `9c90471` stacked draft PR #5 olarak yayınlandı.
+- Stop and wait for the user; do not start PR13 without a new command.
 
 Blockers:
 - No code blocker. PR12 remains intentionally stacked on PR #4 until its base lands or is rebased.
