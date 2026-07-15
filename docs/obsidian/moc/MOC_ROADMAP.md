@@ -1,9 +1,9 @@
 ---
 type: moc
 status: current
-implementation_status: proposed
-verified_commit: a8e019e
-updated: 2026-07-14
+implementation_status: active
+verified_commit: 5c3ce35
+updated: 2026-07-16
 tags: [gymtracker/moc, gymtracker/roadmap]
 ---
 
@@ -27,7 +27,8 @@ flowchart LR
     P6 --> DS[Design system + Home]
     DS --> WO[Workout redesign]
     WO --> REST[Other features]
-    REST --> BETA[Beta hardening]
+    REST --> MEDIA[Photo media + load calibration]
+    MEDIA --> BETA
 ```
 
 Yeni oturum [[SESSION_START_PROTOCOL]] ile başlamalı ve tamamlanan PR sonrasında [[SESSION_HANDOFF]] güncellenmelidir.

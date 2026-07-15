@@ -2,8 +2,8 @@
 type: architecture
 status: current
 implementation_status: current
-verified_commit: 9c90471
-updated: 2026-07-15
+verified_commit: 5c3ce35
+updated: 2026-07-16
 source_files:
   - app/src/main/java/com/gymtracker/data/entities/Entities.kt
   - app/src/main/java/com/gymtracker/data/database/AppDatabase.kt
@@ -23,6 +23,8 @@ tags: [gymtracker/architecture, gymtracker/data]
 > Update (2026-07-15, v7): `ProgramDayExercise`, `WorkoutSet.exerciseId` ve nullable `targetReps` eklendi. `MIGRATION_6_7` geçerli program JSON’unu ilişkisel satırlara taşır, bozuk payload’ı kayıpsız legacy fallback olarak korur. Program→ACTIVE workout copy ve planlanan-set completion transaction/state sözleşmesi [[ADR_007_RELATIONAL_PROGRAM_PLANS]] ile aktiftir.
 
 > Update (2026-07-15, v8): `body_measurements(date)` index’i explicit `MIGRATION_7_8` ile eklendi. v7 measurement fixture’ı, index varlığı ve v3/v6→latest zinciri API 34 migration testleriyle doğrulanır. Period query `MeasurementRepository` üzerinden 7/30/90/tümü grafiğini besler.
+
+> Update (2026-07-16, v9): `ProgressPhoto.thumbnailUri`, `widthPx` ve `heightPx` explicit `MIGRATION_8_9` ile eklendi. v0/v1 satırlar veri kaybetmeden korunur; yeni storage v2 importlar normalize ana görsel + thumbnail metadata’sı yazar. v3/v6/v7/v8→latest zinciri API 34’te doğrulanır.
 
 > Implementation update (2026-07-14): `exportSchema=true`; v3 schema hash `bb80650678afbc615c5dec81809ab042` is stored under `app/schemas`; `fallbackToDestructiveMigration()` is removed; migrations are registered through `DatabaseMigrations.ALL`. [[DatabaseMigrationTest]] and [[WorkoutDaoTest]] pass on the API 34 emulator. v3 is the minimum evidence-backed migration baseline.
 
@@ -68,6 +70,9 @@ erDiagram
       string mimeType
       long sizeBytes
       int storageVersion
+      string thumbnailUri
+      int widthPx
+      int heightPx
     }
     Program { long id PK }
     ProgramWorkout { long id PK }
@@ -87,22 +92,22 @@ erDiagram
 | DAO | Tablolar | Feature |
 |---|---|---|
 | WorkoutDao | sessions, sets | [[FEATURE_WORKOUT]], [[FEATURE_HOME]], [[FEATURE_MUSCLE_LOAD]] |
-| MeasurementDao | measurements + indexed period query | [[FEATURE_MEASUREMENTS]], [[FEATURE_HOME]] |
+| MeasurementDao | measurements + indexed period + latest valid weight Flow | [[FEATURE_MEASUREMENTS]], [[FEATURE_HOME]], [[FEATURE_MUSCLE_LOAD]] |
 | NutritionDao | food items/entries/goals | [[FEATURE_NUTRITION]], [[FEATURE_HOME]] |
 | ProgressPhotoDao | photos | [[FEATURE_PROGRESS_PHOTOS]] |
 | ProgramDao | programs/workouts | [[FEATURE_PROGRAMS]] |
 
 ## Kritik mevcut gerçekler
 
-- DB version 8, `exportSchema=true`; v3–v8 schema JSON’ları version control altında.
+- DB version 9, `exportSchema=true`; v3–v9 schema JSON’ları version control altında.
 - Destructive fallback kaldırıldı; bilinmeyen sürümler veri silmek yerine fail-closed davranır.
-- `DatabaseMigrations.ALL`, 3→4→5→6→7→8 kenarlarını kaydeder; v3→latest satır koruma/status, v6 JSON normalizasyon ve v7 measurement index testleri API 34’te geçer.
+- `DatabaseMigrations.ALL`, 3→4→5→6→7→8→9 kenarlarını kaydeder; v3→latest satır koruma/status, v6 JSON normalizasyon, v7 measurement index ve v8 fotoğraf metadata testleri API 34’te geçer.
 - Workout yazma yolu tek transaction içinde start-or-resume uygular; set/finish mutation’ları `status='ACTIVE'` koşuluyla korunur.
 - Programların aktif okuma modeli `ProgramWorkout → ProgramDayExercise` ilişkisidir. `ProgramWorkout.exercises` yalnız v6 migration fallback payload’ıdır; UI parse etmez.
 - `body_measurements(date)` indexlidir; diğer tarih sorgularının query-plan/index değerlendirmesi açıktır.
 - `WorkoutDao.getSetsSince()` içindeki `date(sessionId)` semantik olarak yanlış ve kullanılmıyor.
 - Program seed tek Room transaction’ı ve `seed_metadata` claim’i ile idempotenttir.
-- Fotoğraf byte’ları Room içinde BLOB değildir; app internal storage’da, DB’de URI ve metadata tutulur.
+- Fotoğraf byte’ları Room içinde BLOB değildir; app internal storage’da optimize ana JPEG + thumbnail, DB’de URI/dimension/storage metadata tutulur.
 
 ## Hedef değişiklikler
 
@@ -110,7 +115,7 @@ erDiagram
 - Workout için `startedAt` adlandırmasını netleştirme, exerciseId/position ve gerekirse DB seviyesinde partial unique active index
 - Legacy program JSON kolonunu kanıtlı destek penceresi sonrasında kaldırma
 - Program seedKey/contentVersion unique
-- Photo thumbnail/dimension/media-transform metadata ve legacy re-import UX
+- Legacy photo re-import/re-optimize UX
 - Tarih ve compound index’ler
 - Para minor unit/currency
 

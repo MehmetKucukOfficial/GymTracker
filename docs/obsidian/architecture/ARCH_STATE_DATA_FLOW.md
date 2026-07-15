@@ -2,8 +2,8 @@
 type: architecture
 status: current
 implementation_status: mixed
-verified_commit: 9c90471
-updated: 2026-07-15
+verified_commit: 5c3ce35
+updated: 2026-07-16
 source_files:
   - app/src/main/java/com/gymtracker/ui/screens/home/HomeViewModel.kt
   - app/src/main/java/com/gymtracker/ui/screens/workout/WorkoutViewModel.kt
@@ -30,7 +30,7 @@ tags: [gymtracker/architecture, gymtracker/state]
 - Program list/detail: ilişkisel repository Flow → ViewModel `Loading/Content/Error`; detail ID `SavedStateHandle` kaynağındandır. Program günü başlatma, locked/ownership/target doğrulaması ve active-session kontrolüyle tek transaction’da planlanan WorkoutSet’ler üretir.
 - Nutrition: seçili `LocalDate` ISO biçiminde `SavedStateHandle` içinde korunur; `Clock`/dinamik sistem `ZoneId` ile takvim günü aralığı hesaplanır ve `flatMapLatest` yeni Room Flow’una geçer. Edit snapshot-safe update’tir; delete aynı-ID Snackbar undo state’i üretir.
 - Measurements: `MeasurementRepository` all + indexed period Flow’larını ayırır. `SavedStateHandle` içindeki chart period `flatMapLatest` ile 7/30/90/tümü query’sini seçer; `MeasurementsUiState(latest, history, weightTrend, chartMeasurements)` üretir. Edit/update ve delete/aynı-ID undo Room Flow üzerinden Home ve UI’yı yeniler.
-- Muscle Load: takvim tabanlı son yedi gün period Flow’u `flatMapLatest` ile completed-set Room Flow’una geçer; saf calculator loading/content/error state üretir ve gece yarısında query sınırını yeniler.
+- Muscle Load: takvim tabanlı son yedi gün period Flow’u `flatMapLatest` ile completed-set Room Flow’una geçer; bu Flow `MeasurementDao.observeLatestWithWeight()` ile birleşir. Saf calculator sıfır kilolu setleri en güncel kişisel ölçümle, ölçüm yoksa açık 20 kg fallback ile hesaplayıp kaynak bilgisini loading/content/error state’e taşır.
 - Bütün ana Compose ekranları `collectAsStateWithLifecycle()` kullanır.
 - Programdan gelen `WorkoutSet.isCompleted=false` satırları gerçek reps/kg mutation’ıyla tamamlanır; çözülmemiş planlı set varken finish reddedilir ve Muscle Load yalnız session + set tamamlandığında etkilenir.
 - Gün sınırı sabit 86.400.000 ms yerine `ZoneId` + takvim günü ile hesaplanır; tarihsel Istanbul DST unit testi vardır.
@@ -47,6 +47,8 @@ flowchart TD
     W[Workout Room Flow] --> R[HomeDashboardRepository combine]
     M[Measurement Room Flow] --> R
     N[Nutrition day Flow] --> R
+    BW[Latest valid weight Flow] --> ML[Muscle Load combine]
+    CS[Completed set Flow] --> ML
     T[Midnight period tick] --> F[flatMapLatest]
     F --> R
     R --> U[HomeUiState]
