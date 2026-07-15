@@ -2,7 +2,7 @@
 type: workflow
 status: current
 implementation_status: active
-verified_commit: 2ad7ad8
+verified_commit: 7917358
 updated: 2026-07-15
 tags: [gymtracker/workflow, gymtracker/impact]
 ---

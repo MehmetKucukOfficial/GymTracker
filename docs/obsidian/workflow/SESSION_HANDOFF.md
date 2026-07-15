@@ -2,13 +2,13 @@
 type: handoff
 status: ready
 implementation_status: active
-code_baseline: 2ad7ad8
+code_baseline: 7917358
 updated: 2026-07-15
-active_phase: "Phase 4 - PR11 review/publish; PR12 Nutrition/Measurements depth"
+active_phase: "Phase 4 - PR12 Nutrition/Measurements depth"
 next_pr: "PR 12 - Nutrition/Measurements edit, undo, chart and second locale"
 primary_nodes:
-  - FEATURE_PROGRAMS
-  - ADR_007_RELATIONAL_PROGRAM_PLANS
+  - FEATURE_NUTRITION
+  - FEATURE_MEASUREMENTS
   - ARCH_DATABASE
   - ARCH_STATE_DATA_FLOW
   - DESIGN_SYSTEM_GRAPH
@@ -23,6 +23,7 @@ tags: [gymtracker/workflow, gymtracker/session]
 - Uygulama baseline: `f9d6d75`; PR8 `codex/workout-lifecycle` dalında draft PR #1 olarak yayınlandı.
 - PR9 baseline: `341bf79`; `codex/nutrition-measurements` dalı PR8’i hedefleyen stacked draft PR #2 olarak yayınlandı.
 - PR10 baseline: `2ad7ad8`; `codex/progress-load` dalı PR9’u hedefleyen stacked draft PR #3 olarak yayınlandı.
+- PR11 baseline: `7917358`; `codex/programs-normalization` dalı PR10’u hedefleyen stacked draft PR #4 olarak yayınlandı.
 - Room v7; explicit 6→7 program migration aktif, destructive fallback yok; ilişkisel program planı + legacy JSON fallback, stable exercise ID ve planlanan WorkoutSet sözleşmesi aktiftir.
 - Telefon navigation shell’i 5 ana hedefe indi; workout/program detail ID + SavedStateHandle + repository Flow kullanıyor.
 - Home completed/active workout, measurement ve nutrition kaynaklarına reaktif; aktif workout varsa CTA doğrudan session ID’ye devam ediyor.
@@ -38,7 +39,7 @@ tags: [gymtracker/workflow, gymtracker/session]
 
 ## Sıradaki önerilen iş
 
-Önce `codex/programs-normalization` çalışma ağacını commit/push et ve PR #3’ü hedefleyen stacked draft PR aç. Ardından [[ROADMAP_EXECUTION_GRAPH#Sonraki dikey dilimler]] PR12:
+[[ROADMAP_EXECUTION_GRAPH#Sonraki dikey dilimler]] PR12 ile devam et:
 
 1. Nutrition/Measurements edit ve undo veri sözleşmesini çıkar; DAO/repository mutation’larını typed result ile güvenli yap.
 2. Measurement tarih index’i ve dönem query’siyle gerçek chart veri modelini kur; migration/test zorunluluklarını uygula.
@@ -544,8 +545,8 @@ Graph notes updated:
 - [[SOURCE_FILE_ATLAS]], [[CHANGE_IMPACT_MAP]], [[SESSION_HANDOFF]], [[00_START_HERE]]
 
 Next concrete action:
-- Rerun lint/diff checks, commit and push `codex/programs-normalization`, then open a stacked draft PR targeting `codex/progress-load`.
+- PR11 `7917358` + docs follow-up ile stacked draft PR #4 olarak yayınlandı.
 - Start PR12 Nutrition/Measurements edit-undo-chart and second-locale work without waiting for an additional prompt.
 
 Blockers:
-- No code blocker. PR11 is intentionally uncommitted until its final lint/diff verification completes.
+- No code blocker. PR #4 remains stacked on PR #3 until its base lands or is rebased.

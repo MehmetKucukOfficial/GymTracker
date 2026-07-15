@@ -2,7 +2,7 @@
 type: architecture
 status: current
 implementation_status: current
-verified_commit: 2ad7ad8
+verified_commit: 7917358
 updated: 2026-07-15
 source_files:
   - app/src/main/java/com/gymtracker/data/entities/Entities.kt

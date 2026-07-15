@@ -2,7 +2,7 @@
 type: roadmap
 status: current
 implementation_status: active
-verified_commit: 2ad7ad8
+verified_commit: 7917358
 updated: 2026-07-15
 tags: [gymtracker/roadmap, gymtracker/workflow]
 ---
@@ -95,7 +95,7 @@ Kabul: 20 JVM + 33 cihaz testi, lint 0 hata/67 uyarı, assemble ve light/dark/%2
 ## PR 11 — Programs normalizasyonu ve workout entegrasyonu
 
 Node: [[FEATURE_PROGRAMS]], [[ADR_007_RELATIONAL_PROGRAM_PLANS]], [[ARCH_DATABASE]].
-Durum: uygulama, tam kalite kapısı ve görsel kabul `codex/programs-normalization` çalışma ağacında tamamlandı; yayın bekliyor.
+Durum: `7917358` commit’i `codex/programs-normalization` dalında stacked draft PR #4 olarak yayınlandı ve PR #3’ü hedefliyor.
 Çıktı: Room v7 ilişkisel `ProgramDayExercise`, legacy JSON backfill/fallback, kararlı egzersiz ID, locked/ownership/target repository guard, atomic program→ACTIVE workout copy, planlanan-set completion/finish sözleşmesi ve modern adaptive Programs list/detail.
 Kabul: 22 JVM + 41 cihaz testi; lint 0 hata/71 uyarı; assemble; light normal ve dark %200 Programs/detail/planned-workout API 34 görsel kontrolü.
 

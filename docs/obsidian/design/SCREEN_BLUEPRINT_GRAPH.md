@@ -2,7 +2,7 @@
 type: design
 status: current
 implementation_status: mixed
-verified_commit: 2ad7ad8
+verified_commit: 7917358
 updated: 2026-07-15
 tags: [gymtracker/design, gymtracker/feature]
 ---

@@ -2,7 +2,7 @@
 type: adr
 status: accepted
 implementation_status: current
-verified_commit: 2ad7ad8
+verified_commit: 7917358
 updated: 2026-07-15
 tags: [gymtracker/decision, gymtracker/data, gymtracker/programs]
 ---

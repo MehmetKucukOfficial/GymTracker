@@ -3,7 +3,7 @@ aliases: [GymTracker Graph Start, Başlangıç]
 type: moc
 status: current
 implementation_status: mixed
-verified_commit: 2ad7ad8
+verified_commit: 7917358
 updated: 2026-07-15
 tags: [gymtracker/moc, gymtracker/graph]
 ---
@@ -67,8 +67,8 @@ tags: [gymtracker/moc, gymtracker/graph]
 
 ## Grafın güncellik durumu
 
-- Kod baseline: `2ad7ad8` (`codex/progress-load`, stacked draft PR #3)
-- Kod değişikliği: PR11 Programs normalizasyonu `codex/programs-normalization` çalışma ağacında tamamlandı; henüz commit/push edilmedi
-- Dokümanlar: Room v7 ilişkisel plan, stable ID, program→planned-workout ve adaptive Programs çalışma ağacıyla senkron
+- Kod baseline: `7917358` (`codex/programs-normalization`, stacked draft PR #4)
+- Kod değişikliği: PR11 Programs normalizasyonu commit/push edildi ve PR #3’ü hedefleyen stacked draft PR #4 olarak yayınlandı
+- Dokümanlar: Room v7 ilişkisel plan, stable ID, program→planned-workout ve adaptive Programs commit’iyle senkron
 - Son tam doğrulama: 2026-07-15
-- Aktif önerilen iş: PR11’i incele/commit/push et; ardından Nutrition/Measurements edit-undo-chart + ikinci locale PR12 dilimine geç
+- Aktif önerilen iş: Nutrition/Measurements edit-undo-chart + ikinci locale PR12 dilimine geç
