@@ -184,7 +184,8 @@ fun WorkoutListContent(
                 item {
                     GtSectionHeader(
                         title = stringResource(R.string.workout_history_section),
-                        supportingText = stringResource(R.string.workout_history_section_support)
+                        supportingText = stringResource(R.string.workout_history_section_support),
+                        modifier = Modifier.testTag("workout-history-section")
                     )
                 }
                 if (completedSessions.isEmpty()) {

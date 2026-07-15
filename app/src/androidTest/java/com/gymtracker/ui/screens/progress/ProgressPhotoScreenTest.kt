@@ -12,6 +12,8 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.unit.Density
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import com.gymtracker.R
 import com.gymtracker.data.entities.PhotoAngle
 import com.gymtracker.data.entities.ProgressPhoto
 import com.gymtracker.ui.theme.GymTrackerTheme
@@ -44,8 +46,8 @@ class ProgressPhotoScreenTest {
             }
         }
 
-        composeRule.onNodeWithText("Henüz fotoğraf yok").performScrollTo().assertIsDisplayed()
-        composeRule.onNodeWithText("İlk fotoğrafı ekle").performScrollTo().performClick()
+        composeRule.onNodeWithText(text(R.string.progress_photos_empty_title)).performScrollTo().assertIsDisplayed()
+        composeRule.onNodeWithText(text(R.string.progress_photos_first_action)).performScrollTo().performClick()
         assertEquals(1, clicks.get())
     }
 
@@ -75,6 +77,9 @@ class ProgressPhotoScreenTest {
         composeRule.onNodeWithTag("progress-photo-grid")
             .performScrollToNode(hasTestTag("progress-photo-legacy"))
         composeRule.onNodeWithTag("progress-photo-legacy").assertIsDisplayed()
-        composeRule.onNodeWithText("Eski kayıt").assertIsDisplayed()
+        composeRule.onNodeWithText(text(R.string.progress_photos_legacy_badge)).assertIsDisplayed()
     }
+
+    private fun text(id: Int): String =
+        InstrumentationRegistry.getInstrumentation().targetContext.getString(id)
 }

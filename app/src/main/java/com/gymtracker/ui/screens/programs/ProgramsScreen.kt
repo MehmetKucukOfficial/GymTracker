@@ -57,6 +57,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -587,6 +588,9 @@ private fun PurchaseDialog(program: Program, onDismiss: () -> Unit, onConfirm: (
 }
 
 @Composable
-private fun formatPrice(price: Float): String = remember(price) {
-    NumberFormat.getCurrencyInstance(Locale("tr", "TR")).format(price)
+private fun formatPrice(price: Float): String {
+    val locale = LocalConfiguration.current.locales[0] ?: Locale.getDefault()
+    return remember(price, locale) {
+        NumberFormat.getCurrencyInstance(locale).format(price)
+    }
 }

@@ -158,7 +158,7 @@ fun MuscleLoadContent(
                                     Text(
                                         text = stringResource(
                                             R.string.muscle_load_selected_value,
-                                            muscle.displayName,
+                                            muscle.localizedName(),
                                             levelLabel(load.level),
                                             load.loadScore
                                         ),
@@ -293,7 +293,7 @@ private fun LoadLegend() {
 private fun MuscleLoadRow(load: MuscleLoad, selected: Boolean, onClick: () -> Unit) {
     val description = stringResource(
         R.string.muscle_load_row_description,
-        load.muscle.displayName,
+        load.muscle.localizedName(),
         levelLabel(load.level),
         load.loadScore
     )
@@ -312,7 +312,7 @@ private fun MuscleLoadRow(load: MuscleLoad, selected: Boolean, onClick: () -> Un
             modifier = Modifier.padding(GtSpacing.md),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(load.muscle.displayName, modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
+            Text(load.muscle.localizedName(), modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.width(GtSpacing.sm))
             Column(horizontalAlignment = Alignment.End) {
                 Text(levelLabel(load.level), color = levelColor(load.level), style = MaterialTheme.typography.labelLarge)
@@ -337,3 +337,41 @@ private fun levelColor(level: MuscleLoadLevel) = when (level) {
     MuscleLoadLevel.MEDIUM -> MaterialTheme.colorScheme.primary
     MuscleLoadLevel.HIGH -> MaterialTheme.colorScheme.error
 }
+
+@Composable
+private fun MuscleGroup.localizedName(): String = stringResource(
+    when (this) {
+        MuscleGroup.UPPER_BACK -> R.string.muscle_upper_back
+        MuscleGroup.LATS -> R.string.muscle_lats
+        MuscleGroup.TRAPS -> R.string.muscle_traps
+        MuscleGroup.FRONT_DELTS -> R.string.muscle_front_delts
+        MuscleGroup.SIDE_DELTS -> R.string.muscle_side_delts
+        MuscleGroup.REAR_DELTS -> R.string.muscle_rear_delts
+        MuscleGroup.FOREARMS -> R.string.muscle_forearms
+        MuscleGroup.ABS -> R.string.muscle_abs
+        MuscleGroup.OBLIQUES -> R.string.muscle_obliques
+        MuscleGroup.LOWER_BACK -> R.string.muscle_lower_back
+        MuscleGroup.GLUTES -> R.string.muscle_glutes
+        MuscleGroup.QUADS -> R.string.muscle_quads
+        MuscleGroup.HAMSTRINGS -> R.string.muscle_hamstrings
+        MuscleGroup.CALVES -> R.string.muscle_calves
+        MuscleGroup.HIP_FLEXORS -> R.string.muscle_hip_flexors
+        MuscleGroup.NECK -> R.string.muscle_neck
+        MuscleGroup.SERRATUS -> R.string.muscle_serratus
+        MuscleGroup.ADDUCTORS -> R.string.muscle_adductors
+        MuscleGroup.GLUTE_MEDIUS -> R.string.muscle_glute_medius
+        MuscleGroup.CHEST_UPPER -> R.string.muscle_chest_upper
+        MuscleGroup.CHEST_MID -> R.string.muscle_chest_mid
+        MuscleGroup.CHEST_LOWER -> R.string.muscle_chest_lower
+        MuscleGroup.BICEPS_LONG_HEAD -> R.string.muscle_biceps_long
+        MuscleGroup.BICEPS_SHORT_HEAD -> R.string.muscle_biceps_short
+        MuscleGroup.BRACHIALIS -> R.string.muscle_brachialis
+        MuscleGroup.TRICEPS_LATERAL -> R.string.muscle_triceps_lateral
+        MuscleGroup.TRICEPS_LONG -> R.string.muscle_triceps_long
+        MuscleGroup.TRICEPS_MEDIAL -> R.string.muscle_triceps_medial
+        MuscleGroup.TERES -> R.string.muscle_teres
+        MuscleGroup.INTERNAL_OBLIQUES -> R.string.muscle_internal_obliques
+        MuscleGroup.TRANSVERSE_ABDOMINIS -> R.string.muscle_transverse_abdominis
+        MuscleGroup.RHOMBOIDS -> R.string.muscle_rhomboids
+    }
+)

@@ -3,6 +3,9 @@ package com.gymtracker
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -16,6 +19,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.gymtracker.ui.components.BottomNavigationBar
+import com.gymtracker.ui.components.GtNavigationRail
+import com.gymtracker.ui.components.navigationTypeForWidth
+import com.gymtracker.ui.components.GtNavigationType
 import com.gymtracker.ui.navigation.NavigationPolicy
 import com.gymtracker.ui.navigation.Screen
 import com.gymtracker.ui.screens.fatigue.FatigueScreen
@@ -44,18 +50,28 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainNavigation() {
+fun MainNavigation(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
-    Scaffold(
-        bottomBar = {
-            if (NavigationPolicy.shouldShowBottomBar(currentRoute)) {
-                BottomNavigationBar(navController)
+    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+        when (navigationTypeForWidth(maxWidth)) {
+            GtNavigationType.BOTTOM_BAR -> Scaffold(
+                bottomBar = {
+                    if (NavigationPolicy.shouldShowBottomBar(currentRoute)) {
+                        BottomNavigationBar(navController)
+                    }
+                }
+            ) { innerPadding ->
+                AppNavHost(navController, Modifier.padding(innerPadding))
+            }
+            GtNavigationType.RAIL -> Row(Modifier.fillMaxSize()) {
+                if (NavigationPolicy.shouldShowBottomBar(currentRoute)) {
+                    GtNavigationRail(navController)
+                }
+                AppNavHost(navController, Modifier.weight(1f))
             }
         }
-    ) { innerPadding ->
-        AppNavHost(navController, Modifier.padding(innerPadding))
     }
 }
 

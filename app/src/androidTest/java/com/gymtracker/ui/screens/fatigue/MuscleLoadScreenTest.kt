@@ -46,8 +46,8 @@ class MuscleLoadScreenTest {
         }
 
         composeRule.onNodeWithTag("muscle-load-content")
-            .performScrollToNode(hasText("Henüz kas yükü yok"))
-        composeRule.onNodeWithText("Henüz kas yükü yok").assertIsDisplayed()
+            .performScrollToNode(hasText(text(R.string.muscle_load_empty_title)))
+        composeRule.onNodeWithText(text(R.string.muscle_load_empty_title)).assertIsDisplayed()
     }
 
     @Test
@@ -76,16 +76,17 @@ class MuscleLoadScreenTest {
             }
         }
 
-        composeRule.onNodeWithText("1 tamamlanmış set").assertIsDisplayed()
-        composeRule.onNodeWithText("Vücut ağırlığı kalibrasyonu", substring = true).assertIsDisplayed()
-        composeRule.onNodeWithContentDescription("Kas yükü yöntemi hakkında bilgi").performClick()
-        composeRule.onNodeWithText("Kas yükü nasıl hesaplanır?").assertIsDisplayed()
-        composeRule.onNodeWithText(
-            InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.action_ok)
-        ).performClick()
+        composeRule.onNodeWithText(text(R.string.muscle_load_completed_sets, 1)).assertIsDisplayed()
+        composeRule.onNodeWithText(text(R.string.muscle_load_personal_calibration, 82.5f)).assertIsDisplayed()
+        composeRule.onNodeWithContentDescription(text(R.string.muscle_load_methodology_action)).performClick()
+        composeRule.onNodeWithText(text(R.string.muscle_load_methodology_title)).assertIsDisplayed()
+        composeRule.onNodeWithText(text(R.string.action_ok)).performClick()
         composeRule.onNodeWithTag("muscle-load-content")
-            .performScrollToNode(hasText("Orta Göğüs"))
-        composeRule.onNodeWithText("Orta Göğüs").assertIsDisplayed()
-        composeRule.onNodeWithText("Skor 0.45").assertIsDisplayed()
+            .performScrollToNode(hasText(text(R.string.muscle_chest_mid)))
+        composeRule.onNodeWithText(text(R.string.muscle_chest_mid)).assertIsDisplayed()
+        composeRule.onNodeWithText(text(R.string.muscle_load_score, 0.45f)).assertIsDisplayed()
     }
+
+    private fun text(id: Int, vararg args: Any): String =
+        InstrumentationRegistry.getInstrumentation().targetContext.getString(id, *args)
 }
