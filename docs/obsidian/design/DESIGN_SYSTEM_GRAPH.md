@@ -30,7 +30,7 @@ tags: [gymtracker/design, gymtracker/architecture]
 - `GymTrackerComponents.kt`: `GtSectionHeader`, `GtMetricCard`, `GtQuickActionCard`, `GtLoadingState`, `GtEmptyState`, `GtErrorState` bileşenlerini sağlar.
 - Home referans ekran olarak bu bileşenlere taşındı; bottom navigation %200 fontta yalnız seçili etiketi göstererek çok satırlı taşmayı önler.
 - Workout aktif/geçmiş liste ve detayları aynı token/state bileşenlerini tüketir; %200 fontta kart ve detay başlıkları dikey yerleşime geçer.
-- Nutrition tarih/kalori/makro/öğün ve Measurements latest/trend/history/empty yüzeyleri ortak tokenları tüketir; %200 fontta yatay metrikler dikeyleşir.
+- Nutrition tarih/kalori/makro/öğün/edit-undo ve Measurements latest/gerçek chart/history/edit-undo yüzeyleri ortak tokenları tüketir; %200 fontta yatay metrikler dikeyleşir, chart dönemleri yatay kaydırılır.
 - Progress Hub, Photos ve Muscle Load ortak tokenları; scroll/adaptive grid; açık empty/loading/error state’leri; renk bağımsız load listesi ve %200 font düzeni kullanır.
 - Programs adaptive kart grid’i, ilişkisel gün accordion’ları, demo erişim/locked/empty/error state’leri ve plan→workout CTA’ları ortak token/resource/semantics sözleşmesini kullanır.
 - Kullanıcıya görünen Home, Workout, Nutrition, Measurements, Progress Hub, Photos, Muscle Load, Programs ve alt navigasyon metinleri string resource’a taşındı.
@@ -62,13 +62,13 @@ Detaylı değerler: [[GELISTIRME_MASTER_PLANI#5. Görsel tasarım yönü]].
 - GtNumberField / GtNumberStepper
 - GtDateHeader
 - GtExerciseRow / GtSetRow
-- GtChartCard / GtSnackbarHost
+- `partial`: Measurements chart card + Nutrition/Measurements SnackbarHost; ortak `GtChartCard/GtSnackbarHost` extraction bekler
 
 ## Kalite sözleşmesi ve kanıt
 
 Her bileşen: normal/disabled/loading/error, light/dark, büyük font preview, 48dp touch, semantics, screenshot testi. Primary renk error yerine kullanılmaz; renk tek bilgi kanalı değildir. PR7 Home, PR8 Workout, PR9 Nutrition/Measurements, PR10 Progress/Photos/Load ve PR11 Programs light/dark/%200 font gerçek API 34 görselleriyle; state’ler Compose UI testleriyle doğrulandı. Disabled/loading varyantları ve kalıcı golden altyapısı bütün bileşenler için henüz tamamlanmadı.
 
-Görsel kanıtlar (build artifact): önceki PR görselleri; PR11 `pr11-programs-light.png`, `pr11-program-detail-light2.png`, `pr11-programs-dark-font200c.png`, `pr11-program-detail-dark-font200.png`, `pr11-planned-workout-dark-font200.png`.
+Görsel kanıtlar (build artifact): önceki PR görselleri; PR12 `pr12-nutrition-light.png`, `pr12-measurements-light.png`, `pr12-nutrition-dark-font200.png`, `pr12-measurements-dark-font200.png`, `pr12-measurements-chart-dark-font200.png`.
 
 ## Uygulama sırası
 

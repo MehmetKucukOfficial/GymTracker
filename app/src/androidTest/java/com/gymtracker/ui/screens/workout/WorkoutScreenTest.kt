@@ -11,6 +11,8 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.unit.Density
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import com.gymtracker.R
 import com.gymtracker.data.entities.WorkoutSession
 import com.gymtracker.data.entities.WorkoutSet
 import com.gymtracker.data.entities.WorkoutStatus
@@ -120,7 +122,9 @@ class WorkoutScreenTest {
         composeRule.onNodeWithTag("workout-detail-active").assertIsDisplayed()
         composeRule.onNodeWithTag("workout-finish-action").assertIsDisplayed()
         composeRule.onNodeWithTag("workout-add-set-action").assertIsDisplayed()
-        composeRule.onNodeWithText("Sil").assertIsDisplayed()
+        composeRule.onNodeWithText(
+            InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.action_delete)
+        ).assertIsDisplayed()
     }
 
     @Test

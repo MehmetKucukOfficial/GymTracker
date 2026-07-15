@@ -1,6 +1,8 @@
 package com.gymtracker.data.measurements
 
 import com.gymtracker.data.entities.BodyMeasurement
+import java.time.Clock
+import java.time.LocalDate
 
 enum class MeasurementValidationError {
     EMPTY,
@@ -41,6 +43,30 @@ data class WeightTrend(
     val latestKg: Float?,
     val changeKg: Float?
 )
+
+enum class MeasurementChartPeriod(val days: Long?) {
+    SEVEN_DAYS(7),
+    THIRTY_DAYS(30),
+    NINETY_DAYS(90),
+    ALL(null)
+}
+
+data class MeasurementDateRange(
+    val startInclusiveMillis: Long,
+    val endExclusiveMillis: Long
+)
+
+fun measurementDateRange(period: MeasurementChartPeriod, clock: Clock): MeasurementDateRange {
+    val today = LocalDate.now(clock)
+    val start = period.days
+        ?.let { today.minusDays(it - 1) }
+        ?.atStartOfDay(clock.zone)
+        ?.toInstant()
+        ?.toEpochMilli()
+        ?: 0L
+    val end = today.plusDays(1).atStartOfDay(clock.zone).toInstant().toEpochMilli()
+    return MeasurementDateRange(start, end)
+}
 
 fun weightTrend(measurements: List<BodyMeasurement>): WeightTrend {
     val weighted = measurements

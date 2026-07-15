@@ -19,7 +19,7 @@ class DatabaseMigrationTest {
     )
 
     @Test
-    fun migrate3To7_preservesRowsAndMarksLegacyData() {
+    fun migrate3To8_preservesRowsAndMarksLegacyData() {
         migrationHelper.createDatabase(TEST_DATABASE, 3).apply {
             execSQL(
                 """
@@ -42,7 +42,7 @@ class DatabaseMigrationTest {
 
         migrationHelper.runMigrationsAndValidate(
             TEST_DATABASE,
-            7,
+            8,
             true,
             *DatabaseMigrations.ALL
         ).close()
@@ -69,7 +69,7 @@ class DatabaseMigrationTest {
     }
 
     @Test
-    fun migrate6To7_normalizesProgramExercisesAndPreservesLegacyPayload() {
+    fun migrate6To8_normalizesProgramExercisesAndPreservesLegacyPayload() {
         val legacyJson = """[{"name":"Bench Press","sets":3,"reps":"8-10","rest":120}]"""
         migrationHelper.createDatabase(TEST_DATABASE, 6).apply {
             execSQL(
@@ -114,7 +114,7 @@ class DatabaseMigrationTest {
 
         migrationHelper.runMigrationsAndValidate(
             TEST_DATABASE,
-            7,
+            8,
             true,
             *DatabaseMigrations.ALL
         ).close()
@@ -141,6 +141,47 @@ class DatabaseMigrationTest {
         assertEquals(null, existingSet.exerciseId)
         assertEquals(null, existingSet.targetReps)
         assertEquals(0, existingSet.exerciseOrder)
+    }
+
+    @Test
+    fun migrate7To8_preservesMeasurementsAndCreatesDateIndex() {
+        migrationHelper.createDatabase(TEST_DATABASE, 7).apply {
+            execSQL(
+                """
+                INSERT INTO body_measurements
+                    (id, date, weightKg, bodyFatPercent, chestCm, waistCm, hipsCm,
+                     leftArmCm, rightArmCm, leftCalfCm, rightCalfCm, shouldersCm, notes)
+                VALUES (42, 2000, 81.5, NULL, NULL, 84.0, NULL, NULL, NULL, NULL, NULL, NULL, 'keep')
+                """.trimIndent()
+            )
+            close()
+        }
+
+        val migrated = migrationHelper.runMigrationsAndValidate(
+            TEST_DATABASE,
+            8,
+            true,
+            *DatabaseMigrations.ALL
+        )
+        val indexNames = buildList {
+            migrated.query("PRAGMA index_list(`body_measurements`)").use { cursor ->
+                val nameIndex = cursor.getColumnIndexOrThrow("name")
+                while (cursor.moveToNext()) add(cursor.getString(nameIndex))
+            }
+        }
+        migrated.close()
+        assertEquals(true, "index_body_measurements_date" in indexNames)
+
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val database = androidx.room.Room.databaseBuilder(context, AppDatabase::class.java, TEST_DATABASE)
+            .addMigrations(*DatabaseMigrations.ALL)
+            .build()
+        migrationHelper.closeWhenFinished(database)
+        val measurement = runBlocking { database.measurementDao().getLatest() }
+        assertEquals(42L, measurement?.id)
+        assertEquals(81.5f, measurement?.weightKg)
+        assertEquals(84f, measurement?.waistCm)
+        assertEquals("keep", measurement?.notes)
     }
 
     private companion object {

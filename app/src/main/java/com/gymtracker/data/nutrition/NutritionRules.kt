@@ -1,6 +1,7 @@
 package com.gymtracker.data.nutrition
 
 import com.gymtracker.data.entities.FoodItem
+import com.gymtracker.data.entities.FoodEntry
 import com.gymtracker.data.entities.NutritionGoal
 import java.time.Clock
 import java.time.LocalDate
@@ -36,6 +37,18 @@ fun isValidNutritionGoal(goal: NutritionGoal): Boolean =
         goal.dailyFatG > 0
 
 fun isValidFoodAmount(amountGrams: Float): Boolean = amountGrams.isFinite() && amountGrams > 0f
+
+fun updateFoodEntrySnapshot(entry: FoodEntry, amountGrams: Float): FoodEntry? {
+    if (!isValidFoodAmount(amountGrams) || !isValidFoodAmount(entry.amountGrams)) return null
+    val factor = amountGrams / entry.amountGrams
+    return entry.copy(
+        amountGrams = amountGrams,
+        calories = entry.calories * factor,
+        protein = entry.protein * factor,
+        carbs = entry.carbs * factor,
+        fat = entry.fat * factor
+    )
+}
 
 fun isValidFoodItem(item: FoodItem): Boolean =
     item.name.isNotBlank() &&

@@ -83,12 +83,16 @@ class HomeDashboardRepositoryTest {
         assertEquals(1, activeWorkoutUpdate.totalWorkouts)
         assertEquals("Reactive workout", activeWorkoutUpdate.lastWorkoutName)
 
-        database.measurementDao().insert(
+        val measurementId = database.measurementDao().insert(
             BodyMeasurement(date = dayStart + 2_000, weightKg = 81.5f)
         )
         assertEquals(81.5f, emissions.receiveMatching { it.latestWeight != null }.latestWeight)
+        database.measurementDao().update(
+            BodyMeasurement(id = measurementId, date = dayStart + 2_000, weightKg = 80.8f)
+        )
+        assertEquals(80.8f, emissions.receiveMatching { it.latestWeight == 80.8f }.latestWeight)
 
-        database.nutritionDao().insertEntry(
+        val entryId = database.nutritionDao().insertEntry(
             FoodEntry(
                 date = dayStart + 3_000,
                 foodItemId = 0,
@@ -104,6 +108,21 @@ class HomeDashboardRepositoryTest {
         val nutritionUpdate = emissions.receiveMatching { it.todayCalories == 450 }
         assertEquals(450, nutritionUpdate.todayCalories)
         assertEquals(1, nutritionUpdate.todayNutritionEntryCount)
+        database.nutritionDao().updateEntry(
+            FoodEntry(
+                id = entryId,
+                date = dayStart + 3_000,
+                foodItemId = 0,
+                foodName = "Test meal",
+                amountGrams = 150f,
+                calories = 675f,
+                protein = 45f,
+                carbs = 60f,
+                fat = 22.5f,
+                mealType = MealType.LUNCH
+            )
+        )
+        assertEquals(675, emissions.receiveMatching { it.todayCalories == 675 }.todayCalories)
 
         collection.cancel()
         emissions.close()

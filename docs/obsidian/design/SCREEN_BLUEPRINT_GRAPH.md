@@ -23,11 +23,11 @@ Uygulandı: adaptive program kart grid’i; free/demo erişim badge’i; ID deta
 
 ## Beslenme
 
-Date pager; calorie budget; macro progress; dört meal card; recent/favorite food; quick add + undo. Kaynak: [[FEATURE_NUTRITION]].
+Uygulandı: locale-aware date pager; calorie budget; adaptive macro progress; dört meal card; snapshot-safe miktar/meal edit ve delete Snackbar undo. Recent/favorite food ve quick add sonraki ürün. Kaynak: [[FEATURE_NUTRITION]].
 
 ## İlerleme merkezi
 
-Uygulandı: token tabanlı Overview kartları; adaptive photo grid + scrollable angle filter + viewer; completed-set kaynaklı kas haritası + renk bağımsız erişilebilir liste/metodoloji. Expanded list-detail ve kalıcı karşılaştırma seçimi sonraki aşamadır. Kaynaklar: [[FEATURE_MEASUREMENTS]], [[FEATURE_PROGRESS_PHOTOS]], [[FEATURE_MUSCLE_LOAD]].
+Uygulandı: token tabanlı Overview kartları; Measurements latest/edit/delete-undo + 7/30/90/tümü gerçek kilo grafiği + özel tarih; adaptive photo grid + scrollable angle filter + viewer; completed-set kaynaklı kas haritası + renk bağımsız erişilebilir liste/metodoloji. Expanded list-detail, çoklu ölçüm metriği ve kalıcı karşılaştırma seçimi sonraki aşamadır. Kaynaklar: [[FEATURE_MEASUREMENTS]], [[FEATURE_PROGRESS_PHOTOS]], [[FEATURE_MUSCLE_LOAD]].
 
 ## Responsive kural
 

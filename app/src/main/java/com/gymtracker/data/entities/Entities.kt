@@ -49,7 +49,10 @@ data class WorkoutSet(
     @ColumnInfo(defaultValue = "0") val exerciseOrder: Int = 0
 )
 
-@Entity(tableName = "body_measurements")
+@Entity(
+    tableName = "body_measurements",
+    indices = [Index("date")]
+)
 data class BodyMeasurement(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val date: Long = System.currentTimeMillis(),
@@ -91,11 +94,11 @@ data class FoodEntry(
     val mealType: MealType = MealType.BREAKFAST
 )
 
-enum class MealType(val displayName: String) {
-    BREAKFAST("Kahvaltı"),
-    LUNCH("Öğle"),
-    DINNER("Akşam"),
-    SNACK("Ara Öğün")
+enum class MealType {
+    BREAKFAST,
+    LUNCH,
+    DINNER,
+    SNACK
 }
 
 @Entity(tableName = "progress_photos")

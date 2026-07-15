@@ -26,12 +26,12 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 
 | Dosya | Sorumluluk | Kullanan |
 |---|---|---|
-| `data/entities/Entities.kt` | Room entity + v7 ProgramDayExercise/planned-set alanları | bütün feature’lar |
-| `data/database/AppDatabase.kt` | DB v7 + converter + DAO registry | [[ARCH_DATABASE]] |
-| `data/database/DatabaseMigrations.kt` | explicit 3→4→5→6→7 migration zinciri + JSON backfill | [[ARCH_DATABASE]] |
+| `data/entities/Entities.kt` | Room entity + v7 Programs + v8 measurement date index | bütün feature’lar |
+| `data/database/AppDatabase.kt` | DB v8 + converter + DAO registry | [[ARCH_DATABASE]] |
+| `data/database/DatabaseMigrations.kt` | explicit 3→4→5→6→7→8 migration zinciri | [[ARCH_DATABASE]] |
 | `data/dao/WorkoutDao.kt` | active/completed session, planned-set/status mutation ve completed-set load Flow | Home, Workout, Programs, Load |
-| `data/dao/MeasurementDao.kt` | measurement queries | Home, Measurements |
-| `data/dao/NutritionDao.kt` | food/entry/goal queries | Home, Nutrition |
+| `data/dao/MeasurementDao.kt` | all/latest/indexed period + mutation queries | Home, Measurements |
+| `data/dao/NutritionDao.kt` | food/entry/goal + update/delete/restore queries | Home, Nutrition |
 | `data/dao/ProgressPhotoDao.kt` | photo queries | Photos |
 | `data/dao/ProgramDao.kt` | program + ilişkisel day/exercise queries | Programs |
 | `di/DatabaseModule.kt` | Room singleton + DAO providers | bütün ViewModel’ler |
@@ -40,6 +40,7 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | `data/workout/WorkoutRepository.kt` | tek aktif start/resume, planned-set completion ve status-korumalı mutation | Workout, Programs |
 | `data/programs/ProgramRepository.kt` | list/detail/demo erişim + atomic program→workout sınırı | Programs |
 | `data/programs/ProgramWorkoutPlan.kt` | Room relation modeli ve sıralı egzersiz görünümü | Programs |
+| `data/measurements/MeasurementRepository.kt` | all/period Flow ve measurement mutation sınırı | Measurements |
 | `data/photos/ProgressPhotoRepository.kt` | app-owned fotoğraf import/delete sınırı | Photos |
 
 ## Domain
@@ -91,17 +92,17 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 
 | Dosya | Rol |
 |---|---|
-| `ui/screens/nutrition/NutritionViewModel.kt` | selected day + totals + CRUD |
-| `data/nutrition/NutritionRules.kt` | DST-safe day range, entry time, goal/food/progress validation |
-| `ui/screens/nutrition/NutritionScreen.kt` | tarih pager + adaptive summary/macro/meal/form/goal UI |
+| `ui/screens/nutrition/NutritionViewModel.kt` | selected day + totals + snapshot edit/delete/undo |
+| `data/nutrition/NutritionRules.kt` | DST-safe day range, validation ve snapshot miktar ölçekleme |
+| `ui/screens/nutrition/NutritionScreen.kt` | locale tarih + adaptive summary/macro/meal/edit/undo UI |
 
 ## Measurements
 
 | Dosya | Rol |
 |---|---|
-| `data/measurements/MeasurementRules.kt` | alan aralıkları, boş kayıt engeli ve kilo trendi |
-| `ui/screens/measurements/MeasurementsViewModel.kt` | latest/history/trend + validation/save/delete |
-| `ui/screens/measurements/MeasurementsScreen.kt` | adaptive latest/delta/history/empty/form UI |
+| `data/measurements/MeasurementRules.kt` | alan aralıkları, trend ve 7/30/90/tümü tarih aralığı |
+| `ui/screens/measurements/MeasurementsViewModel.kt` | latest/history/trend/chart period + edit/delete/undo |
+| `ui/screens/measurements/MeasurementsScreen.kt` | adaptive latest/chart/history/custom-date/edit/undo UI |
 
 ## Progress photos
 
@@ -130,7 +131,7 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 
 - `res/drawable-nodpi/body_*.png`: 2 × 470×836 body image
 - `res/drawable-nodpi/mask_*.png`: 38 kullanılan maske
-- `res/values/strings.xml`: app name + Home/navigation/Workout/Nutrition/Measurements metinleri
+- `res/values/strings.xml`, `res/values-en/strings.xml`: temel metinler + scoped Nutrition/Measurements English/plural kapsamı
 - `res/values/themes.xml`, `res/values-night/themes.xml`: light/dark launch/platform theme
 - `res/xml/backup_rules.xml`, `data_extraction_rules.xml`: progress fotoğraflarını backup/transfer dışında tutar
 

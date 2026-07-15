@@ -12,6 +12,8 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.unit.Density
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import com.gymtracker.R
 import com.gymtracker.data.entities.FoodEntry
 import com.gymtracker.data.entities.MealType
 import com.gymtracker.data.entities.NutritionGoal
@@ -73,7 +75,7 @@ class NutritionScreenTest {
 
         composeRule.onNodeWithTag("nutrition-content").assertIsDisplayed()
         composeRule.onNodeWithTag("nutrition-calories-over").performScrollTo().assertIsDisplayed()
-        composeRule.onNodeWithText("Hedef 500 kcal aşıldı").assertIsDisplayed()
+        composeRule.onNodeWithText(text(R.string.nutrition_calories_over, 500)).assertIsDisplayed()
     }
 
     @Test
@@ -97,9 +99,12 @@ class NutritionScreenTest {
         }
 
         composeRule.onNodeWithTag("nutrition-content")
-            .performScrollToNode(hasText("Bu günde öğün yok"))
-        composeRule.onNodeWithText("Bu günde öğün yok").assertIsDisplayed()
-        composeRule.onNodeWithText("Öğün ekle").performClick()
+            .performScrollToNode(hasText(text(R.string.nutrition_empty_title)))
+        composeRule.onNodeWithText(text(R.string.nutrition_empty_title)).assertIsDisplayed()
+        composeRule.onNodeWithText(text(R.string.nutrition_add_entry)).performClick()
         assertEquals(1, clicks.get())
     }
+
+    private fun text(id: Int, vararg args: Any): String =
+        InstrumentationRegistry.getInstrumentation().targetContext.getString(id, *args)
 }

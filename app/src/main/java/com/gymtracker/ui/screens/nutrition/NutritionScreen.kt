@@ -23,6 +23,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
@@ -41,7 +42,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,6 +56,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -83,22 +89,39 @@ fun NutritionScreen(viewModel: NutritionViewModel = hiltViewModel()) {
     val foodItems by viewModel.foodItems.collectAsStateWithLifecycle()
     val selectedDate by viewModel.selectedDate.collectAsStateWithLifecycle()
     val mutationError by viewModel.mutationError.collectAsStateWithLifecycle()
+    val deletedEntry by viewModel.deletedEntry.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
     var showAddEntry by remember { mutableStateOf(false) }
     var showAddFood by remember { mutableStateOf(false) }
     var showGoalDialog by remember { mutableStateOf(false) }
+    var editingEntry by remember { mutableStateOf<FoodEntry?>(null) }
 
-    NutritionContent(
-        daily = daily,
-        selectedDate = selectedDate,
-        canGoNext = selectedDate.isBefore(LocalDate.now()),
-        onPreviousDay = viewModel::selectPreviousDay,
-        onNextDay = viewModel::selectNextDay,
-        onToday = viewModel::selectToday,
-        onAddEntry = { showAddEntry = true },
-        onGoalSettings = { showGoalDialog = true },
-        onAddCustomFood = { showAddFood = true },
-        onDeleteEntry = viewModel::deleteEntry
-    )
+    Box(Modifier.fillMaxSize()) {
+        NutritionContent(
+            daily = daily,
+            selectedDate = selectedDate,
+            canGoNext = selectedDate.isBefore(LocalDate.now()),
+            onPreviousDay = viewModel::selectPreviousDay,
+            onNextDay = viewModel::selectNextDay,
+            onToday = viewModel::selectToday,
+            onAddEntry = { showAddEntry = true },
+            onGoalSettings = { showGoalDialog = true },
+            onAddCustomFood = { showAddFood = true },
+            onDeleteEntry = viewModel::deleteEntry,
+            onEditEntry = { editingEntry = it }
+        )
+        SnackbarHost(snackbarHostState, Modifier.align(Alignment.BottomCenter))
+    }
+
+    val deletedMessage = stringResource(R.string.nutrition_entry_deleted)
+    val undoLabel = stringResource(R.string.action_undo)
+    LaunchedEffect(deletedEntry) {
+        deletedEntry?.let { entry ->
+            val result = snackbarHostState.showSnackbar(deletedMessage, undoLabel)
+            if (result == SnackbarResult.ActionPerformed) viewModel.undoDelete(entry)
+            else viewModel.consumeDeletedEntry(entry)
+        }
+    }
 
     if (showAddEntry) {
         AddEntryDialog(
@@ -120,6 +143,15 @@ fun NutritionScreen(viewModel: NutritionViewModel = hiltViewModel()) {
             current = daily.goal,
             onDismiss = { showGoalDialog = false },
             onConfirm = { goal -> viewModel.updateGoal(goal) { showGoalDialog = false } }
+        )
+    }
+    editingEntry?.let { entry ->
+        EditEntryDialog(
+            entry = entry,
+            onDismiss = { editingEntry = null },
+            onConfirm = { amount, meal ->
+                viewModel.updateEntry(entry, amount, meal) { editingEntry = null }
+            }
         )
     }
     mutationError?.let { error ->
@@ -148,6 +180,7 @@ fun NutritionContent(
     onGoalSettings: () -> Unit,
     onAddCustomFood: () -> Unit,
     onDeleteEntry: (FoodEntry) -> Unit,
+    onEditEntry: (FoodEntry) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val grouped = daily.entries.groupBy(FoodEntry::mealType)
@@ -211,7 +244,7 @@ fun NutritionContent(
             MealType.values().forEach { mealType ->
                 grouped[mealType]?.takeIf { it.isNotEmpty() }?.let { entries ->
                     item(key = mealType.name) {
-                        MealSection(mealType, entries, onDeleteEntry)
+                        MealSection(mealType, entries, onDeleteEntry, onEditEntry)
                     }
                 }
             }
@@ -239,7 +272,8 @@ private fun NutritionDateNavigator(
     onNextDay: () -> Unit,
     onToday: () -> Unit
 ) {
-    val formatter = remember { DateTimeFormatter.ofPattern("d MMMM yyyy, EEEE", Locale("tr")) }
+    val locale = LocalConfiguration.current.locales[0] ?: Locale.getDefault()
+    val formatter = remember(locale) { DateTimeFormatter.ofPattern("d MMMM yyyy, EEEE", locale) }
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
@@ -411,7 +445,8 @@ private fun MacroItem(
 private fun MealSection(
     mealType: MealType,
     entries: List<FoodEntry>,
-    onDelete: (FoodEntry) -> Unit
+    onDelete: (FoodEntry) -> Unit,
+    onEdit: (FoodEntry) -> Unit
 ) {
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -422,7 +457,7 @@ private fun MealSection(
             verticalArrangement = Arrangement.spacedBy(GtSpacing.sm)
         ) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(mealType.displayName, style = MaterialTheme.typography.titleMedium)
+                Text(mealType.localizedName(), style = MaterialTheme.typography.titleMedium)
                 Text(
                     stringResource(
                         R.string.nutrition_meal_calories,
@@ -455,6 +490,9 @@ private fun MealSection(
                         stringResource(R.string.nutrition_meal_calories, entry.calories.roundToInt()),
                         style = MaterialTheme.typography.labelLarge
                     )
+                    IconButton(onClick = { onEdit(entry) }) {
+                        Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.action_edit))
+                    }
                     IconButton(onClick = { onDelete(entry) }) {
                         Icon(Icons.Default.Close, contentDescription = stringResource(R.string.action_delete))
                     }
@@ -519,7 +557,7 @@ private fun AddEntryDialog(
                         onExpandedChange = { mealExpanded = it }
                     ) {
                         OutlinedTextField(
-                            value = selectedMeal.displayName,
+                            value = selectedMeal.localizedName(),
                             onValueChange = {},
                             readOnly = true,
                             label = { Text(stringResource(R.string.nutrition_meal)) },
@@ -532,7 +570,7 @@ private fun AddEntryDialog(
                         ) {
                             MealType.values().forEach { meal ->
                                 DropdownMenuItem(
-                                    text = { Text(meal.displayName) },
+                                    text = { Text(meal.localizedName()) },
                                     onClick = { selectedMeal = meal; mealExpanded = false }
                                 )
                             }
@@ -546,6 +584,67 @@ private fun AddEntryDialog(
                 enabled = selectedItem != null && parsedAmount?.let(::isValidFoodAmount) == true,
                 onClick = { onConfirm(requireNotNull(selectedItem), requireNotNull(parsedAmount), selectedMeal) }
             ) { Text(stringResource(R.string.action_add)) }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } }
+    )
+}
+
+@Composable
+private fun EditEntryDialog(
+    entry: FoodEntry,
+    onDismiss: () -> Unit,
+    onConfirm: (Float, MealType) -> Unit
+) {
+    var amount by remember(entry.id) { mutableStateOf(entry.amountGrams.toString()) }
+    var meal by remember(entry.id) { mutableStateOf(entry.mealType) }
+    var mealExpanded by remember { mutableStateOf(false) }
+    val parsedAmount = parseLocalizedDecimal(amount)
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.nutrition_edit_entry)) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(GtSpacing.sm)) {
+                Text(entry.foodName, style = MaterialTheme.typography.titleMedium)
+                OutlinedTextField(
+                    value = amount,
+                    onValueChange = { amount = it },
+                    label = { Text(stringResource(R.string.nutrition_amount_grams)) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    isError = parsedAmount?.let(::isValidFoodAmount) != true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                ExposedDropdownMenuBox(
+                    expanded = mealExpanded,
+                    onExpandedChange = { mealExpanded = it }
+                ) {
+                    OutlinedTextField(
+                        value = meal.localizedName(),
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text(stringResource(R.string.nutrition_meal)) },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(mealExpanded) },
+                        modifier = Modifier.menuAnchor().fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = mealExpanded,
+                        onDismissRequest = { mealExpanded = false }
+                    ) {
+                        MealType.values().forEach { option ->
+                            DropdownMenuItem(
+                                text = { Text(option.localizedName()) },
+                                onClick = { meal = option; mealExpanded = false }
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                enabled = parsedAmount?.let(::isValidFoodAmount) == true,
+                onClick = { onConfirm(requireNotNull(parsedAmount), meal) }
+            ) { Text(stringResource(R.string.action_save)) }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } }
     )
@@ -657,5 +756,15 @@ private fun NutritionMutationError.userMessage(): String = stringResource(
         NutritionMutationError.INVALID_FOOD -> R.string.nutrition_error_invalid_food
         NutritionMutationError.INVALID_GOAL -> R.string.nutrition_error_invalid_goal
         NutritionMutationError.SAVE_FAILED -> R.string.nutrition_error_save
+    }
+)
+
+@Composable
+private fun MealType.localizedName(): String = stringResource(
+    when (this) {
+        MealType.BREAKFAST -> R.string.nutrition_meal_breakfast
+        MealType.LUNCH -> R.string.nutrition_meal_lunch
+        MealType.DINNER -> R.string.nutrition_meal_dinner
+        MealType.SNACK -> R.string.nutrition_meal_snack
     }
 )

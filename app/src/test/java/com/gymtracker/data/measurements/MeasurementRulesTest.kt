@@ -1,6 +1,9 @@
 package com.gymtracker.data.measurements
 
 import com.gymtracker.data.entities.BodyMeasurement
+import java.time.Clock
+import java.time.Instant
+import java.time.ZoneId
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
@@ -35,5 +38,24 @@ class MeasurementRulesTest {
         assertEquals(87.5f, trend.latestKg)
         assertEquals(-0.5f, trend.changeKg)
         assertNull(weightTrend(listOf(BodyMeasurement(weightKg = 81f))).changeKg)
+    }
+
+    @Test
+    fun chartRangeUsesCalendarDaysAndExclusiveTomorrowBoundary() {
+        val clock = Clock.fixed(Instant.parse("2026-07-15T12:00:00Z"), ZoneId.of("Europe/Istanbul"))
+
+        val sevenDays = measurementDateRange(MeasurementChartPeriod.SEVEN_DAYS, clock)
+        val all = measurementDateRange(MeasurementChartPeriod.ALL, clock)
+
+        assertEquals(
+            Instant.parse("2026-07-08T21:00:00Z").toEpochMilli(),
+            sevenDays.startInclusiveMillis
+        )
+        assertEquals(
+            Instant.parse("2026-07-15T21:00:00Z").toEpochMilli(),
+            sevenDays.endExclusiveMillis
+        )
+        assertEquals(0L, all.startInclusiveMillis)
+        assertEquals(sevenDays.endExclusiveMillis, all.endExclusiveMillis)
     }
 }
