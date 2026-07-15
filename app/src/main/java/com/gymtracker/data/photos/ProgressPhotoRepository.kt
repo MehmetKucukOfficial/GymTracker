@@ -20,13 +20,24 @@ class ProgressPhotoRepository @Inject constructor(
 
     suspend fun reconcileStorage(): Result<PhotoReconciliationSummary> = withContext(Dispatchers.IO) {
         runCatching {
-            val managedPhotos = dao.getAllSync().filter { it.storageVersion >= CURRENT_STORAGE_VERSION }
-            val reconciliation = fileStorage.reconcile(managedPhotos.mapTo(mutableSetOf(), ProgressPhoto::photoUri))
+            val managedPhotos = dao.getAllSync().filter { it.storageVersion >= MANAGED_STORAGE_VERSION }
+            val managedUris = managedPhotos.flatMapTo(mutableSetOf()) { photo ->
+                listOfNotNull(photo.photoUri, photo.thumbnailUri)
+            }
+            val reconciliation = fileStorage.reconcile(managedUris)
             val missingPhotos = managedPhotos.filter { it.photoUri in reconciliation.missingManagedUris }
-            missingPhotos.forEach { dao.delete(it) }
+            missingPhotos.forEach { photo ->
+                fileStorage.deleteManaged(photo.thumbnailUri)
+                dao.delete(photo)
+            }
+            val missingThumbnails = managedPhotos.filter { photo ->
+                photo !in missingPhotos && photo.thumbnailUri in reconciliation.missingManagedUris
+            }
+            missingThumbnails.forEach { photo -> dao.update(photo.copy(thumbnailUri = null)) }
             PhotoReconciliationSummary(
                 orphanFilesDeleted = reconciliation.orphanFilesDeleted,
-                missingRowsDeleted = missingPhotos.size
+                missingRowsDeleted = missingPhotos.size,
+                missingThumbnailsCleared = missingThumbnails.size
             )
         }
     }
@@ -49,12 +60,16 @@ class ProgressPhotoRepository @Inject constructor(
                         notes = notes.trim(),
                         mimeType = stored.mimeType,
                         sizeBytes = stored.sizeBytes,
-                        storageVersion = CURRENT_STORAGE_VERSION
+                        storageVersion = CURRENT_STORAGE_VERSION,
+                        thumbnailUri = stored.thumbnailUri,
+                        widthPx = stored.widthPx,
+                        heightPx = stored.heightPx
                     )
                 )
                 Result.success(id)
             } catch (error: Throwable) {
                 fileStorage.deleteManaged(stored.uri)
+                fileStorage.deleteManaged(stored.thumbnailUri)
                 throw error
             }
         } catch (error: Throwable) {
@@ -68,6 +83,9 @@ class ProgressPhotoRepository @Inject constructor(
             check(fileStorage.deleteManaged(photo.photoUri)) {
                 "Fotoğraf dosyası temizlenemedi."
             }
+            check(fileStorage.deleteManaged(photo.thumbnailUri)) {
+                "Küçük görsel dosyası temizlenemedi."
+            }
             Result.success(Unit)
         } catch (error: Throwable) {
             Result.failure(error)
@@ -75,11 +93,13 @@ class ProgressPhotoRepository @Inject constructor(
     }
 
     private companion object {
-        const val CURRENT_STORAGE_VERSION = 1
+        const val MANAGED_STORAGE_VERSION = 1
+        const val CURRENT_STORAGE_VERSION = 2
     }
 }
 
 data class PhotoReconciliationSummary(
     val orphanFilesDeleted: Int,
-    val missingRowsDeleted: Int
+    val missingRowsDeleted: Int,
+    val missingThumbnailsCleared: Int
 )

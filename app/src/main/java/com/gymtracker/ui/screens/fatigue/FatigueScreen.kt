@@ -223,6 +223,18 @@ private fun MuscleLoadSummaryCard(summary: MuscleLoadSummary) {
                 stringResource(R.string.muscle_load_summary_support),
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+            Text(
+                stringResource(
+                    if (summary.usesPersonalBodyweight) {
+                        R.string.muscle_load_personal_calibration
+                    } else {
+                        R.string.muscle_load_default_calibration
+                    },
+                    summary.bodyweightCalibrationKg
+                ),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodyMedium
+            )
             if (summary.unknownExerciseCount > 0) {
                 Text(
                     stringResource(R.string.muscle_load_unknown_exercises, summary.unknownExerciseCount),

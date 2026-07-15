@@ -94,4 +94,16 @@ class MutationContractTest {
         repository.save(deleted)
         assertEquals(7L, repository.observeChart(MeasurementChartPeriod.SEVEN_DAYS).first().single().id)
     }
+
+    @Test
+    fun latestValidWeightFlowSelectsNewestUsableCalibration() = runBlocking {
+        val dao = database.measurementDao()
+        dao.insert(BodyMeasurement(id = 1, date = 1_000, weightKg = 80f))
+        dao.insert(BodyMeasurement(id = 2, date = 2_000, weightKg = null))
+
+        assertEquals(80f, dao.observeLatestWithWeight().first()?.weightKg)
+
+        dao.insert(BodyMeasurement(id = 3, date = 3_000, weightKg = 82.5f))
+        assertEquals(82.5f, dao.observeLatestWithWeight().first()?.weightKg)
+    }
 }

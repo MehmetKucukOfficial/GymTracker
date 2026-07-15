@@ -12,6 +12,13 @@ interface MeasurementDao {
     @Query("SELECT * FROM body_measurements ORDER BY date DESC LIMIT 1")
     suspend fun getLatest(): BodyMeasurement?
 
+    @Query(
+        "SELECT * FROM body_measurements " +
+            "WHERE weightKg IS NOT NULL AND weightKg BETWEEN 20 AND 400 " +
+            "ORDER BY date DESC LIMIT 1"
+    )
+    fun observeLatestWithWeight(): Flow<BodyMeasurement?>
+
     @Query("SELECT * FROM body_measurements WHERE date >= :since ORDER BY date ASC")
     fun getSince(since: Long): Flow<List<BodyMeasurement>>
 

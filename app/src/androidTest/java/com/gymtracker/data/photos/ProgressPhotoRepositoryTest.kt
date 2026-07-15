@@ -1,6 +1,10 @@
 package com.gymtracker.data.photos
 
 import android.net.Uri
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Color
+import android.media.ExifInterface
 import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -9,6 +13,7 @@ import com.gymtracker.data.database.AppDatabase
 import com.gymtracker.data.entities.PhotoAngle
 import com.gymtracker.data.entities.ProgressPhoto
 import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
@@ -48,7 +53,7 @@ class ProgressPhotoRepositoryTest {
 
     @Test
     fun importPhoto_copiesToManagedStorageAndDeleteCleansFileAndRow() = kotlinx.coroutines.runBlocking {
-        reader.bytes = "durable-image-content".toByteArray()
+        reader.bytes = createJpeg(width = 800, height = 400)
 
         val result = repository.importPhoto(
             Uri.parse("content://test/photo"),
@@ -60,10 +65,18 @@ class ProgressPhotoRepositoryTest {
         assertTrue(result.isSuccess)
         val photo = database.progressPhotoDao().getAllSync().single()
         val managedFile = java.io.File(requireNotNull(Uri.parse(photo.photoUri).path))
+        val thumbnailFile = java.io.File(requireNotNull(Uri.parse(photo.thumbnailUri).path))
         assertTrue(managedFile.exists())
-        assertEquals(reader.bytes.size.toLong(), photo.sizeBytes)
+        assertTrue(thumbnailFile.exists())
+        assertEquals(managedFile.length(), photo.sizeBytes)
         assertEquals("image/jpeg", photo.mimeType)
-        assertEquals(1, photo.storageVersion)
+        assertEquals(2, photo.storageVersion)
+        assertEquals(800, photo.widthPx)
+        assertEquals(400, photo.heightPx)
+        val thumbnailBounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        BitmapFactory.decodeFile(thumbnailFile.path, thumbnailBounds)
+        assertEquals(512, thumbnailBounds.outWidth)
+        assertEquals(256, thumbnailBounds.outHeight)
 
         // A new storage instance can still resolve the app-owned file after a restart.
         PhotoFileStorage(context)
@@ -71,8 +84,50 @@ class ProgressPhotoRepositoryTest {
 
         assertTrue(repository.deletePhoto(photo).isSuccess)
         assertFalse(managedFile.exists())
+        assertFalse(thumbnailFile.exists())
         assertTrue(database.progressPhotoDao().getAllSync().isEmpty())
     }
+
+    @Test
+    fun importPhoto_appliesExifOrientationBeforeWritingMetadata() = kotlinx.coroutines.runBlocking {
+        reader.bytes = createJpegWithOrientation(
+            width = 40,
+            height = 20,
+            orientation = ExifInterface.ORIENTATION_ROTATE_90
+        )
+
+        val result = repository.importPhoto(
+            Uri.parse("content://test/oriented-photo"),
+            PhotoAngle.SIDE_RIGHT,
+            null,
+            ""
+        )
+
+        assertTrue(result.isSuccess)
+        val photo = database.progressPhotoDao().getAllSync().single()
+        assertEquals(20, photo.widthPx)
+        assertEquals(40, photo.heightPx)
+        assertTrue(repository.deletePhoto(photo).isSuccess)
+    }
+
+    @Test
+    fun importPhoto_whenDecodeFails_cleansTemporaryFilesAndDoesNotCreateRow() =
+        kotlinx.coroutines.runBlocking {
+            reader.bytes = "not-an-image".toByteArray()
+            val directory = File(context.filesDir, "progress_photos")
+            val filesBefore = directory.listFiles()?.map(File::getName)?.sorted().orEmpty()
+
+            val result = repository.importPhoto(
+                Uri.parse("content://test/corrupt-image"),
+                PhotoAngle.FRONT,
+                null,
+                ""
+            )
+
+            assertTrue(result.isFailure)
+            assertTrue(database.progressPhotoDao().getAllSync().isEmpty())
+            assertEquals(filesBefore, directory.listFiles()?.map(File::getName)?.sorted().orEmpty())
+        }
 
     @Test
     fun importPhoto_whenSourceFails_doesNotCreateDatabaseRow() = kotlinx.coroutines.runBlocking {
@@ -91,7 +146,7 @@ class ProgressPhotoRepositoryTest {
 
     @Test
     fun importPhoto_whenDatabaseInsertFails_removesCopiedFile() = kotlinx.coroutines.runBlocking {
-        reader.bytes = "copy-before-database-failure".toByteArray()
+        reader.bytes = createJpeg(width = 64, height = 64)
         val directory = File(context.filesDir, "progress_photos")
         val filesBefore = directory.listFiles()?.map(File::getName)?.sorted().orEmpty()
         val failingRepository = ProgressPhotoRepository(FailingInsertDao(), reader, storage)
@@ -124,10 +179,14 @@ class ProgressPhotoRepositoryTest {
         kotlinx.coroutines.runBlocking {
             val directory = File(context.filesDir, "progress_photos").apply { mkdirs() }
             File(directory, "orphan.jpg").writeBytes("orphan".toByteArray())
+            val thumbnailForMissingMain = File(directory, "missing-main-thumb.jpg").apply {
+                writeBytes(createJpeg(width = 32, height = 32))
+            }
             database.progressPhotoDao().insert(
                 ProgressPhoto(
                     photoUri = Uri.fromFile(File(directory, "missing.jpg")).toString(),
-                    storageVersion = 1
+                    thumbnailUri = Uri.fromFile(thumbnailForMissingMain).toString(),
+                    storageVersion = 2
                 )
             )
             database.progressPhotoDao().insert(
@@ -136,17 +195,37 @@ class ProgressPhotoRepositoryTest {
                     storageVersion = 0
                 )
             )
+            val retainedMain = File(directory, "retained.jpg").apply {
+                writeBytes(createJpeg(width = 32, height = 32))
+            }
+            database.progressPhotoDao().insert(
+                ProgressPhoto(
+                    photoUri = Uri.fromFile(retainedMain).toString(),
+                    thumbnailUri = Uri.fromFile(File(directory, "missing-thumb.jpg")).toString(),
+                    storageVersion = 2
+                )
+            )
 
             val result = repository.reconcileStorage()
 
             assertTrue(result.isSuccess)
             assertEquals(1, result.getOrThrow().orphanFilesDeleted)
             assertEquals(1, result.getOrThrow().missingRowsDeleted)
+            assertEquals(1, result.getOrThrow().missingThumbnailsCleared)
             assertEquals(
-                listOf("content://legacy/photo"),
-                database.progressPhotoDao().getAllSync().map { it.photoUri }
+                setOf("content://legacy/photo", Uri.fromFile(retainedMain).toString()),
+                database.progressPhotoDao().getAllSync().map { it.photoUri }.toSet()
+            )
+            assertEquals(
+                null,
+                database.progressPhotoDao().getAllSync()
+                    .first { it.photoUri == Uri.fromFile(retainedMain).toString() }
+                    .thumbnailUri
             )
             assertFalse(File(directory, "orphan.jpg").exists())
+            assertFalse(thumbnailForMissingMain.exists())
+            retainedMain.delete()
+            Unit
         }
 
     private class FakePhotoSourceReader : PhotoSourceReader {
@@ -156,6 +235,30 @@ class ProgressPhotoRepositoryTest {
         override fun open(uri: Uri): OpenedPhotoSource {
             failure?.let { throw it }
             return OpenedPhotoSource(ByteArrayInputStream(bytes), "image/jpeg")
+        }
+    }
+
+    private fun createJpeg(width: Int, height: Int): ByteArray {
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        bitmap.eraseColor(Color.rgb(30, 90, 160))
+        return ByteArrayOutputStream().use { output ->
+            assertTrue(bitmap.compress(Bitmap.CompressFormat.JPEG, 90, output))
+            bitmap.recycle()
+            output.toByteArray()
+        }
+    }
+
+    private fun createJpegWithOrientation(width: Int, height: Int, orientation: Int): ByteArray {
+        val file = File.createTempFile("exif-test-", ".jpg", context.cacheDir)
+        return try {
+            file.writeBytes(createJpeg(width, height))
+            ExifInterface(file.path).apply {
+                setAttribute(ExifInterface.TAG_ORIENTATION, orientation.toString())
+                saveAttributes()
+            }
+            file.readBytes()
+        } finally {
+            file.delete()
         }
     }
 
@@ -185,6 +288,8 @@ class ProgressPhotoRepositoryTest {
         override suspend fun getAllSync(): List<ProgressPhoto> = emptyList()
 
         override suspend fun insert(photo: ProgressPhoto): Long = throw IOException("database full")
+
+        override suspend fun update(photo: ProgressPhoto) = Unit
 
         override suspend fun delete(photo: ProgressPhoto) = Unit
     }

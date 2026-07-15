@@ -111,7 +111,10 @@ data class ProgressPhoto(
     val angle: PhotoAngle = PhotoAngle.FRONT,
     @ColumnInfo(defaultValue = "'image/*'") val mimeType: String = "image/*",
     @ColumnInfo(defaultValue = "0") val sizeBytes: Long = 0,
-    @ColumnInfo(defaultValue = "0") val storageVersion: Int = 0
+    @ColumnInfo(defaultValue = "0") val storageVersion: Int = 0,
+    @ColumnInfo(defaultValue = "NULL") val thumbnailUri: String? = null,
+    @ColumnInfo(defaultValue = "0") val widthPx: Int = 0,
+    @ColumnInfo(defaultValue = "0") val heightPx: Int = 0
 )
 
 enum class PhotoAngle(val displayName: String) {

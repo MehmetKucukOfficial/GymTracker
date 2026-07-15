@@ -302,7 +302,7 @@ private fun PhotoGridItem(
                 .background(MaterialTheme.colorScheme.surfaceVariant)
         ) {
             AsyncImage(
-                model = photo.photoUri,
+                model = photo.thumbnailUri ?: photo.photoUri,
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,

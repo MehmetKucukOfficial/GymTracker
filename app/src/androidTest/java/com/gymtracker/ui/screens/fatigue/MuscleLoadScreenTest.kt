@@ -66,7 +66,9 @@ class MuscleLoadScreenTest {
                                 )
                             ),
                             completedSetCount = 1,
-                            unknownExerciseCount = 0
+                            unknownExerciseCount = 0,
+                            bodyweightCalibrationKg = 82.5f,
+                            usesPersonalBodyweight = true
                         )
                     ),
                     onRetry = {}
@@ -75,6 +77,7 @@ class MuscleLoadScreenTest {
         }
 
         composeRule.onNodeWithText("1 tamamlanmış set").assertIsDisplayed()
+        composeRule.onNodeWithText("Vücut ağırlığı kalibrasyonu", substring = true).assertIsDisplayed()
         composeRule.onNodeWithContentDescription("Kas yükü yöntemi hakkında bilgi").performClick()
         composeRule.onNodeWithText("Kas yükü nasıl hesaplanır?").assertIsDisplayed()
         composeRule.onNodeWithText(
