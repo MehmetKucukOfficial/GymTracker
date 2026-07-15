@@ -1,5 +1,5 @@
 # Project-specific R8/ProGuard rules.
 #
-# Release shrinking is currently disabled. Keep this file in version control
-# because the Android build configuration references it; add narrowly scoped
-# rules here when shrinking is enabled or a library requires one.
+# Release shrinking is enabled. AndroidX, Room, Hilt, Coil, and Kotlin ship
+# consumer rules, so this file intentionally avoids broad keep rules. Add only
+# evidence-backed exceptions when a minified release smoke test exposes one.
