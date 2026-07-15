@@ -109,7 +109,7 @@ Kabul: 24 JVM + 46 cihaz testi; lint 0 hata/77 uyarı; assemble; light normal ve
 ## PR 13 — Photo media pipeline + personal load calibration
 
 Node: [[FEATURE_PROGRESS_PHOTOS]], [[FEATURE_MUSCLE_LOAD]], [[ADR_004_PERSISTENT_PHOTO_STORAGE]], [[ADR_005_MUSCLE_LOAD_NAMING]].
-Durum: `5c3ce35` kod commit’i `codex/photo-load-calibration` dalında yerel olarak tamamlandı; yayın bekliyor.
+Durum: `5c3ce35` kod + `d189f6c` graph commit’leri `codex/photo-load-calibration` dalında stacked draft PR #6 olarak yayınlandı ve PR #5’i hedefliyor.
 Çıktı: Room v9 photo thumbnail/dimension metadata; bounded decode, EXIF normalize, 2048 ana JPEG + 512 thumbnail ve iki dosyalı rollback/reconciliation; latest-valid measurement Flow’u ile kişisel bodyweight kalibrasyonu ve açık fallback UI.
 Kabul: 26 JVM + 50 API 34 instrumentation testi; lint 0 hata/78 uyarı; assemble başarılı.
 

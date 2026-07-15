@@ -4,8 +4,8 @@ status: ready
 implementation_status: active
 code_baseline: 5c3ce35
 updated: 2026-07-16
-active_phase: "Phase 4 - PR13 publication"
-next_pr: "Publish PR13, then app-wide locale/adaptive/golden"
+active_phase: "Phase 4 - PR13 published"
+next_pr: "Wait for user command before PR14"
 primary_nodes:
   - FEATURE_PROGRESS_PHOTOS
   - FEATURE_MUSCLE_LOAD
@@ -25,7 +25,7 @@ tags: [gymtracker/workflow, gymtracker/session]
 - PR10 baseline: `2ad7ad8`; `codex/progress-load` dalı PR9’u hedefleyen stacked draft PR #3 olarak yayınlandı.
 - PR11 baseline: `7917358`; `codex/programs-normalization` dalı PR10’u hedefleyen stacked draft PR #4 olarak yayınlandı.
 - PR12 baseline: `9c90471`; `codex/nutrition-measurements-depth` dalı PR11’i hedefleyen stacked draft PR #5 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/5
-- PR13 code baseline: `5c3ce35`; `codex/photo-load-calibration` dalında doküman/yayın adımı bekliyor.
+- PR13 code baseline: `5c3ce35`; graph baseline `d189f6c`; `codex/photo-load-calibration` dalı PR12’yi hedefleyen stacked draft PR #6 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/6
 - Room v9; explicit 8→9 photo thumbnail/dimension metadata migration aktif, destructive fallback yok; v0/v1 fotoğraf satırları kayıpsız korunur.
 - Telefon navigation shell’i 5 ana hedefe indi; workout/program detail ID + SavedStateHandle + repository Flow kullanıyor.
 - Home completed/active workout, measurement ve nutrition kaynaklarına reaktif; aktif workout varsa CTA doğrudan session ID’ye devam ediyor.
@@ -41,7 +41,7 @@ tags: [gymtracker/workflow, gymtracker/session]
 
 ## Sıradaki önerilen iş
 
-PR13 docs commit’ini tamamla, branch’i push et ve PR #5’i hedefleyen stacked draft PR aç. Ardından bir sonraki ürün dilimine kullanıcı komutu olmadan geçme.
+PR13 commit/push/draft PR yayınından sonra kullanıcının yeni komutunu bekle. PR14’e otomatik geçme.
 
 ## Açık P0/P1
 
@@ -623,8 +623,8 @@ Graph notes updated:
 - [[SOURCE_FILE_ATLAS]], [[CHANGE_IMPACT_MAP]], [[SESSION_HANDOFF]], [[00_START_HERE]]
 
 Next concrete action:
-- Commit the synchronized PR13 graph, push `codex/photo-load-calibration` and open a stacked draft PR targeting `codex/nutrition-measurements-depth`.
-- After publication, wait for the user before starting the app-wide locale/adaptive/golden slice.
+- PR13 stacked draft PR #6 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/6
+- Stop and wait for the user before starting the app-wide locale/adaptive/golden slice.
 
 Blockers:
 - No code blocker. PR13 is intentionally stacked on PR #5 until its base lands or is rebased.

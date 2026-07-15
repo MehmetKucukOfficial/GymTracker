@@ -67,8 +67,8 @@ tags: [gymtracker/moc, gymtracker/graph]
 
 ## Grafın güncellik durumu
 
-- Kod baseline: `5c3ce35` (`codex/photo-load-calibration`, PR13 yerel kod commit’i)
-- Kod değişikliği: Room v9 photo metadata, storage v2 bounded EXIF/resize/thumbnail hattı ve latest-measurement tabanlı Muscle Load kalibrasyonu tamamlandı
+- Kod baseline: `5c3ce35` (`codex/photo-load-calibration`, stacked draft PR #6)
+- Kod değişikliği: Room v9 photo metadata, storage v2 bounded EXIF/resize/thumbnail hattı ve latest-measurement tabanlı Muscle Load kalibrasyonu yayınlandı
 - Dokümanlar: PR13 feature/ADR/database/state/risk/test/roadmap sözleşmeleriyle senkron
 - Son tam doğrulama: 2026-07-16
-- Aktif önerilen iş: PR13 docs commit/push/draft PR yayını; sonra uygulama geneli ikinci locale + adaptive navigation/accessibility/golden
+- Aktif önerilen iş: kullanıcı komutunu bekle; sıradaki aday uygulama geneli ikinci locale + adaptive navigation/accessibility/golden
