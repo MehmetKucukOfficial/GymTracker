@@ -2,7 +2,7 @@
 type: atlas
 status: current
 implementation_status: active
-verified_commit: a573ab9
+verified_commit: 0fa2383
 updated: 2026-07-16
 tags: [gymtracker/workflow, gymtracker/source-map]
 ---
@@ -13,7 +13,7 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 
 | Dosya | Sorumluluk | Bağ |
 |---|---|---|
-| `.github/workflows/android-ci.yml` | PR/main quality + API 34 device/golden CI ve artifact’ler | [[ARCH_BUILD_DI]] |
+| `.github/workflows/android-ci.yml` | PR/`master` quality + API 34 device/golden CI ve artifact’ler | [[ARCH_BUILD_DI]] |
 | `.github/workflows/android-release.yml` | protected production secret’larıyla signed APK/AAB üretim ve doğrulama | [[ADR_009_SECRET_BACKED_RELEASES]] |
 | `build.gradle.kts` | root plugin alias + tek `ciQuality` kapısı | [[ARCH_BUILD_DI]] |
 | `settings.gradle.kts` | repositories + `:app` + `:baselineprofile` | [[ARCH_BUILD_DI]] |
