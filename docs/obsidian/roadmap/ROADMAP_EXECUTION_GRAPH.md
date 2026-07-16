@@ -2,7 +2,7 @@
 type: roadmap
 status: current
 implementation_status: active
-verified_commit: e28a22d
+verified_commit: a3bdbe6
 updated: 2026-07-16
 tags: [gymtracker/roadmap, gymtracker/workflow]
 ---
@@ -31,6 +31,7 @@ flowchart TD
     B --> RP[PR 16 Signing + Performance]
     RP --> LG[PR 17 List-detail + Golden]
     LG --> LR[PR 18 Legacy photo recovery]
+    LR --> DL[PR 19 External deep links]
 ```
 
 ## Birleştirme durumu
@@ -159,10 +160,17 @@ Durum: `e28a22d` kod commit’i `codex/legacy-photo-recovery` dalında hazır Gi
 Çıktı: v0 dış sağlayıcı kayıtları için yeniden seçim; v1 app-owned kayıtlar için doğrudan v2 optimizasyon; aynı Room kimliği ve kullanıcı metadata’sı; update başarısızlığında iki yeni dosyanın rollback’i; başarılı swap sonrasında eski yönetilen dosya temizliği; ayrı erişilebilir kart/viewer eylemleri.
 Kabul: 30 JVM + 62 API 34 instrumentation testi; hedefli photo paketi 13/13; `ciQuality`, lint, debug ve minified release/profile kapısı; light normal ve dark %200 yükseltme UI doğrulaması. Hosted run `29503247012`: quality 7m23s, API 34 device/golden 9m41s, artifact XML 62/62.
 
+## PR 19 — Validated external deep links
+
+Node: [[ARCH_NAVIGATION]], [[ADR_002_FIVE_TARGET_NAVIGATION]], [[TEST_MATRIX]].
+Durum: `a3bdbe6` kod commit’i `codex/external-deep-links` dalında; tam yerel kabul tamamlandı, yayın/hosted kabul sırada.
+Çıktı: `gymtracker://app` scheme/host manifest sözleşmesi; on NavHost destination pattern’i; merkezi URI üretme/parçalama; pozitif workout/program detail ID tipi; bilinmeyen/geçersiz URI safe-home fallback’i; cold-start ve recreation Compose testi.
+Kabul: 34 JVM + 66 API 34 instrumentation testi; hedefli deep-link paketi 4/4; `ciQuality`, lint, debug ve minified release/profile kapısı başarılı.
+
 ## Sonraki dikey dilim
 
 1. Production secret + Play internal-track smoke ve fiziksel cihaz performans kabulü
-2. Harici deep link + gerçek OS process-death kabul paketi
+2. Gerçek OS process-death kabul paketi
 3. Kalan kritik ekran/state golden kapsamı ve ortak top-app-bar/feedback bileşenleri
 
 Detaylı süre: [[GELISTIRME_MASTER_PLANI#18. Fazlar ve süre tahmini]]. Aktif durum: [[SESSION_HANDOFF]].

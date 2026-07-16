@@ -2,7 +2,7 @@
 type: atlas
 status: current
 implementation_status: active
-verified_commit: e28a22d
+verified_commit: a3bdbe6
 updated: 2026-07-16
 tags: [gymtracker/workflow, gymtracker/source-map]
 ---
@@ -23,9 +23,9 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | `baselineprofile/` | startup/Home scroll/Workout profile producer ve macrobenchmark’lar | [[PERFORMANCE_BASELINE]] |
 | `app/src/release/generated/baselineProfiles/` | ölçülerek üretilen release Baseline + Startup Profile | [[PERFORMANCE_BASELINE]] |
 | `app/proguard-rules.pro` | yalnız kanıtla eklenecek proje R8 istisnaları | [[ARCH_BUILD_DI]] |
-| `AndroidManifest.xml` | permission/app/activity/backup | [[ARCH_BUILD_DI]] |
+| `AndroidManifest.xml` | permission/app/activity/backup + trusted external deep-link intent filter | [[ARCH_BUILD_DI]], [[ARCH_NAVIGATION]] |
 | `GymTrackerApp.kt` | Hilt application | [[ARCH_CURRENT_SYSTEM]] |
-| `MainActivity.kt` | theme + compact bottom-bar / 600 dp+ rail adaptive scaffold + NavHost | [[ARCH_NAVIGATION]] |
+| `MainActivity.kt` | theme + compact bottom-bar / 600 dp+ rail adaptive scaffold + deep-link-aware NavHost | [[ARCH_NAVIGATION]] |
 
 ## Veri
 
@@ -63,6 +63,7 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | Dosya | Sorumluluk | Not |
 |---|---|---|
 | `ui/navigation/NavGraph.kt` | route sözleşmesi + 5 bottom item + navigation policy | [[ARCH_NAVIGATION]] |
+| `ui/navigation/DeepLinkContract.kt` | trusted URI pattern/route parser + positive Long NavType | [[ARCH_NAVIGATION]], [[ADR_002_FIVE_TARGET_NAVIGATION]] |
 | `ui/components/BottomNavigationBar.kt` | bottom bar/rail, 600 dp politikası, nested target seçimi + save/restore | [[ARCH_NAVIGATION]] |
 | `ui/screens/progress/ProgressHubScreen.kt` | ölçüm/fotoğraf/kas yükü hub | [[FEATURE_PROGRESS_PHOTOS]] |
 | `ui/components/MuscleBodyMap.kt` | bitmap overlay/hit test | [[FEATURE_MUSCLE_LOAD]] |

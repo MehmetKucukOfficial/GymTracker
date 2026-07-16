@@ -2,11 +2,13 @@
 type: architecture
 status: current
 implementation_status: current
-verified_commit: a573ab9
+verified_commit: a3bdbe6
 updated: 2026-07-16
 source_files:
   - app/src/main/java/com/gymtracker/MainActivity.kt
   - app/src/main/java/com/gymtracker/ui/navigation/NavGraph.kt
+  - app/src/main/java/com/gymtracker/ui/navigation/DeepLinkContract.kt
+  - app/src/main/AndroidManifest.xml
   - app/src/main/java/com/gymtracker/ui/components/BottomNavigationBar.kt
   - app/src/main/java/com/gymtracker/ui/components/GymTrackerComponents.kt
   - app/src/main/java/com/gymtracker/ui/screens/workout/WorkoutScreen.kt
@@ -23,6 +25,8 @@ Compact genişlikte alt bar; 600 dp ve üzerinde navigation rail kullanılır. H
 Ölçüm (`progress/measurements`), fotoğraf (`progress/photos`) ve kas yükü (`progress/load`) İlerleme hub’ından açılır ve alt barda İlerleme seçili kalır. `workouts/{sessionId}` ve `programs/{programId}` detail ekranları alt barı gizler; Hilt ViewModel route ID’sini `SavedStateHandle` üzerinden alır ve repository Flow’dan veriyi yeniden çözer.
 
 Workout ve Programs ana rotaları 840 dp+ genişlikte ortak liste–detay iskeletini kullanır. Kart seçimi aynı ana rotada `rememberSaveable` kimliği günceller; önizlemenin açık eylemi mevcut pozitif-ID detay rotasına gider. Böylece compact back davranışı, full-screen detay shell’i, route sahipliği ve repository veri çözümü tek sözleşme olarak kalır.
+
+PR19 dış giriş sözleşmesi `gymtracker://app/<route>` tabanını kullanır. Manifest yalnız `gymtracker` scheme + `app` host eşleşmesini `VIEW/DEFAULT/BROWSABLE` olarak dışa açar; her NavHost destination merkezi `DeepLinkContract` pattern’ine bağlanır. Workout/program detail argümanları `PositiveLongNavType` ile sıfır, negatif ve sayısal olmayan ID’leri route eşleşmesinden çıkarır. Geçersiz veya bilinmeyen URI güvenli `home` başlangıcında kalır.
 
 ## Hedef
 
@@ -51,10 +55,20 @@ Telefon ana hedefleri:
 | `progress/photos` | yok | Photo repository Flow |
 | `progress/load` | yok | Fatigue ViewModel |
 
+## Harici URI sözleşmesi
+
+| Ürün hedefi | URI |
+|---|---|
+| Özet | `gymtracker://app/home` |
+| Antrenman listesi/detayı | `gymtracker://app/workouts`, `gymtracker://app/workouts/{positiveId}` |
+| Program listesi/detayı | `gymtracker://app/programs`, `gymtracker://app/programs/{positiveId}` |
+| Beslenme | `gymtracker://app/nutrition` |
+| İlerleme hub/ölçüm/fotoğraf/yük | `gymtracker://app/progress[/measurements|/photos|/load]` |
+
 ## Değişiklik kontrol listesi
 
 - [[ADR_002_FIVE_TARGET_NAVIGATION]] kararı
-- System back/Activity recreation/selected-tab, compact→rail ve 839/840 dp liste–detay sınır testleri geçiyor; harici deep link ve gerçek OS process-death bekliyor
+- System back/Activity recreation/selected-tab, compact→rail, 839/840 dp liste–detay ve harici cold-start deep-link testleri geçiyor; gerçek OS process-death bekliyor
 - `SavedStateHandle`
 - Bottom bar selected state
 - Ana destination’larda state restore
