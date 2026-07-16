@@ -5,6 +5,7 @@ package com.gymtracker.ui.screens.programs
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarMonth
@@ -43,6 +45,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -55,6 +58,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -64,6 +68,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -79,6 +84,7 @@ import com.gymtracker.data.programs.orderedExercises
 import com.gymtracker.ui.components.GtEmptyState
 import com.gymtracker.ui.components.GtErrorState
 import com.gymtracker.ui.components.GtLoadingState
+import com.gymtracker.ui.components.GtListDetailScaffold
 import com.gymtracker.ui.components.GtSectionHeader
 import com.gymtracker.ui.theme.GtSize
 import com.gymtracker.ui.theme.GtSpacing
@@ -135,6 +141,52 @@ fun ProgramsContent(
     onPurchase: (Program) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var selectedProgramId by rememberSaveable { mutableStateOf(programs.firstOrNull()?.id) }
+    val selectedProgram = programs.firstOrNull { it.id == selectedProgramId } ?: programs.firstOrNull()
+
+    GtListDetailScaffold(
+        modifier = modifier,
+        listPane = { expanded ->
+            ProgramsListPane(
+                programs = programs,
+                selectedProgramId = selectedProgram?.id.takeIf { expanded },
+                onProgramSelected = { program ->
+                    if (expanded) selectedProgramId = program.id
+                    else onProgramSelected(program.id)
+                },
+                onPurchase = onPurchase
+            )
+        },
+        detailPane = {
+            if (selectedProgram == null) {
+                Box(
+                    modifier = Modifier.fillMaxSize().padding(GtSpacing.md),
+                    contentAlignment = Alignment.Center
+                ) {
+                    GtEmptyState(
+                        title = stringResource(R.string.programs_empty_title),
+                        body = stringResource(R.string.programs_empty_body)
+                    )
+                }
+            } else {
+                ProgramPreviewPane(
+                    program = selectedProgram,
+                    onOpenDetails = { onProgramSelected(selectedProgram.id) },
+                    onPurchase = { onPurchase(selectedProgram) }
+                )
+            }
+        }
+    )
+}
+
+@Composable
+private fun ProgramsListPane(
+    programs: List<Program>,
+    selectedProgramId: Long?,
+    onProgramSelected: (Program) -> Unit,
+    onPurchase: (Program) -> Unit,
+    modifier: Modifier = Modifier
+) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 300.dp),
         modifier = modifier
@@ -162,8 +214,10 @@ fun ProgramsContent(
             items(programs, key = { it.id }) { program ->
                 ProgramCard(
                     program = program,
-                    onClick = { onProgramSelected(program.id) },
-                    onPurchase = { onPurchase(program) }
+                    selected = program.id == selectedProgramId,
+                    onClick = { onProgramSelected(program) },
+                    onPurchase = { onPurchase(program) },
+                    modifier = Modifier.testTag("program-card-${program.id}")
                 )
             }
         }
@@ -172,7 +226,13 @@ fun ProgramsContent(
 }
 
 @Composable
-private fun ProgramCard(program: Program, onClick: () -> Unit, onPurchase: () -> Unit) {
+private fun ProgramCard(
+    program: Program,
+    selected: Boolean,
+    onClick: () -> Unit,
+    onPurchase: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     val locked = program.isPaid && !program.isPurchased
     val access = stringResource(
         when {
@@ -190,14 +250,21 @@ private fun ProgramCard(program: Program, onClick: () -> Unit, onPurchase: () ->
     )
     Card(
         onClick = onClick,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .semantics(mergeDescendants = true) {
                 role = Role.Button
+                this.selected = selected
                 contentDescription = description
             },
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+        colors = CardDefaults.cardColors(
+            containerColor = if (selected) MaterialTheme.colorScheme.secondaryContainer
+            else MaterialTheme.colorScheme.surface
+        ),
+        border = BorderStroke(
+            if (selected) 2.dp else 1.dp,
+            if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant
+        )
     ) {
         Column(
             modifier = Modifier.padding(GtSpacing.md),
@@ -238,6 +305,77 @@ private fun ProgramCard(program: Program, onClick: () -> Unit, onPurchase: () ->
             DifficultyBadge(program.difficulty)
             if (locked) {
                 Button(
+                    onClick = onPurchase,
+                    modifier = Modifier.fillMaxWidth().heightIn(min = GtSize.minimumTouchTarget)
+                ) {
+                    Icon(Icons.Default.ShoppingCart, contentDescription = null)
+                    Spacer(Modifier.width(GtSpacing.xs))
+                    Text(stringResource(R.string.program_purchase_price, formatPrice(program.price)))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ProgramPreviewPane(
+    program: Program,
+    onOpenDetails: () -> Unit,
+    onPurchase: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val locked = program.isPaid && !program.isPurchased
+    Surface(
+        modifier = modifier.fillMaxSize().testTag("program-preview-pane"),
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(GtSpacing.lg),
+            verticalArrangement = Arrangement.spacedBy(GtSpacing.md)
+        ) {
+            GtSectionHeader(
+                title = stringResource(R.string.program_preview_title),
+                supportingText = stringResource(R.string.program_preview_support)
+            )
+            Text(program.name, style = MaterialTheme.typography.headlineSmall)
+            Text(
+                stringResource(R.string.program_creator, program.creatorName),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
+            ProgramAccessBadge(program)
+            Text(program.description, style = MaterialTheme.typography.bodyLarge)
+            Row(horizontalArrangement = Arrangement.spacedBy(GtSpacing.xs)) {
+                ProgramMetadataChip(
+                    text = pluralStringResource(
+                        R.plurals.program_weeks,
+                        program.durationWeeks,
+                        program.durationWeeks
+                    ),
+                    icon = { Icon(Icons.Default.CalendarMonth, null, Modifier.size(GtSize.iconSmall)) }
+                )
+                ProgramMetadataChip(
+                    text = pluralStringResource(
+                        R.plurals.program_days_week,
+                        program.daysPerWeek,
+                        program.daysPerWeek
+                    ),
+                    icon = { Icon(Icons.Default.FitnessCenter, null, Modifier.size(GtSize.iconSmall)) }
+                )
+            }
+            DifficultyBadge(program.difficulty)
+            Button(
+                onClick = onOpenDetails,
+                modifier = Modifier.fillMaxWidth().heightIn(min = GtSize.minimumTouchTarget)
+                    .testTag("program-open-detail")
+            ) {
+                Text(stringResource(R.string.adaptive_open_full_details))
+            }
+            if (locked) {
+                OutlinedButton(
                     onClick = onPurchase,
                     modifier = Modifier.fillMaxWidth().heightIn(min = GtSize.minimumTouchTarget)
                 ) {

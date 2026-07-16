@@ -4,9 +4,12 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,11 +25,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -35,6 +40,61 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.gymtracker.ui.theme.GtSize
 import com.gymtracker.ui.theme.GtSpacing
+
+enum class GtListDetailLayout {
+    LIST_ONLY,
+    LIST_DETAIL
+}
+
+val GtListDetailMinWidth = 840.dp
+
+fun listDetailLayoutForWidth(width: androidx.compose.ui.unit.Dp): GtListDetailLayout =
+    if (width >= GtListDetailMinWidth) GtListDetailLayout.LIST_DETAIL
+    else GtListDetailLayout.LIST_ONLY
+
+/**
+ * Keeps compact navigation route-based while exposing a persistent selection preview on larger
+ * windows. The caller owns the selected item so configuration/process restoration can use
+ * rememberSaveable without coupling this shared layout to a specific entity type.
+ */
+@Composable
+fun GtListDetailScaffold(
+    listPane: @Composable (expanded: Boolean) -> Unit,
+    detailPane: @Composable () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+        when (listDetailLayoutForWidth(maxWidth)) {
+            GtListDetailLayout.LIST_ONLY -> Box(
+                modifier = Modifier.fillMaxSize().testTag("list-only-layout")
+            ) {
+                listPane(false)
+            }
+
+            GtListDetailLayout.LIST_DETAIL -> Row(
+                modifier = Modifier.fillMaxSize().testTag("list-detail-layout")
+            ) {
+                Box(
+                    modifier = Modifier
+                        .weight(0.54f)
+                        .fillMaxHeight()
+                        .testTag("list-pane")
+                ) {
+                    listPane(true)
+                }
+                VerticalDivider(modifier = Modifier.fillMaxHeight())
+                Box(
+                    modifier = Modifier
+                        .weight(0.46f)
+                        .fillMaxHeight()
+                        .testTag("detail-pane")
+                ) {
+                    detailPane()
+                }
+            }
+        }
+    }
+}
 
 @Composable
 fun GtSectionHeader(
