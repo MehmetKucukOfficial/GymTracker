@@ -2,7 +2,7 @@
 type: atlas
 status: current
 implementation_status: active
-verified_commit: 21bc385
+verified_commit: abd3fbe
 updated: 2026-07-16
 tags: [gymtracker/workflow, gymtracker/source-map]
 ---

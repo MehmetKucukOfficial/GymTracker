@@ -2,7 +2,7 @@
 type: roadmap
 status: current
 implementation_status: active
-verified_commit: 21bc385
+verified_commit: abd3fbe
 updated: 2026-07-16
 tags: [gymtracker/roadmap, gymtracker/workflow]
 ---
@@ -127,9 +127,9 @@ Kabul: 28 JVM + 54 API 34 instrumentation testi; lint ve assemble başarılı.
 ## PR 15 — CI + minified release hardening
 
 Node: [[ARCH_BUILD_DI]], [[TEST_MATRIX]], [[RISK_REGISTER_GRAPH]].
-Durum: `21bc385` kod commit’i `codex/ci-release-hardening` dalında yerel kapılardan geçti; PR14 dalını hedefleyen stacked draft PR olarak yayınlanacak.
+Durum: `abd3fbe` kod commit’i `codex/ci-release-hardening` dalında PR14’ü hedefleyen stacked draft PR #8 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/8
 Çıktı: Linux-executable wrapper, tek `ciQuality`, PR/main quality job’u, API 34 device/golden job’u, 14 günlük rapor/release artifact’leri, R8 + resource shrinking ve APK/AAB/mapping üretimi.
-Kabul: 28 JVM + 54 API 34 instrumentation testi; lint/debug; 2.56 MB minified APK, 4.81 MB AAB ve mapping başarılı. İlk hosted GitHub Actions koşusu yayın sonrası doğrulanacak.
+Kabul: 28 JVM + 54 API 34 instrumentation testi; lint/debug; 2.56 MB minified APK, 4.81 MB AAB ve mapping başarılı. Hosted koşu `29459249716` quality 8 dk 51 sn ve API 34 device/golden 13 dk 13 sn ile tamamen yeşil.
 
 ## Sonraki dikey dilimler
 

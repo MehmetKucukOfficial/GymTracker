@@ -3,7 +3,7 @@ aliases: [GymTracker Graph Start, Başlangıç]
 type: moc
 status: current
 implementation_status: mixed
-verified_commit: 21bc385
+verified_commit: abd3fbe
 updated: 2026-07-16
 tags: [gymtracker/moc, gymtracker/graph]
 ---
@@ -67,8 +67,8 @@ tags: [gymtracker/moc, gymtracker/graph]
 
 ## Grafın güncellik durumu
 
-- Kod baseline: `21bc385` (`codex/ci-release-hardening`, PR14 üstüne stacked)
-- Kod değişikliği: tek yerel/CI kalite kapısı, GitHub Actions quality + API 34 device job’ları ve R8/resource-shrunk release APK/AAB/mapping üretimi doğrulandı
+- Kod baseline: `abd3fbe` (`codex/ci-release-hardening`, PR14 üstüne stacked draft PR #8)
+- Kod değişikliği: tek yerel/CI kalite kapısı, KVM hızlandırmalı GitHub Actions quality + API 34 device job’ları ve R8/resource-shrunk release APK/AAB/mapping üretimi yerel ve hosted koşuda doğrulandı
 - Dokümanlar: PR15 build/CI/release/test/risk/roadmap sözleşmeleriyle senkron
 - Son tam doğrulama: 2026-07-16
-- Aktif önerilen iş: PR15’i stacked draft PR olarak yayınla, hosted CI sonucunu doğrula ve sonra kullanıcı komutunu bekle
+- Aktif önerilen iş: PR15 tamamlandı; PR16 kapsamını başlatmadan kullanıcı komutunu bekle
