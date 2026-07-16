@@ -2,7 +2,7 @@
 type: architecture
 status: current
 implementation_status: current
-verified_commit: 0fa2383
+verified_commit: 3f2f8cf
 updated: 2026-07-16
 source_files:
   - .github/workflows/android-ci.yml
@@ -70,6 +70,6 @@ tags: [gymtracker/architecture, gymtracker/build, gymtracker/quality]
 3. Branch protection içinde quality + API 34 job’larını required check yapma
 4. Kontrollü dependency güncellemeleri
 
-Hosted kabul: PR #10 koşusu `29474876318` üzerinde quality işi 11 dk 08 sn, API 34 cihaz/golden işi 14 dk 06 sn sürdü; 30 JVM ve 58 instrumentation testi sıfır hatayla geçti. Linux runner KVM erişimi workflow içinde açıkça hazırlanır. PR #1–#10 merge commit ile `master`a alındı; push trigger’ındaki eski `main` adı `master` olarak düzeltildi.
+Hosted kabul: PR #11 koşusu `29497592820` ve otomatik `master` push koşusu `29499237460` tamamen yeşildir. Nihai master koşusunda quality işi 11 dk 54 sn, API 34 cihaz/golden işi 9 dk 26 sn sürdü; artifact XML 58 instrumentation testi, 0 failure/error/skipped gösterdi. Linux runner KVM erişimi workflow içinde açıkça hazırlanır. PR #1–#11 merge commit ile `master`a alındı; push trigger’ındaki eski `main` adı `master` olarak düzeltildi ve gerçek varsayılan dal üzerinde doğrulandı.
 
 Yol haritası: [[ROADMAP_EXECUTION_GRAPH#PR 1 — Build hygiene]].

@@ -2,7 +2,7 @@
 type: roadmap
 status: current
 implementation_status: active
-verified_commit: 0fa2383
+verified_commit: 3f2f8cf
 updated: 2026-07-16
 tags: [gymtracker/roadmap, gymtracker/workflow]
 ---
@@ -34,7 +34,7 @@ flowchart TD
 
 ## Birleştirme durumu
 
-GitHub PR #1–#10, 2026-07-16 tarihinde sırayla merge commit kullanılarak `master`a alındı. Her adımda çocuk PR önce `master`a yeniden hedeflendi; yalnız kendi commit’lerinin kaldığı ve clean/mergeable olduğu doğrulandı. Son birleşik baseline `be2d8c5`; commit soy ağacı ve on ayrı first-parent merge commit korunur.
+GitHub PR #1–#11, 2026-07-16 tarihinde sırayla merge commit kullanılarak `master`a alındı. İlk on stacked PR için her adımda çocuk PR `master`a yeniden hedeflendi; yalnız kendi commit’lerinin kaldığı ve clean/mergeable olduğu doğrulandı. PR #11 post-merge CI düzeltmesini taşıdı. Son code baseline `3f2f8cf`; commit soy ağacı ve on bir ayrı first-parent merge commit korunur. Açık PR kalmadı ve kaynak dallar silinmedi. Otomatik master kabul koşusu `29499237460` tamamen yeşildir.
 
 ## PR 1 — Build hygiene
 

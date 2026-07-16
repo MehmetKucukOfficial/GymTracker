@@ -2,7 +2,7 @@
 type: quality
 status: current
 implementation_status: mixed
-verified_commit: 0fa2383
+verified_commit: 3f2f8cf
 updated: 2026-07-16
 tags: [gymtracker/quality, gymtracker/testing]
 ---
@@ -41,6 +41,8 @@ tags: [gymtracker/quality, gymtracker/testing]
 - PR16: 2 Baseline Profile üretici testi sıfır hatayla release baseline/startup profili yazdı; startup None/Partial, Home scroll ve Workout macrobenchmark senaryoları API 34 emülatörde çalıştı. Fiziksel cihaz performans kabulü açık.
 - PR16 hosted GitHub Actions koşusu `29473550009`: quality ve API 34 device/golden işleri tamamen yeşil.
 - PR17 hosted GitHub Actions koşusu `29474876318`: quality 11m08s; API 34 device/golden 14m06s; artifact XML 58 test, 0 failure/error/skipped.
+- PR #11 post-merge bakım koşusu `29497592820`: quality 10m49s; API 34 device/golden 13m23s; artifact XML 58 test, 0 failure/error/skipped.
+- Otomatik `master` kabul koşusu `29499237460` (`3f2f8cf`): quality 11m54s; API 34 device/golden 9m26s; artifact XML 58 test, 0 failure/error/skipped.
 - `releaseDistribution` dummy upload keystore ile APK v2/v3, AAB JAR imzası ve embedded profile girdilerini doğruladı; secretsiz çağrı dört eksik environment değerini fail-fast raporladı.
 
 ## Feature matrisi

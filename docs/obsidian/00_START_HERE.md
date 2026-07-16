@@ -3,7 +3,7 @@ aliases: [GymTracker Graph Start, Başlangıç]
 type: moc
 status: current
 implementation_status: mixed
-verified_commit: 0fa2383
+verified_commit: 3f2f8cf
 updated: 2026-07-16
 tags: [gymtracker/moc, gymtracker/graph]
 ---
@@ -68,8 +68,8 @@ tags: [gymtracker/moc, gymtracker/graph]
 
 ## Grafın güncellik durumu
 
-- Master baseline: `be2d8c5`; GitHub PR #1–#10 merge commit ile sırayla birleştirildi, açık stacked PR kalmadı
-- Aktif bakım baseline: `0fa2383` (`codex/post-merge-baseline`); CI push hedefi varsayılan `master` dalıyla eşlendi
-- Dokümanlar: post-merge build/test/risk/roadmap/handoff durumuyla senkron
+- Master code baseline: `3f2f8cf`; GitHub PR #1–#11 merge commit ile sırayla birleştirildi, açık PR kalmadı ve kaynak dallar korundu
+- PR #11, CI push hedefini varsayılan `master` dalıyla eşledi; otomatik master koşusu `29499237460` tamamen yeşil
+- Dokümanlar: birleşik master build/test/risk/roadmap/handoff durumuyla senkron
 - Son tam doğrulama: 2026-07-16
-- Aktif önerilen iş: post-merge bakım PR’ını yayınla, final `master` hosted run’ını doğrula, sonra kullanıcı komutunu bekle
+- Aktif önerilen iş: kullanıcıdan gelecek sonraki geliştirme komutunu bekle
