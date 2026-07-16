@@ -2,7 +2,7 @@
 type: quality
 status: current
 implementation_status: mixed
-verified_commit: a3bdbe6
+verified_commit: 8a2d350
 updated: 2026-07-16
 tags: [gymtracker/quality, gymtracker/testing]
 ---
@@ -21,6 +21,7 @@ tags: [gymtracker/quality, gymtracker/testing]
 - [[NavigationContractTest]] 5 hedef sırasını, nested route sahipliğini, detail görünürlük politikasını ve pozitif ID kuralını; `DeepLinkContractTest` on dış URI pattern’ini, trusted scheme/host ve bozuk ID reddini doğrular.
 - [[HomeDashboardPeriodTest]] Istanbul takvim/DST gün sınırını; [[HomeDashboardRepositoryTest]] completed/active workout, measurement ve nutrition Flow’larının reaktif birleşimini doğrular.
 - [[NavigationSmokeTest]] back, selected tab, workout/program ID detail ve Activity recreation davranışını; `DeepLinkNavigationTest` manifest çözümü, cold-start progress child, pozitif program detail, invalid-ID safe fallback ve recreation davranışını gerçek Compose UI üzerinde doğrular.
+- `ProcessDeathNavigationTest`, hedef uygulamadan ayrı instrumentation sürecinde Progress Photos ve pozitif-ID Program detail görevini arka plana alır; `am kill` ile eski PID’nin yok olduğunu, aynı task öne getirildiğinde yeni PID ve doğru destination’ın geri geldiğini doğrular.
 - `HomeLayoutConfigTest` compact/expanded ve %200 font kolon politikasını JVM’de doğrular.
 - `HomeScreenTest` light/dark render, %200 font empty state, sahte sıfır yokluğu, birleşik metric semantics ve error retry davranışını doğrular.
 - `WorkoutRepositoryTest` eşzamanlı start/resume çağrılarının tek aktif ID üretmesini ve tamamlanan seansın mutation’lara kapanmasını doğrular.
@@ -37,6 +38,7 @@ tags: [gymtracker/quality, gymtracker/testing]
 - `MuscleLoadCalculatorTest`, `WorkoutDaoTest`, `MutationContractTest` ve `MuscleLoadScreenTest` recency/personal-bodyweight/fallback/invalid ölçüm/unknown/cap kurallarını, completed-only + latest-valid-weight reaktif query’lerini ve kalibrasyon kaynağı gösteren renk bağımsız adaptive UI’ı doğrular.
 - `ExerciseIdentityTest`, `ProgramSeedInitializerTest`, `ProgramRepositoryTest`, `WorkoutRepositoryTest` ve `ProgramsScreenTest`; unique/locale-independent ID, 5/23/108 seed, locked guard, atomic plan copy, incomplete-set finish engeli ve adaptive UI’yı doğrular.
 - Pixel 6 Pro API 34 emülatöründe 66 instrumentation testi ve 34 JVM testi, 0 failure ile geçer.
+- Ayrı `:baselineprofile` benchmarkRelease kabul paketinde 2 gerçek süreç-ölümü testi, 0 failure ile geçer.
 - GitHub Actions koşusu `29459249716`: quality 8 dk 51 sn; KVM hızlandırmalı API 34 device/golden 13 dk 13 sn; artifact XML toplamı 54 test, 0 failure/error/skipped.
 - PR16: 2 Baseline Profile üretici testi sıfır hatayla release baseline/startup profili yazdı; startup None/Partial, Home scroll ve Workout macrobenchmark senaryoları API 34 emülatörde çalıştı. Fiziksel cihaz performans kabulü açık.
 - PR16 hosted GitHub Actions koşusu `29473550009`: quality ve API 34 device/golden işleri tamamen yeşil.
@@ -52,11 +54,11 @@ tags: [gymtracker/quality, gymtracker/testing]
 | Alan | Unit | Room/instrumentation | Compose/UI | Smoke |
 |---|---|---|---|---|
 | Home | aggregate + clock + adaptive policy | summary queries | empty/content/error, semantics, light/dark, %200 font | dashboard açılış |
-| Workout | state/validation + 839/840 layout | v3→v7, transaction/cascade/single-active/read-only/planned set | active/history/planned completion, expanded list-detail, golden, light/dark, %200 font | external positive-ID deep link + recreation; process death bekliyor |
+| Workout | state/validation + 839/840 layout | v3→v7, transaction/cascade/single-active/read-only/planned set | active/history/planned completion, expanded list-detail, golden, light/dark, %200 font | external positive-ID deep link + recreation |
 | Nutrition | totals/DST/parser/goal/snapshot scale | day query/update/delete/same-ID undo | over-goal/empty/edit action/dark/%200/English | gerçek process-death bekliyor |
 | Measurements | validation/trend/period | v3→v8, date index/range/update/delete/same-ID undo | latest/history/chart/period/empty/dark/%200/English | process-death/timezone bekliyor |
-| Photos | input/limit/media bounds/backup policy | v3→v9 + v8→v9/import/EXIF/thumbnail/delete/reconcile/legacy-upgrade rollback | thumbnail grid/v0 reselect/v1 optimize/viewer/dark/%200 | process kill/restart/reboot/low-storage bekliyor |
-| Programs | stable ID/content + 839/840 layout | idempotent 5/23/108 seed, v6→v7 JSON migration, atomic plan copy | list/detail/locked/start, expanded selection/restoration, golden, dark/%200 | program→workout + Activity recreation |
+| Photos | input/limit/media bounds/backup policy | v3→v9 + v8→v9/import/EXIF/thumbnail/delete/reconcile/legacy-upgrade rollback | thumbnail grid/v0 reselect/v1 optimize/viewer/dark/%200 | alt rota gerçek process-death; reboot/low-storage bekliyor |
+| Programs | stable ID/content + 839/840 layout | idempotent 5/23/108 seed, v6→v7 JSON migration, atomic plan copy | list/detail/locked/start, expanded selection/restoration, golden, dark/%200 | positive-ID detail Activity recreation + gerçek process-death |
 | Muscle load | activation/decay/personal bodyweight/fallback/unknown | completed-only set + latest-valid-weight Flow | map/list/calibration/methodology/dark/%200 | midnight + TalkBack bekliyor |
 
 ## Room ve migration
@@ -81,6 +83,6 @@ Home’un takvim sınırı saf fonksiyonla testlidir; canlı rollover akışına
 
 ## CI sırası
 
-`ciQuality`: unit → lintDebug → debug APK → minified/resource-shrunk release APK + AAB + mapping + embedded Baseline Profile doğrulaması. Pull request ve `master` push’unda quality job’u geçtikten sonra API 34 Pixel 6 Pro üzerinde 66 Room/Compose/navigation/golden cihaz testi çalışır. Lint, release ve device raporları artifact olarak saklanır. Production signing manuel protected-environment kapısıdır; fiziksel cihaz benchmark ve Play internal-track smoke’u ayrıca gerekir.
+`ciQuality`: unit → lintDebug → debug APK → minified/resource-shrunk release APK + AAB + mapping + embedded Baseline Profile doğrulaması. Pull request ve `master` push’unda quality job’u geçtikten sonra API 34 Pixel 6 Pro üzerinde 66 Room/Compose/navigation/golden cihaz testi ve ayrı benchmarkRelease sürecinde 2 gerçek process-death testi çalışır. Her iki modülün device raporları artifact olarak saklanır. Production signing manuel protected-environment kapısıdır; fiziksel cihaz benchmark ve Play internal-track smoke’u ayrıca gerekir.
 
 Definition of Done ayrıntısı: [[GELISTIRME_MASTER_PLANI#Definition of Done]].

@@ -3,7 +3,7 @@ aliases: [GymTracker Graph Start, Başlangıç]
 type: moc
 status: current
 implementation_status: mixed
-verified_commit: a3bdbe6
+verified_commit: 8a2d350
 updated: 2026-07-16
 tags: [gymtracker/moc, gymtracker/graph]
 ---
@@ -21,7 +21,7 @@ tags: [gymtracker/moc, gymtracker/graph]
 - Local-first; backend ve gerçek ödeme yok
 - 5 ana navigation hedefi, 3 İlerleme alt hedefi, ID tabanlı workout/program detayları
 - 82 benzersiz egzersiz, 108 hazır program egzersiz referansı
-- `ciQuality` debug + minified release APK/AAB üretir; 34 JVM + 66 cihaz testi geçiyor; lint 0 hata
+- `ciQuality` debug + minified release APK/AAB üretir; 34 JVM + 66 app cihaz + 2 gerçek process-death testi geçiyor; lint 0 hata
 - Workout ve Programs compact’ta ID rotası, 840 dp+ genişlikte ortak liste–özet kullanır; dört kalıcı golden baseline vardır
 - Destructive migration, yeni fotoğraf URI kaybı, seed race ve temel navigation/state riskleri kapatıldı veya azaltıldı
 
@@ -68,9 +68,9 @@ tags: [gymtracker/moc, gymtracker/graph]
 
 ## Grafın güncellik durumu
 
-- Master code baseline: `52da93a`; GitHub PR #1–#12 merge commit ile sırayla birleştirildi ve kaynak dallar korundu
+- Master code baseline: `1d642ad`; GitHub PR #1–#13 merge commit ile sırayla birleştirildi ve kaynak dallar korundu
 - PR #11, CI push hedefini varsayılan `master` dalıyla eşledi; otomatik master koşusu `29499237460` tamamen yeşil
-- Aktif PR19 code baseline: `a3bdbe6` (`codex/external-deep-links`); yerel kabul tamamlandı
-- Dokümanlar: PR19 navigation/ADR/test/risk/roadmap/handoff durumuyla senkron
+- Aktif PR20 code baseline: `8a2d350` (`codex/process-death-acceptance`); yerel 34 JVM + 66 app device + 2 process-death kabulü tamamlandı
+- Dokümanlar: PR20 navigation/ADR/test/risk/performance/roadmap/handoff durumuyla senkron
 - Son tam doğrulama: 2026-07-16
-- Aktif önerilen iş: PR19’u yayınla ve hosted quality/API 34 kabulünü doğrula
+- Aktif önerilen iş: PR20’yi yayınla ve hosted quality/API 34 + ayrı process-death kabulünü doğrula

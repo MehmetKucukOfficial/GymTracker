@@ -2,7 +2,7 @@
 type: atlas
 status: current
 implementation_status: active
-verified_commit: a3bdbe6
+verified_commit: 8a2d350
 updated: 2026-07-16
 tags: [gymtracker/workflow, gymtracker/source-map]
 ---
@@ -13,14 +13,14 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 
 | Dosya | Sorumluluk | Bağ |
 |---|---|---|
-| `.github/workflows/android-ci.yml` | PR/`master` quality + API 34 device/golden CI ve artifact’ler | [[ARCH_BUILD_DI]] |
+| `.github/workflows/android-ci.yml` | PR/`master` quality + API 34 app/golden + ayrı-process task-restoration CI ve artifact’ler | [[ARCH_BUILD_DI]], [[TEST_MATRIX]] |
 | `.github/workflows/android-release.yml` | protected production secret’larıyla signed APK/AAB üretim ve doğrulama | [[ADR_009_SECRET_BACKED_RELEASES]] |
 | `build.gradle.kts` | root plugin alias + tek `ciQuality` kapısı | [[ARCH_BUILD_DI]] |
 | `settings.gradle.kts` | repositories + `:app` + `:baselineprofile` | [[ARCH_BUILD_DI]] |
 | `gradle/libs.versions.toml` | dependency/plugin versions | [[ARCH_BUILD_DI]] |
 | `gradle/wrapper/gradle-wrapper.properties`, `gradlew` | Gradle 8.4 URL + Linux çalıştırılabilir wrapper | [[ARCH_BUILD_DI]] |
 | `app/build.gradle.kts` | Android/Compose/Hilt/Room + minified release, signing/profile doğrulama görevleri | [[ARCH_BUILD_DI]] |
-| `baselineprofile/` | startup/Home scroll/Workout profile producer ve macrobenchmark’lar | [[PERFORMANCE_BASELINE]] |
+| `baselineprofile/` | startup/Home scroll/Workout profile producer, macrobenchmark’lar ve hedef uygulamadan ayrı gerçek process-death kabul testi | [[PERFORMANCE_BASELINE]], [[ARCH_NAVIGATION]] |
 | `app/src/release/generated/baselineProfiles/` | ölçülerek üretilen release Baseline + Startup Profile | [[PERFORMANCE_BASELINE]] |
 | `app/proguard-rules.pro` | yalnız kanıtla eklenecek proje R8 istisnaları | [[ARCH_BUILD_DI]] |
 | `AndroidManifest.xml` | permission/app/activity/backup + trusted external deep-link intent filter | [[ARCH_BUILD_DI]], [[ARCH_NAVIGATION]] |

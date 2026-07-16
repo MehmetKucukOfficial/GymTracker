@@ -4,7 +4,7 @@ adr: 2
 status: accepted
 implementation_status: implemented
 date: 2026-07-14
-verified_commit: a3bdbe6
+verified_commit: 8a2d350
 updated: 2026-07-16
 tags: [gymtracker/decision, gymtracker/navigation, gymtracker/design]
 ---
@@ -34,7 +34,8 @@ Dış giriş: `gymtracker://app` custom scheme/host sözleşmesi bütün ürün 
 - [x] Workout/program detail yalnız pozitif DB ID taşır ve `SavedStateHandle` ile yeniden çözülür.
 - [x] Back, seçili sekme ve Activity recreation Compose testleri geçer.
 - [x] Harici deep link sözleşmeleri; manifest çözümü, cold start, detail ID, safe fallback ve recreation testli.
+- [x] Uygulama dışı test süreci; arka plan `am kill`, PID değişimi ve aynı Android task üzerinden alt rota/detail restorasyonunu doğrular.
 - [x] 600 dp ve üzerinde aynı beş hedefi kullanan navigation rail.
-- [ ] Feature bazlı medium/expanded list-detail düzenleri.
+- [x] Workout ve Programs için 840 dp+ ortak list-detail düzenleri.
 
 Bağlar: [[ARCH_NAVIGATION]], [[SCREEN_BLUEPRINT_GRAPH]].
