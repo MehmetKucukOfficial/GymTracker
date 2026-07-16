@@ -2,8 +2,8 @@
 type: design
 status: current
 implementation_status: current
-verified_commit: 9c90471
-updated: 2026-07-15
+verified_commit: 41c2ceb
+updated: 2026-07-16
 source_files:
   - app/src/main/java/com/gymtracker/ui/theme/Theme.kt
   - app/src/main/java/com/gymtracker/ui/theme/DesignTokens.kt
@@ -34,6 +34,8 @@ tags: [gymtracker/design, gymtracker/architecture]
 - Progress Hub, Photos ve Muscle Load ortak tokenları; scroll/adaptive grid; açık empty/loading/error state’leri; renk bağımsız load listesi ve %200 font düzeni kullanır.
 - Programs adaptive kart grid’i, ilişkisel gün accordion’ları, demo erişim/locked/empty/error state’leri ve plan→workout CTA’ları ortak token/resource/semantics sözleşmesini kullanır.
 - Kullanıcıya görünen Home, Workout, Nutrition, Measurements, Progress Hub, Photos, Muscle Load, Programs ve alt navigasyon metinleri string resource’a taşındı.
+- Varsayılan Türkçe ve İngilizce katalogları 350/350 anahtar eşitliğine sahiptir; kas adları ve para biçimi de aktif locale’e bağlıdır.
+- Compact shell alt bar, 600 dp+ shell navigation rail kullanır; ikonlar yinelenen TalkBack açıklaması üretmez ve Progress Hub kartları birleşik button semantics sunar.
 
 ## Token ve tüketim grafı
 
@@ -56,8 +58,8 @@ Detaylı değerler: [[GELISTIRME_MASTER_PLANI#5. Görsel tasarım yönü]].
 ## Ortak bileşen durumu
 
 - `current`: GtMetricCard, GtSectionHeader, GtQuickActionCard, GtEmptyState, GtLoadingState, GtErrorState
-- `partial`: adaptive Home/Workout/Nutrition/Measurements/Progress/Programs content ve font-aware bottom navigation
-- `next`: GtAdaptiveScaffold / GtTopAppBar
+- `current-core`: adaptive Home/Workout/Nutrition/Measurements/Progress/Programs content, font-aware bottom navigation ve 600 dp+ navigation rail
+- `next`: ortak GtAdaptiveScaffold / GtTopAppBar ve feature list-detail kalıpları
 - `next`: GtPrimaryButton / GtTonalButton / GtProgressCard / skeleton
 - GtNumberField / GtNumberStepper
 - GtDateHeader
@@ -66,10 +68,10 @@ Detaylı değerler: [[GELISTIRME_MASTER_PLANI#5. Görsel tasarım yönü]].
 
 ## Kalite sözleşmesi ve kanıt
 
-Her bileşen: normal/disabled/loading/error, light/dark, büyük font preview, 48dp touch, semantics, screenshot testi. Primary renk error yerine kullanılmaz; renk tek bilgi kanalı değildir. PR7 Home, PR8 Workout, PR9 Nutrition/Measurements, PR10 Progress/Photos/Load ve PR11 Programs light/dark/%200 font gerçek API 34 görselleriyle; state’ler Compose UI testleriyle doğrulandı. Disabled/loading varyantları ve kalıcı golden altyapısı bütün bileşenler için henüz tamamlanmadı.
+Her bileşen: normal/disabled/loading/error, light/dark, büyük font preview, 48dp touch, semantics, screenshot testi. Primary renk error yerine kullanılmaz; renk tek bilgi kanalı değildir. PR14 kalıcı pixel-golden karşılaştırıcısını ve Progress Hub için English/light ile Turkish/dark/%200 baseline’larını ekledi. Tüm ekranlara golden yayılımı ile disabled/loading varyantları henüz tamamlanmadı.
 
 Görsel kanıtlar (build artifact): önceki PR görselleri; PR12 `pr12-nutrition-light.png`, `pr12-measurements-light.png`, `pr12-nutrition-dark-font200.png`, `pr12-measurements-dark-font200.png`, `pr12-measurements-chart-dark-font200.png`.
 
 ## Uygulama sırası
 
-Home, active/read-only/planned Workout, Nutrition/Measurements, Progress/Photos/Load ve Programs çekirdek ekranları tamamlandı → uygulama geneli adaptive/golden. Ekran hedefleri: [[SCREEN_BLUEPRINT_GRAPH]].
+Home, active/read-only/planned Workout, Nutrition/Measurements, Progress/Photos/Load ve Programs çekirdek ekranları; uygulama geneli ikinci locale ve adaptive navigation shell’i tamamlandı → sıradaki tasarım işi ortak scaffold/list-detail ve golden kapsamını genişletmektir. Ekran hedefleri: [[SCREEN_BLUEPRINT_GRAPH]].

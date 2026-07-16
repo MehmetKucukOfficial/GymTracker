@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+<resources>
     <string name="app_name">GymTracker</string>
     <string name="nav_home">Özet</string>
     <string name="nav_workout">Antrenman</string>
@@ -225,6 +225,7 @@
     <string name="progress_hub_load">Kas yükü</string>
     <string name="progress_hub_load_support">Tamamlanan setlerin kas gruplarına etkisini gör.</string>
     <string name="progress_hub_open">Aç</string>
+    <string name="progress_hub_item_description">%1$s. %2$s</string>
 
     <string name="progress_photos_title">İlerleme fotoğrafları</string>
     <string name="progress_photos_subtitle">Aynı açıdan çekimlerle değişimini görsel olarak karşılaştır.</string>
@@ -289,6 +290,38 @@
     <string name="muscle_load_list_support">Renkten bağımsız seviye ve skor karşılığı.</string>
     <string name="muscle_load_score">Skor %1$.2f</string>
     <string name="muscle_load_row_description">%1$s kas yükü %2$s, skor %3$.2f</string>
+    <string name="muscle_upper_back">Üst sırt</string>
+    <string name="muscle_lats">Latissimus</string>
+    <string name="muscle_traps">Trapez</string>
+    <string name="muscle_front_delts">Ön omuz</string>
+    <string name="muscle_side_delts">Yan omuz</string>
+    <string name="muscle_rear_delts">Arka omuz</string>
+    <string name="muscle_forearms">Önkol</string>
+    <string name="muscle_abs">Karın</string>
+    <string name="muscle_obliques">Yan karın</string>
+    <string name="muscle_lower_back">Alt sırt</string>
+    <string name="muscle_glutes">Kalça</string>
+    <string name="muscle_quads">Quadriceps</string>
+    <string name="muscle_hamstrings">Hamstring</string>
+    <string name="muscle_calves">Baldır</string>
+    <string name="muscle_hip_flexors">Kalça fleksörü</string>
+    <string name="muscle_neck">Boyun</string>
+    <string name="muscle_serratus">Serratus</string>
+    <string name="muscle_adductors">Adduktör</string>
+    <string name="muscle_glute_medius">Kalça yanı</string>
+    <string name="muscle_chest_upper">Üst göğüs</string>
+    <string name="muscle_chest_mid">Orta göğüs</string>
+    <string name="muscle_chest_lower">Alt göğüs</string>
+    <string name="muscle_biceps_long">Biceps uzun baş</string>
+    <string name="muscle_biceps_short">Biceps kısa baş</string>
+    <string name="muscle_brachialis">Brachialis</string>
+    <string name="muscle_triceps_lateral">Triceps dış baş</string>
+    <string name="muscle_triceps_long">Triceps uzun baş</string>
+    <string name="muscle_triceps_medial">Triceps iç baş</string>
+    <string name="muscle_teres">Kanat altı kası</string>
+    <string name="muscle_internal_obliques">İç eğik kaslar</string>
+    <string name="muscle_transverse_abdominis">Derin karın kası</string>
+    <string name="muscle_rhomboids">Romboid kaslar</string>
 
     <string name="programs_title">Programlar</string>
     <string name="programs_subtitle">Hedefine uygun planı incele ve antrenmana hazır setlerle başla.</string>

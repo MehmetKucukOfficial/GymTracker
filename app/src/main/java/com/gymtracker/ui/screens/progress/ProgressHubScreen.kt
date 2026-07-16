@@ -24,6 +24,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.gymtracker.R
 import com.gymtracker.ui.components.GtSectionHeader
@@ -36,7 +41,8 @@ fun ProgressHubScreen(onNavigate: (String) -> Unit) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = GtSpacing.md),
+            .padding(horizontal = GtSpacing.md)
+            .testTag("progress-hub-content"),
         contentPadding = androidx.compose.foundation.layout.PaddingValues(vertical = GtSpacing.lg),
         verticalArrangement = Arrangement.spacedBy(GtSpacing.sm)
     ) {
@@ -52,6 +58,7 @@ fun ProgressHubScreen(onNavigate: (String) -> Unit) {
                 title = stringResource(R.string.progress_hub_measurements),
                 description = stringResource(R.string.progress_hub_measurements_support),
                 icon = Icons.Default.Straighten,
+                testTag = "progress-destination-${Screen.Measurements.route}",
                 onClick = { onNavigate(Screen.Measurements.route) }
             )
         }
@@ -60,6 +67,7 @@ fun ProgressHubScreen(onNavigate: (String) -> Unit) {
                 title = stringResource(R.string.progress_hub_photos),
                 description = stringResource(R.string.progress_hub_photos_support),
                 icon = Icons.Default.PhotoLibrary,
+                testTag = "progress-destination-${Screen.ProgressPhotos.route}",
                 onClick = { onNavigate(Screen.ProgressPhotos.route) }
             )
         }
@@ -68,6 +76,7 @@ fun ProgressHubScreen(onNavigate: (String) -> Unit) {
                 title = stringResource(R.string.progress_hub_load),
                 description = stringResource(R.string.progress_hub_load_support),
                 icon = Icons.Default.AccessibilityNew,
+                testTag = "progress-destination-${Screen.Fatigue.route}",
                 onClick = { onNavigate(Screen.Fatigue.route) }
             )
         }
@@ -79,11 +88,23 @@ private fun ProgressDestinationCard(
     title: String,
     description: String,
     icon: ImageVector,
+    testTag: String,
     onClick: () -> Unit
 ) {
+    val accessibilityDescription = stringResource(
+        R.string.progress_hub_item_description,
+        title,
+        description
+    )
     Card(
         onClick = onClick,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag(testTag)
+            .semantics(mergeDescendants = true) {
+                role = Role.Button
+                contentDescription = accessibilityDescription
+            },
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
     ) {
@@ -108,7 +129,7 @@ private fun ProgressDestinationCard(
             }
             Icon(
                 imageVector = Icons.Default.ChevronRight,
-                contentDescription = stringResource(R.string.progress_hub_open),
+                contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }

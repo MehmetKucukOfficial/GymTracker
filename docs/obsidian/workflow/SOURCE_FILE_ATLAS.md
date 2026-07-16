@@ -2,7 +2,7 @@
 type: atlas
 status: current
 implementation_status: active
-verified_commit: 5c3ce35
+verified_commit: 41c2ceb
 updated: 2026-07-16
 tags: [gymtracker/workflow, gymtracker/source-map]
 ---
@@ -20,7 +20,7 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | `app/build.gradle.kts` | Android/Compose/Hilt/Room config | [[ARCH_BUILD_DI]] |
 | `AndroidManifest.xml` | permission/app/activity/backup | [[ARCH_BUILD_DI]] |
 | `GymTrackerApp.kt` | Hilt application | [[ARCH_CURRENT_SYSTEM]] |
-| `MainActivity.kt` | theme + scaffold + NavHost | [[ARCH_NAVIGATION]] |
+| `MainActivity.kt` | theme + compact bottom-bar / 600 dp+ rail adaptive scaffold + NavHost | [[ARCH_NAVIGATION]] |
 
 ## Veri
 
@@ -47,7 +47,7 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 
 | Dosya | Sorumluluk | Kritik bağ |
 |---|---|---|
-| `domain/MuscleGroup.kt` | 31 kas + 82 egzersiz/activation | Workout, Load, Programs |
+| `domain/MuscleGroup.kt` | 32 kas + 82 egzersiz/activation | Workout, Load, Programs |
 | `domain/MuscleLoadCalculator.kt` | activation + recency + kişisel bodyweight/fallback → kas yükü | Load |
 | `data/workout/CompletedSetForLoad.kt` | completed-set DAO projeksiyonu | Load |
 | `domain/ProgramExercise.kt` | legacy JSON migration modeli + locale-independent stable ID | Programs, Workout |
@@ -58,7 +58,7 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | Dosya | Sorumluluk | Not |
 |---|---|---|
 | `ui/navigation/NavGraph.kt` | route sözleşmesi + 5 bottom item + navigation policy | [[ARCH_NAVIGATION]] |
-| `ui/components/BottomNavigationBar.kt` | nested target seçimi + save/restore | [[ARCH_NAVIGATION]] |
+| `ui/components/BottomNavigationBar.kt` | bottom bar/rail, 600 dp politikası, nested target seçimi + save/restore | [[ARCH_NAVIGATION]] |
 | `ui/screens/progress/ProgressHubScreen.kt` | ölçüm/fotoğraf/kas yükü hub | [[FEATURE_PROGRESS_PHOTOS]] |
 | `ui/components/MuscleBodyMap.kt` | bitmap overlay/hit test | [[FEATURE_MUSCLE_LOAD]] |
 | `ui/theme/Theme.kt` | light/dark Material renk şeması + fatigue color | [[DESIGN_SYSTEM_GRAPH]] |
@@ -131,7 +131,8 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 
 - `res/drawable-nodpi/body_*.png`: 2 × 470×836 body image
 - `res/drawable-nodpi/mask_*.png`: 38 kullanılan maske
-- `res/values/strings.xml`, `res/values-en/strings.xml`: temel metinler + scoped Nutrition/Measurements English/plural kapsamı
+- `res/values/strings.xml`, `res/values-en/strings.xml`: uygulama geneli eş anahtarlı Türkçe/English string ve plural katalogları
+- `androidTest/assets/goldens/`, `ui/golden/*`: API 34 kalıcı pixel-golden baseline ve karşılaştırıcı
 - `res/values/themes.xml`, `res/values-night/themes.xml`: light/dark launch/platform theme
 - `res/xml/backup_rules.xml`, `data_extraction_rules.xml`: progress fotoğraflarını backup/transfer dışında tutar
 

@@ -62,7 +62,7 @@ class WorkoutScreenTest {
         }
 
         composeRule.onNodeWithTag("workout-active-card").assertIsDisplayed().performClick()
-        composeRule.onNodeWithText("Tamamlananlar").performScrollTo().assertIsDisplayed()
+        composeRule.onNodeWithTag("workout-history-section").performScrollTo().assertIsDisplayed()
         composeRule.onNodeWithText("Sabah Kondisyon").performScrollTo().assertIsDisplayed()
         assertEquals(11, openedSessionId.get())
     }
@@ -89,10 +89,10 @@ class WorkoutScreenTest {
         }
 
         composeRule.onNodeWithTag("workout-detail-read-only").assertIsDisplayed()
-        composeRule.onNodeWithText("Antrenman özeti").assertIsDisplayed()
+        composeRule.onNodeWithText(text(R.string.workout_detail_summary)).assertIsDisplayed()
         composeRule.onNodeWithTag("workout-finish-action").assertDoesNotExist()
         composeRule.onNodeWithTag("workout-add-set-action").assertDoesNotExist()
-        composeRule.onNodeWithText("Sil").assertDoesNotExist()
+        composeRule.onNodeWithText(text(R.string.action_delete)).assertDoesNotExist()
     }
 
     @Test
@@ -122,9 +122,7 @@ class WorkoutScreenTest {
         composeRule.onNodeWithTag("workout-detail-active").assertIsDisplayed()
         composeRule.onNodeWithTag("workout-finish-action").assertIsDisplayed()
         composeRule.onNodeWithTag("workout-add-set-action").assertIsDisplayed()
-        composeRule.onNodeWithText(
-            InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.action_delete)
-        ).assertIsDisplayed()
+        composeRule.onNodeWithText(text(R.string.action_delete)).assertIsDisplayed()
     }
 
     @Test
@@ -153,7 +151,7 @@ class WorkoutScreenTest {
         }
 
         composeRule.onNodeWithTag("workout-finish-action").assertIsNotEnabled()
-        composeRule.onNodeWithText("Seti kaydet").performClick()
+        composeRule.onNodeWithText(text(R.string.workout_complete_planned_set)).performClick()
         assertEquals(44L, completedSetId.get())
     }
 
@@ -180,4 +178,7 @@ class WorkoutScreenTest {
         reps = 8,
         weightKg = 60f
     )
+
+    private fun text(id: Int): String =
+        InstrumentationRegistry.getInstrumentation().targetContext.getString(id)
 }

@@ -9,6 +9,8 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.unit.Density
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import com.gymtracker.R
 import com.gymtracker.data.entities.Program
 import com.gymtracker.data.entities.ProgramDayExercise
 import com.gymtracker.data.entities.ProgramDifficulty
@@ -62,7 +64,7 @@ class ProgramsScreenTest {
             }
         }
 
-        composeRule.onNodeWithText("Bu antrenmana başla").performScrollTo().performClick()
+        composeRule.onNodeWithText(text(R.string.program_start_workout)).performScrollTo().performClick()
         assertEquals(10L, started.get())
     }
 
@@ -81,8 +83,8 @@ class ProgramsScreenTest {
             }
         }
 
-        composeRule.onNodeWithText("Bu plan demo erişimi gerektiriyor").performScrollTo().assertIsDisplayed()
-        composeRule.onNodeWithText("Bu antrenmana başla").assertDoesNotExist()
+        composeRule.onNodeWithText(text(R.string.program_locked_title)).performScrollTo().assertIsDisplayed()
+        composeRule.onNodeWithText(text(R.string.program_start_workout)).assertDoesNotExist()
     }
 
     private fun program(isPaid: Boolean = false) = Program(
@@ -117,4 +119,7 @@ class ProgramsScreenTest {
             )
         )
     )
+
+    private fun text(id: Int): String =
+        InstrumentationRegistry.getInstrumentation().targetContext.getString(id)
 }

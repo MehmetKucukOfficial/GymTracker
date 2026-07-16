@@ -11,6 +11,8 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.unit.Density
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import com.gymtracker.R
 import com.gymtracker.data.home.HomeDashboardData
 import com.gymtracker.ui.theme.GymTrackerTheme
 import java.util.concurrent.atomic.AtomicInteger
@@ -44,11 +46,11 @@ class HomeScreenTest {
         }
 
         composeRule.onNodeWithTag("home-layout-compact").assertIsDisplayed()
-        composeRule.onNodeWithText("İlk adımı birlikte atalım")
+        composeRule.onNodeWithText(text(R.string.home_empty_title))
             .performScrollTo()
             .assertIsDisplayed()
         composeRule.onNodeWithText("0 kcal").assertDoesNotExist()
-        composeRule.onNodeWithText("Öğün yok").performScrollTo().assertIsDisplayed()
+        composeRule.onNodeWithText(text(R.string.home_value_no_meal)).performScrollTo().assertIsDisplayed()
     }
 
     @Test
@@ -74,7 +76,9 @@ class HomeScreenTest {
         }
 
         composeRule.onNodeWithTag("home-state-content").assertIsDisplayed()
-        composeRule.onNodeWithContentDescription("Toplam antrenman: 12. Tüm zamanlar")
+        val metricDescription = "${text(R.string.home_metric_total_workouts)}: 12. " +
+            text(R.string.home_support_all_time)
+        composeRule.onNodeWithContentDescription(metricDescription)
             .performScrollTo()
             .assertIsDisplayed()
     }
@@ -94,7 +98,10 @@ class HomeScreenTest {
         }
 
         composeRule.onNodeWithTag("home-state-error").assertIsDisplayed()
-        composeRule.onNodeWithText("Tekrar dene").performClick()
+        composeRule.onNodeWithText(text(R.string.action_retry)).performClick()
         assertEquals(1, retries.get())
     }
+
+    private fun text(id: Int): String =
+        InstrumentationRegistry.getInstrumentation().targetContext.getString(id)
 }
