@@ -1,0 +1,74 @@
+package com.gymtracker.ui.screens.measurements
+
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.unit.Density
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.gymtracker.data.entities.BodyMeasurement
+import com.gymtracker.data.measurements.WeightTrend
+import com.gymtracker.ui.theme.GymTrackerTheme
+import java.util.concurrent.atomic.AtomicInteger
+import org.junit.Assert.assertEquals
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+
+@RunWith(AndroidJUnit4::class)
+class MeasurementsScreenTest {
+
+    @get:Rule
+    val composeRule = createComposeRule()
+
+    @Test
+    fun latestAndHistoryAtTwoHundredPercentFontScaleStayDistinct() {
+        composeRule.setContent {
+            val density = LocalDensity.current
+            CompositionLocalProvider(LocalDensity provides Density(density.density, 2f)) {
+                GymTrackerTheme(darkTheme = true) {
+                    MeasurementsContent(
+                        uiState = MeasurementsUiState(
+                            latest = BodyMeasurement(id = 2, date = 2_000, weightKg = 81.5f),
+                            history = listOf(
+                                BodyMeasurement(id = 1, date = 1_000, weightKg = 82f, waistCm = 84f)
+                            ),
+                            weightTrend = WeightTrend(81.5f, -0.5f)
+                        ),
+                        onAddMeasurement = {},
+                        onDeleteMeasurement = {}
+                    )
+                }
+            }
+        }
+
+        composeRule.onNodeWithTag("measurements-latest").assertIsDisplayed()
+        composeRule.onNodeWithText("81.5 kg").assertIsDisplayed()
+        composeRule.onNodeWithText("Geçmiş").performScrollTo().assertIsDisplayed()
+        composeRule.onNodeWithText("Bel: 84.0 cm", substring = true)
+            .performScrollTo()
+            .assertIsDisplayed()
+    }
+
+    @Test
+    fun emptyStatePrimaryActionIsReachable() {
+        val clicks = AtomicInteger(0)
+        composeRule.setContent {
+            GymTrackerTheme(darkTheme = false) {
+                MeasurementsContent(
+                    uiState = MeasurementsUiState(),
+                    onAddMeasurement = { clicks.incrementAndGet() },
+                    onDeleteMeasurement = {}
+                )
+            }
+        }
+
+        composeRule.onNodeWithText("Henüz ölçüm yok").assertIsDisplayed()
+        composeRule.onNodeWithText("İlk ölçümü ekle").performClick()
+        assertEquals(1, clicks.get())
+    }
+}

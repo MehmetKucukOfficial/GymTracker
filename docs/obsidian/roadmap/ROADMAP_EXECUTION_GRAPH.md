@@ -2,7 +2,7 @@
 type: roadmap
 status: current
 implementation_status: active
-verified_commit: 4d0cad8
+verified_commit: 341bf79
 updated: 2026-07-15
 tags: [gymtracker/roadmap, gymtracker/workflow]
 ---
@@ -78,11 +78,18 @@ Durum: uygulama ve kalite kapısı tamamlandı; PR8 yayın kapsamına alındı.
 Çıktı: Room v6 status/completedAt migration, legacy completed politikası, tek aktif start/resume transaction’ı, status-korumalı mutation’lar, salt-okunur geçmiş, aktif Home CTA ve adaptive modern Workout ekranları.
 Kabul: 11 JVM + 23 cihaz testi; lint 0 hata; v3→v6 migration; light/dark/%200 font gerçek API 34 kontrolü.
 
+## PR 9 — Nutrition + Measurements doğruluk ve modernizasyon
+
+Node: [[FEATURE_NUTRITION]], [[FEATURE_MEASUREMENTS]], [[ARCH_STATE_DATA_FLOW]].
+Durum: uygulama ve kalite kapısı tamamlandı; `341bf79` commit’i stacked `codex/nutrition-measurements` dalında draft PR #2 olarak yayınlandı ve PR8 dalını hedefliyor.
+Çıktı: DST-safe `LocalDate + Clock + ZoneId`, SavedStateHandle tarih seçimi, zero-goal/over-goal güvenliği, locale ondalık parser, ölçüm aralıkları/latest-history/trend ayrımı, adaptive modern ekranlar ve kaynak metinleri.
+Kabul: 17 JVM + 27 cihaz testi hedefi; lint 0 hata; light/dark/%200 font gerçek API 34 kontrolü. Son kalite kapısı handoff’a yazılır.
+
 ## Sonraki dikey dilimler
 
-1. [[FEATURE_NUTRITION]] + [[FEATURE_MEASUREMENTS]]
-2. [[FEATURE_PROGRESS_PHOTOS]] + [[FEATURE_MUSCLE_LOAD]]
-3. [[FEATURE_PROGRAMS]] normalizasyon/integration
+1. [[FEATURE_PROGRESS_PHOTOS]] + [[FEATURE_MUSCLE_LOAD]]
+2. [[FEATURE_PROGRAMS]] normalizasyon/integration
+3. Nutrition/Measurements edit-undo-chart ve ikinci locale takibi
 4. Uygulama geneli adaptive navigation/accessibility/golden
 5. Performance/release
 

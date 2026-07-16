@@ -2,7 +2,7 @@
 type: atlas
 status: current
 implementation_status: active
-verified_commit: 4d0cad8
+verified_commit: 341bf79
 updated: 2026-07-15
 tags: [gymtracker/workflow, gymtracker/source-map]
 ---
@@ -35,6 +35,7 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | `data/dao/ProgressPhotoDao.kt` | photo queries | Photos |
 | `data/dao/ProgramDao.kt` | program/day queries | Programs |
 | `di/DatabaseModule.kt` | Room singleton + DAO providers | bütün ViewModel’ler |
+| `di/TimeModule.kt` | dinamik sistem ZoneId kullanan injectable Clock | Nutrition/zaman kuralları |
 | `data/home/HomeDashboardRepository.kt` | completed/active workout + measurement + nutrition Flow combine | Home |
 | `data/workout/WorkoutRepository.kt` | tek aktif start/resume, detail ve status-korumalı mutation sınırı | Workout |
 | `data/programs/ProgramRepository.kt` | program list/detail ve purchase sınırı | Programs |
@@ -47,6 +48,7 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | `domain/MuscleGroup.kt` | 31 kas + 82 egzersiz/activation | Workout, Load, Programs |
 | `domain/FatigueCalculator.kt` | hacim→kas skor hesabı | Load |
 | `domain/ProgramExercise.kt` | program exercise + JSON | Programs |
+| `domain/LocalizedDecimal.kt` | virgül/nokta destekli sonlu sayı parser’ı | Nutrition, Measurements |
 
 ## Navigation, tema ve component
 
@@ -88,14 +90,16 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | Dosya | Rol |
 |---|---|
 | `ui/screens/nutrition/NutritionViewModel.kt` | selected day + totals + CRUD |
-| `ui/screens/nutrition/NutritionScreen.kt` | summary/meal/form/goal UI |
+| `data/nutrition/NutritionRules.kt` | DST-safe day range, entry time, goal/food/progress validation |
+| `ui/screens/nutrition/NutritionScreen.kt` | tarih pager + adaptive summary/macro/meal/form/goal UI |
 
 ## Measurements
 
 | Dosya | Rol |
 |---|---|
-| `ui/screens/measurements/MeasurementsViewModel.kt` | list/save/delete |
-| `ui/screens/measurements/MeasurementsScreen.kt` | latest/history/form UI |
+| `data/measurements/MeasurementRules.kt` | alan aralıkları, boş kayıt engeli ve kilo trendi |
+| `ui/screens/measurements/MeasurementsViewModel.kt` | latest/history/trend + validation/save/delete |
+| `ui/screens/measurements/MeasurementsScreen.kt` | adaptive latest/delta/history/empty/form UI |
 
 ## Progress photos
 
@@ -122,7 +126,7 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 
 - `res/drawable-nodpi/body_*.png`: 2 × 470×836 body image
 - `res/drawable-nodpi/mask_*.png`: 38 kullanılan maske
-- `res/values/strings.xml`: app name + Home/navigation metinleri
+- `res/values/strings.xml`: app name + Home/navigation/Workout/Nutrition/Measurements metinleri
 - `res/values/themes.xml`, `res/values-night/themes.xml`: light/dark launch/platform theme
 
 Dosya yolu ararken önce bu atlas, sonra ilgili feature node içindeki `source_files` kullanılmalıdır.
