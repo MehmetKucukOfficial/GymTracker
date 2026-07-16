@@ -1,8 +1,8 @@
 ---
 type: adr
 adr: 5
-status: proposed
-implementation_status: not-started
+status: accepted
+implementation_status: current-core
 date: 2026-07-14
 tags: [gymtracker/decision, gymtracker/workload]
 ---
@@ -19,15 +19,15 @@ UI adı “7 Günlük Kas Yükü”. Yüzde kesinliği yerine Düşük/Orta/Yük
 
 ## Hesap geliştirme
 
-- Yalnız completed set
-- Bodyweight stratejisi
-- Time decay
+- Yalnız completed set — uygulandı
+- Bodyweight stratejisi — 20 kg açık fallback ile ilk sürüm uygulandı
+- Time decay — yedi günde 1.0→0.5 lineer ağırlık uygulandı
 - Stable exercise ID
-- Bilinmeyen exercise telemetry/debug signal
+- Bilinmeyen exercise debug/UI sayacı — uygulandı
 - İleri fazda RPE/RIR ve kişisel baseline
 
 ## Kabul
 
-Formula unit testli; yeni set reaktif; harita yanında erişilebilir liste ve legend var.
+Formula unit testli; completed set Room Flow’u reaktif; harita yanında erişilebilir liste, legend, normalize skor ve metodoloji dialogu var. Stable ID, kişisel bodyweight, RPE/RIR ve baseline sonraki revizyondur.
 
 Bağlar: [[FEATURE_MUSCLE_LOAD]], [[FEATURE_WORKOUT]].

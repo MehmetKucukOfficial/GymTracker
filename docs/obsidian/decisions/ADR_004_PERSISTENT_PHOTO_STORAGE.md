@@ -2,7 +2,7 @@
 type: adr
 adr: 4
 status: accepted
-implementation_status: partial
+implementation_status: current-core
 date: 2026-07-14
 tags: [gymtracker/decision, gymtracker/photos, gymtracker/risk/p0]
 ---
@@ -18,6 +18,8 @@ tags: [gymtracker/decision, gymtracker/photos, gymtracker/risk/p0]
 Varsayılan: sistem seçicisinden alınan içeriği background IO’da uygulamanın internal storage alanına kopyala. DB yalnızca başarılı kopyadan sonra `file://` URI, MIME, byte boyutu ve `storageVersion` kaydeder. Dış sağlayıcının geçici URI iznine çalışma zamanında bağımlı kalınmaz.
 
 İlk uygulama dilimi kopyalama, 25 MB sınırı, geçici dosya temizliği, DB hata telafisi ve kontrollü silmeyi kapsar. EXIF orientation, yeniden boyutlandırma/sıkıştırma, dimension ve thumbnail üretimi sonraki fotoğraf medya hattına bırakılmıştır.
+
+PR10 kararı: hassas ve yüksek boyutlu `files/progress_photos` içeriği cloud backup ve device transfer dışında kalır. Room metadata restore edilip dosya yoksa açılış reconciliation’ı yönetilen eksik satırı kaldırır. DB’de karşılığı olmayan managed orphan/temp dosyalar da temizlenir; legacy `storageVersion=0` dış URI’lara dokunulmaz.
 
 ## Alternatif
 
@@ -36,6 +38,8 @@ Varsayılan: sistem seçicisinden alınan içeriği background IO’da uygulaman
 - [x] Kaynak okuma hatasında DB satırı oluşmaz.
 - [x] Silmede DB satırı ve yönetilen dosya temizlenir.
 - [x] v3 legacy `content://` satırı v5 migration sırasında korunur ve `storageVersion=0` olarak işaretlenir.
+- [x] Orphan managed dosya ve eksik managed metadata açılışta uzlaştırılır.
+- [x] Progress fotoğraf dosyaları backup/device transfer dışında bırakılır ve politika UI’da açıklanır.
 - [ ] Gerçek process death/reboot, düşük alan, bozuk görsel decode ve backup/restore testleri.
 - [ ] EXIF/resize/compress/thumbnail medya hattı.
 

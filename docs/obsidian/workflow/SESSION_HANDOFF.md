@@ -4,11 +4,13 @@ status: ready
 implementation_status: active
 code_baseline: 341bf79
 updated: 2026-07-15
-active_phase: "Phase 4 - PR10 Photos + Muscle Load hazırlığı"
-next_pr: "PR 10 - Progress Photos + Muscle Load modernization"
+active_phase: "Phase 4 - PR10 review/publish; PR11 Programs hazırlığı"
+next_pr: "PR 11 - Programs normalization and integration"
 primary_nodes:
-  - FEATURE_NUTRITION
-  - FEATURE_MEASUREMENTS
+  - FEATURE_PROGRESS_PHOTOS
+  - FEATURE_MUSCLE_LOAD
+  - ADR_004_PERSISTENT_PHOTO_STORAGE
+  - ADR_005_MUSCLE_LOAD_NAMING
   - ARCH_STATE_DATA_FLOW
   - DESIGN_SYSTEM_GRAPH
   - ROADMAP_EXECUTION_GRAPH
@@ -27,34 +29,36 @@ tags: [gymtracker/workflow, gymtracker/session]
 - Workout tek aktif seans, status-korumalı mutation, COMPLETED salt-okunur geçmiş ve adaptive modern UI kullanıyor.
 - Nutrition DST-safe tarih aralığı, SavedStateHandle tarih seçimi, locale sayı doğrulaması, zero/over-goal güvenliği ve adaptive modern UI kullanıyor.
 - Measurements boş/aralık dışı kayıtları engelliyor; latest/history tekrarını kaldırıyor, en yeni iki kilo trendini üretiyor ve adaptive modern UI kullanıyor.
+- Progress fotoğrafları cihaz-yerel backup politikası, orphan/missing reconciliation, doğrulama, viewer ve adaptive grid kullanıyor.
+- Muscle Load yalnız completed setlerden reaktif ve günlük yenilenen Flow üretir; recency/bodyweight/unknown sözleşmesi, metodoloji ve erişilebilir liste aktiftir.
 - Light/dark tasarım sistemi token temeli ve ortak Home bileşenleri aktif; Home loading/content/error, retry, midnight period tick ve adaptive kolon kullanıyor.
-- Test temeli aktif: 17 JVM + 27 API 34 instrumentation testi geçiyor.
-- Debug build başarılı; lint 0 error / 63 warning.
+- Test temeli aktif: 20 JVM + 33 API 34 instrumentation testi geçiyor.
+- Debug build başarılı; lint 0 error / 67 warning.
 
 ## Sıradaki önerilen iş
 
-PR #1 → PR #2 inceleme sırasını koru. Geliştirmede [[ROADMAP_EXECUTION_GRAPH#Sonraki dikey dilimler]] — [[FEATURE_PROGRESS_PHOTOS]] + [[FEATURE_MUSCLE_LOAD]]:
+Önce `codex/progress-load` çalışma ağacını incele, commit/push et ve PR #2’yi hedefleyen stacked draft PR aç. Ardından [[ROADMAP_EXECUTION_GRAPH#Sonraki dikey dilimler]] — [[FEATURE_PROGRAMS]]:
 
-1. Legacy `storageVersion=0`, backup/reconciliation ve EXIF/thumbnail politikasını netleştir.
-2. Fotoğraf viewer/import hata durumlarını token/adaptive tasarım diline taşı.
-3. Muscle Load adlandırma/metodoloji riskini çöz; tamamlanmış setler için reaktif dönem Flow’u kur.
-4. Harita/list erişilebilirliği, dark/light ve %200 font kabulünü ekle.
-5. İlgili repository, migration gerekirse explicit schema ve test etki haritasını uygula.
+1. Program JSON modelinin mevcut veri/migration etkisini çıkar; kararlı exercise ID ve relational hedefi ADR ile netleştir.
+2. Purchase/detail state ve program→workout entegrasyonunu gerçek repository/use-case sınırına taşı.
+3. Program list/detail UI’ını token, resource, adaptive ve erişilebilir bileşenlere geçir.
+4. Seed/migration/program→active-workout testlerini genişlet.
+5. Light/dark/%200 font ve navigation/back/process recreation kabulünü çalıştır.
 
 ## Açık P0/P1
 
 - Legacy `storageVersion=0` fotoğraflar ve backup politikası
 - CI kalite kapısı
-- Programs, Photos ve Muscle Load hardcoded string/accessibility/adaptive layout borcu
+- Programs hardcoded string/accessibility/adaptive layout ve JSON model borcu
 - Harici deep link ve navigation rail
 
 ## Son doğrulama
 
-- `testDebugUnitTest`: success, 17/17.
-- `connectedDebugAndroidTest`: success, 27/27, Pixel 6 Pro API 34.
-- `lintDebug`: success, 0 error / 63 warning.
+- `testDebugUnitTest`: success, 20/20.
+- `connectedDebugAndroidTest`: success, 33/33, Pixel 6 Pro API 34.
+- `lintDebug`: success, 0 error / 67 warning.
 - `assembleDebug`: success.
-- Görsel smoke: PR8 görselleri + `app/build/pr9-nutrition-light-final.png`, `pr9-nutrition-dark-font200-final.png`, `pr9-measurements-dark-font200-final.png`; connected test sonrası final APK yeniden kurulmalıdır.
+- Görsel smoke: `app/build/pr10-progress-hub-light.png`, `pr10-progress-hub-dark-font200.png`, `pr10-photos-empty-light2.png`, `pr10-photos-dark-font200.png`, `pr10-muscle-load-dark-font200.png`; connected test sonrası final APK yeniden kurulmalıdır.
 
 ## Handoff güncelleme şablonu
 
@@ -461,3 +465,46 @@ Next concrete action:
 
 Blockers:
 - No code blocker. Draft PR #2 is stacked on draft PR #1 (`codex/workout-lifecycle`) and must keep that base until PR8 lands or be rebased afterward.
+
+## 2026-07-15 - PR 10 Progress Photos + Muscle Load modernization
+
+Completed:
+- Added typed progress-photo validation, app-owned storage reconciliation and device-local backup/transfer exclusions while preserving legacy `storageVersion=0` rows.
+- Rebuilt the Progress hub and photo flow with adaptive grids, empty/error states, full-screen viewing, legacy indicators and accessible normal/%200-font behavior.
+- Replaced the old fatigue calculation with a completed-set-only, reactive seven-day Muscle Load model using recency weighting, bodyweight fallback and unknown-exercise reporting.
+- Added methodology, front/back body-map controls, color-independent load labels and accessible score summaries.
+
+Files changed:
+- `data/photos/ProgressPhotoRules.kt`, `PhotoFileStorage.kt`, `ProgressPhotoRepository.kt`
+- `data/workout/CompletedSetForLoad.kt`, `WorkoutDao.kt`, `domain/MuscleLoadCalculator.kt`
+- Progress hub/photo and Muscle Load Screen/ViewModel/component files
+- Manifest backup configuration, `res/xml/backup_rules.xml`, `res/xml/data_extraction_rules.xml`, strings and related tests
+- Related Obsidian feature/ADR/architecture/design/quality/roadmap/workflow nodes
+
+Tests run/results:
+- `testDebugUnitTest`: 20 tests, 0 failures.
+- `connectedDebugAndroidTest`: 33 tests, 0 failures on Pixel 6 Pro API 34.
+- `lintDebug`: 0 errors / 67 warnings.
+- `assembleDebug`: success.
+- Manual light/dark/%200-font visual acceptance passed for the Progress hub, Progress Photos and Muscle Load screens.
+
+Risks changed:
+- R2 is further mitigated by missing-row/orphan reconciliation; legacy provider-backed rows remain visible and explicitly marked.
+- R10 core ambiguity is resolved: the feature is named Muscle Load and its current completed-set formula is documented and tested.
+- R14 is further mitigated by explicitly excluding managed progress photos from Android cloud backup and device transfer.
+- R15 is partial+++: Progress hub, photos and Muscle Load now use shared tokens, resources, accessibility semantics and large-font adaptations.
+- No Room schema change was made in PR10.
+
+Graph notes updated:
+- [[FEATURE_PROGRESS_PHOTOS]], [[FEATURE_MUSCLE_LOAD]]
+- [[ADR_004_PERSISTENT_PHOTO_STORAGE]], [[ADR_005_MUSCLE_LOAD_NAMING]]
+- [[ARCH_STATE_DATA_FLOW]], [[DESIGN_SYSTEM_GRAPH]], [[SCREEN_BLUEPRINT_GRAPH]]
+- [[TEST_MATRIX]], [[RISK_REGISTER_GRAPH]], [[ROADMAP_EXECUTION_GRAPH]]
+- [[SOURCE_FILE_ATLAS]], [[CHANGE_IMPACT_MAP]], [[SESSION_HANDOFF]], [[00_START_HERE]]
+
+Next concrete action:
+- Review, commit and push the uncommitted `codex/progress-load` working tree, then open a stacked draft PR targeting `codex/nutrition-measurements`.
+- After publication, start PR11 from [[FEATURE_PROGRAMS]] with the stable exercise-ID/relational model decision before UI work.
+
+Blockers:
+- No code blocker. PR10 is intentionally uncommitted and stacked on PR #2 until the user requests publication.

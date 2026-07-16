@@ -1,14 +1,16 @@
 ---
 type: feature
 status: current
-implementation_status: mixed
-verified_commit: a8e019e
-updated: 2026-07-14
+implementation_status: current
+verified_commit: 341bf79
+updated: 2026-07-15
 source_files:
   - app/src/main/java/com/gymtracker/ui/screens/fatigue/FatigueScreen.kt
   - app/src/main/java/com/gymtracker/ui/screens/fatigue/FatigueViewModel.kt
   - app/src/main/java/com/gymtracker/ui/components/MuscleBodyMap.kt
-  - app/src/main/java/com/gymtracker/domain/FatigueCalculator.kt
+  - app/src/main/java/com/gymtracker/domain/MuscleLoadCalculator.kt
+  - app/src/main/java/com/gymtracker/data/workout/CompletedSetForLoad.kt
+  - app/src/main/java/com/gymtracker/data/dao/WorkoutDao.kt
   - app/src/main/java/com/gymtracker/domain/MuscleGroup.kt
 related_data: [WorkoutSet, WorkoutSession]
 tags: [gymtracker/feature, gymtracker/feature/workload]
@@ -18,7 +20,7 @@ tags: [gymtracker/feature, gymtracker/feature/workload]
 
 ## Mevcut yetenek
 
-Son 7 günün setleri `reps × kg × activation` ile 31 kas grubuna dağıtılır; 38 bitmap maskede ön/arka renklenir ve tıklanır.
+Son yedi takvim günündeki yalnız `COMPLETED` seansların tamamlanmış setleri reaktif Room Flow ile izlenir. `reps × effective load × activation × recency` 31 kas grubuna dağıtılır; 38 bitmap maskede ön/arka renklenir ve tıklanır. Haritanın yanında renk bağımsız kas listesi, Düşük/Orta/Yüksek etiketleri, skor ve metodoloji dialogu vardır.
 
 ## Veri doğrulaması
 
@@ -26,22 +28,27 @@ Son 7 günün setleri `reps × kg × activation` ile 31 kas grubuna dağıtılı
 - Programlardaki 108 referansın tümü kütüphanede.
 - 38 maske 470×836.
 
-## Bilinen sorunlar
+## Uygulanan doğruluk sözleşmesi
 
-- ViewModel init’te tek sorgu; yeni workout’a reaktif değil.
-- Bodyweight set `weight=0` ise katkı sıfır.
-- `isCompleted` dikkate alınmaz.
-- Time decay, RPE/RIR ve kişisel baseline yok.
-- İsim string eşleşmezse sessizce atlanır.
-- “Yorgunluk %” bilimsel kesinlik izlenimi verir.
-- Haritanın erişilebilir metin eşdeğeri yok.
+- ACTIVE seans ve `isCompleted=false` setler query sınırında dışlanır.
+- Sıfır kilolu set için açıkça belgelenmiş 20 kg bodyweight eşdeğeri kullanılır.
+- En yeni set 1.0, yedi günlük sınırdaki set 0.5 recency ağırlığı alır.
+- Bilinmeyen egzersiz sayısı state/UI’da görünür; skora sessizce eklenmez.
+- UI “yorgunluk yüzdesi” iddiası yapmaz; seviye ve normalize skor gösterir.
+- Harita semantics açıklaması ve aynı bilgiyi veren erişilebilir liste içerir.
+
+## Kalan kapsam
+
+- Stable exercise ID, RPE/RIR ve kişisel baseline yok.
+- 20 kg bodyweight eşdeğeri geçici ürün varsayımıdır; profil kilosuna göre strateji sonraki ADR revizyonudur.
+- Kalıcı screenshot golden, TalkBack cihaz turu ve daha geniş metodoloji kalibrasyonu bekler.
 
 ## Hedef durum
 
-[[ADR_005_MUSCLE_LOAD_NAMING]] uyarınca “7 Günlük Kas Yükü”. Tamamlanan setlerden reaktif Flow; bodyweight/set-score stratejisi; zaman ağırlığı; metodoloji sheet’i; legend + erişilebilir kas listesi.
+[[ADR_005_MUSCLE_LOAD_NAMING]] çekirdek kabulü uygulandı. Sonraki hedef stable exercise ID, profil tabanlı bodyweight stratejisi, RPE/RIR ve kişisel baseline’dır.
 
 ## Testler
 
-Completed/pending; weighted/bodyweight; unknown exercise; range clamp; time window; new set reactivity; mask hit/accessibility.
+Uygulandı: completed/incomplete/active query sınırı, activation dağılımı, recency, bodyweight fallback, unknown exercise, range clamp, Flow reactivity ve dark/%200 font erişilebilir UI. Kalan: gerçek midnight rollover, profile bodyweight, TalkBack cihaz turu ve mask hit koordinat testi.
 
 Bağlar: [[FEATURE_WORKOUT]], [[ARCH_STATE_DATA_FLOW]], [[DESIGN_SYSTEM_GRAPH]].

@@ -119,6 +119,36 @@ class ProgressPhotoRepositoryTest {
         assertEquals(filesBefore, directory.listFiles()?.map(File::getName)?.sorted().orEmpty())
     }
 
+    @Test
+    fun reconcileStorage_removesOrphanAndMissingManagedRowButKeepsLegacyRow() =
+        kotlinx.coroutines.runBlocking {
+            val directory = File(context.filesDir, "progress_photos").apply { mkdirs() }
+            File(directory, "orphan.jpg").writeBytes("orphan".toByteArray())
+            database.progressPhotoDao().insert(
+                ProgressPhoto(
+                    photoUri = Uri.fromFile(File(directory, "missing.jpg")).toString(),
+                    storageVersion = 1
+                )
+            )
+            database.progressPhotoDao().insert(
+                ProgressPhoto(
+                    photoUri = "content://legacy/photo",
+                    storageVersion = 0
+                )
+            )
+
+            val result = repository.reconcileStorage()
+
+            assertTrue(result.isSuccess)
+            assertEquals(1, result.getOrThrow().orphanFilesDeleted)
+            assertEquals(1, result.getOrThrow().missingRowsDeleted)
+            assertEquals(
+                listOf("content://legacy/photo"),
+                database.progressPhotoDao().getAllSync().map { it.photoUri }
+            )
+            assertFalse(File(directory, "orphan.jpg").exists())
+        }
+
     private class FakePhotoSourceReader : PhotoSourceReader {
         var bytes: ByteArray = ByteArray(0)
         var failure: Throwable? = null

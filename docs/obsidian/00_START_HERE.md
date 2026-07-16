@@ -21,7 +21,7 @@ tags: [gymtracker/moc, gymtracker/graph]
 - Local-first; backend ve gerçek ödeme yok
 - 5 ana navigation hedefi, 3 İlerleme alt hedefi, ID tabanlı workout/program detayları
 - 82 benzersiz egzersiz, 108 hazır program egzersiz referansı
-- Debug build başarılı; 17 JVM + 27 cihaz testi geçiyor; lint 0 hata/63 uyarı
+- Debug build başarılı; 20 JVM + 33 cihaz testi geçiyor; lint 0 hata/67 uyarı
 - Destructive migration, yeni fotoğraf URI kaybı, seed race ve temel navigation/state riskleri kapatıldı veya azaltıldı
 
 ## Ana haritalar
@@ -68,7 +68,7 @@ tags: [gymtracker/moc, gymtracker/graph]
 ## Grafın güncellik durumu
 
 - Kod baseline: `341bf79` (`codex/nutrition-measurements`, stacked draft PR #2)
-- Kod değişikliği: PR9 Nutrition/Measurements commitlendi ve PR8 dalını hedefleyen draft PR #2 olarak yayınlandı
-- Dokümanlar: PR9 doğruluk/state/adaptive UI commit’iyle senkron
+- Kod değişikliği: PR10 Progress Photos + Muscle Load `codex/progress-load` çalışma ağacında tamamlandı; henüz commit/push edilmedi
+- Dokümanlar: PR10 backup/reconciliation, completed-set Flow ve adaptive Progress çalışma ağacıyla senkron
 - Son tam doğrulama: 2026-07-15
-- Aktif önerilen iş: PR #1 → PR #2 inceleme sırasını koru; geliştirmede [[FEATURE_PROGRESS_PHOTOS]] + [[FEATURE_MUSCLE_LOAD]] dikey dilimine geç
+- Aktif önerilen iş: PR10’u incele/commit/push et; ardından [[FEATURE_PROGRAMS]] normalizasyon ve entegrasyon dilimine geç

@@ -25,8 +25,10 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import com.gymtracker.R
-import com.gymtracker.domain.MuscleFatigue
+import com.gymtracker.domain.MuscleLoad
 import com.gymtracker.domain.MuscleGroup
 import com.gymtracker.ui.theme.fatigueColor
 
@@ -35,13 +37,14 @@ private const val IMAGE_RATIO = 470f / 836f
 
 @Composable
 fun MuscleBodyMap(
-    fatigueData: List<MuscleFatigue>,
+    loadData: List<MuscleLoad>,
     modifier: Modifier = Modifier,
     showFront: Boolean = true,
     selectedMuscle: MuscleGroup? = null,
+    accessibilityDescription: String,
     onMuscleTap: (MuscleGroup?) -> Unit = {}
 ) {
-    val fatigueMap = fatigueData.associateBy { it.muscle }
+    val loadMap = loadData.associateBy { it.muscle }
     val masks = if (showFront) frontMasks else backMasks
     val context = LocalContext.current
 
@@ -66,6 +69,7 @@ fun MuscleBodyMap(
     Box(
         modifier = modifier
             .aspectRatio(IMAGE_RATIO)
+            .semantics { contentDescription = accessibilityDescription }
             .pointerInput(showFront) {
                 detectTapGestures { offset ->
                     val xPct = (offset.x / size.width).coerceIn(0f, 1f)
@@ -86,14 +90,14 @@ fun MuscleBodyMap(
             contentScale = ContentScale.FillBounds
         )
         masks.forEach { (muscle, maskRes) ->
-            val fatigue = fatigueMap[muscle]?.fatiguePercent ?: 0f
+            val load = loadMap[muscle]?.loadScore ?: 0f
             Image(
                 painter = painterResource(id = maskRes),
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.FillBounds,
                 colorFilter = ColorFilter.tint(
-                    fatigueColor(fatigue).copy(alpha = OVERLAY_ALPHA),
+                    fatigueColor(load).copy(alpha = OVERLAY_ALPHA),
                     BlendMode.SrcIn
                 )
             )

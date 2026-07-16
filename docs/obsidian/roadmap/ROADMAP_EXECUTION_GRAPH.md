@@ -83,13 +83,20 @@ Kabul: 11 JVM + 23 cihaz testi; lint 0 hata; v3→v6 migration; light/dark/%200 
 Node: [[FEATURE_NUTRITION]], [[FEATURE_MEASUREMENTS]], [[ARCH_STATE_DATA_FLOW]].
 Durum: uygulama ve kalite kapısı tamamlandı; `341bf79` commit’i stacked `codex/nutrition-measurements` dalında draft PR #2 olarak yayınlandı ve PR8 dalını hedefliyor.
 Çıktı: DST-safe `LocalDate + Clock + ZoneId`, SavedStateHandle tarih seçimi, zero-goal/over-goal güvenliği, locale ondalık parser, ölçüm aralıkları/latest-history/trend ayrımı, adaptive modern ekranlar ve kaynak metinleri.
-Kabul: 17 JVM + 27 cihaz testi hedefi; lint 0 hata; light/dark/%200 font gerçek API 34 kontrolü. Son kalite kapısı handoff’a yazılır.
+Kabul: 17 JVM + 27 cihaz testi geçti; lint 0 hata; light/dark/%200 font gerçek API 34 kontrolü tamamlandı.
+
+## PR 10 — Progress Photos + Muscle Load modernizasyonu
+
+Node: [[FEATURE_PROGRESS_PHOTOS]], [[FEATURE_MUSCLE_LOAD]], [[ADR_004_PERSISTENT_PHOTO_STORAGE]], [[ADR_005_MUSCLE_LOAD_NAMING]].
+Durum: uygulama, tam kalite kapısı ve görsel kabul `codex/progress-load` çalışma ağacında tamamlandı; henüz commit/push edilmedi.
+Çıktı: device-local backup politikası, orphan/missing reconciliation, photo input validation/viewer/adaptive grid; completed-only reaktif load Flow, recency/bodyweight/unknown kuralları, metodoloji ve erişilebilir liste; modern Progress Hub.
+Kabul: 20 JVM + 33 cihaz testi, lint 0 hata/67 uyarı, assemble ve light/dark/%200 API 34 görsel kontrolü.
 
 ## Sonraki dikey dilimler
 
-1. [[FEATURE_PROGRESS_PHOTOS]] + [[FEATURE_MUSCLE_LOAD]]
-2. [[FEATURE_PROGRAMS]] normalizasyon/integration
-3. Nutrition/Measurements edit-undo-chart ve ikinci locale takibi
+1. [[FEATURE_PROGRAMS]] normalizasyon/integration
+2. Nutrition/Measurements edit-undo-chart ve ikinci locale takibi
+3. Photo EXIF/thumbnail + stable exercise ID/personal load calibration
 4. Uygulama geneli adaptive navigation/accessibility/golden
 5. Performance/release
 

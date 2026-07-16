@@ -27,7 +27,9 @@ tags: [gymtracker/quality, gymtracker/testing]
 - `WorkoutScreenTest` aktif/geçmiş ayrımını, tamamlanan detayın salt okunurluğunu ve light/dark + %200 font yerleşimini doğrular.
 - `LocalizedDecimalTest`, `NutritionRulesTest` ve `MeasurementRulesTest` virgül/nokta parse, DST 23/25 saat, zero/over-goal, input aralıkları ve en yeni iki kilo trendini doğrular.
 - `NutritionScreenTest` over-goal/empty state’i; `MeasurementsScreenTest` latest/history ayrımını ve empty state’i dark + %200 font koşulunda doğrular.
-- Pixel 6 Pro API 34 emülatöründe 27 instrumentation testi ve 17 JVM testi, 0 failure ile geçer.
+- `ProgressPhotoRulesTest`, `ProgressPhotoRepositoryTest` ve `ProgressPhotoScreenTest` fotoğraf input aralığı, import/rollback/limit, orphan/missing reconciliation, legacy badge ve %200 font empty state’ini doğrular.
+- `MuscleLoadCalculatorTest`, `WorkoutDaoTest` ve `MuscleLoadScreenTest` recency/bodyweight/unknown/cap kurallarını, completed-only reaktif query’yi ve renk bağımsız adaptive UI’ı doğrular.
+- Pixel 6 Pro API 34 emülatöründe 33 instrumentation testi ve 20 JVM testi, 0 failure ile geçer.
 
 ## Feature matrisi
 
@@ -37,9 +39,9 @@ tags: [gymtracker/quality, gymtracker/testing]
 | Workout | state/validation | v3→v6, transaction/cascade/single-active/read-only | active/history, light/dark, %200 font | Activity recreation; process death bekliyor |
 | Nutrition | totals/DST/parser/goal | day query/goal | over-goal/empty/dark/%200 | delete undo + Home update bekliyor |
 | Measurements | validation/trend | order/update bekliyor | latest/history/empty/dark/%200 | Home update bekliyor |
-| Photos | metadata/limit policy | migration/import/delete rollback | picker/progress/error/viewer | process kill/restart/reboot |
+| Photos | input/limit/backup policy | migration/import/delete/reconcile rollback | empty/legacy/viewer/dark/%200 | process kill/restart/reboot bekliyor |
 | Programs | seed/content | idempotency/migration | detail/purchase | program→workout |
-| Muscle load | formula/time decay | recent sets query | map/list/accessibility | new set update |
+| Muscle load | activation/decay/bodyweight/unknown | completed-only set Flow | map/list/methodology/dark/%200 | midnight + TalkBack bekliyor |
 
 ## Room ve migration
 
