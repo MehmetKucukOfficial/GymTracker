@@ -2,7 +2,7 @@
 type: risk-register
 status: current
 implementation_status: current
-verified_commit: abd3fbe
+verified_commit: a2586d1
 updated: 2026-07-16
 tags: [gymtracker/risk, gymtracker/quality]
 ---
@@ -26,6 +26,7 @@ tags: [gymtracker/risk, gymtracker/quality]
 | R13 | P2 | resolved-core | 5 hedefli compact bottom bar ve 600 dp+ adaptive rail aynı seçim/save-restore sözleşmesini kullanıyor; feature list-detail iyileştirmesi açık | [[ARCH_NAVIGATION]] | [[ADR_002_FIVE_TARGET_NAVIGATION]] |
 | R14 | P2 | mitigated+ | Permission azaltıldı; hassas progress fotoğrafları cloud backup/device transfer dışında | [[ARCH_BUILD_DI]] | permission + extraction rules |
 | R15 | P2 | mitigated+ | Uygulama geneli 350/350 TR/EN kaynak, locale-aware kas/para biçimi, adaptive shell, semantics ve ilk kalıcı golden baseline aktif; bütün ekranlara golden ve list-detail yayılımı açık | [[DESIGN_SYSTEM_GRAPH]] | design DoD |
-| R16 | P1 | partial | Release APK/AAB ve mapping üretiliyor fakat production keystore/secret-backed signing ve mağaza dağıtım kapısı tanımlı değil | [[ARCH_BUILD_DI]] | signing + release smoke |
+| R16 | P1 | mitigated-config | Protected environment, fail-fast secrets, geçici keystore, APK/AAB imza doğrulaması ve artifact kapısı tanımlı; gerçek production secret + Play internal-track smoke’u açık | [[ADR_009_SECRET_BACKED_RELEASES]] | production environment + release smoke |
+| R17 | P1 | partial | Baseline/Startup Profile ve macrobenchmark CUJ’ları üretildi; emülatör yalnız karşılaştırma baseline’ı, fiziksel referans cihaz kabulü yapılmadı | [[PERFORMANCE_BASELINE]] | physical release benchmark |
 
 Aktif risk durumu [[SESSION_HANDOFF]] içinde tutulur; çözülen risk silinmez, `resolved` ve commit ile işaretlenir.
