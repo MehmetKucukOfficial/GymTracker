@@ -2,8 +2,8 @@
 type: roadmap
 status: current
 implementation_status: active
-verified_commit: 9c90471
-updated: 2026-07-15
+verified_commit: 5c3ce35
+updated: 2026-07-16
 tags: [gymtracker/roadmap, gymtracker/workflow]
 ---
 
@@ -106,10 +106,16 @@ Durum: `9c90471` commit’i `codex/nutrition-measurements-depth` dalında stacke
 Çıktı: Room v8 measurement date index + period query/repository; 7/30/90/tümü gerçek kilo chart; özel tarih/edit/delete-undo; Nutrition snapshot-safe amount/meal edit + undo; scoped English resources, locale tarih, plural/birim ve dil-bağımsız testler.
 Kabul: 24 JVM + 46 cihaz testi; lint 0 hata/77 uyarı; assemble; light normal ve dark %200 Nutrition/Measurements/chart API 34 görsel kontrolü.
 
+## PR 13 — Photo media pipeline + personal load calibration
+
+Node: [[FEATURE_PROGRESS_PHOTOS]], [[FEATURE_MUSCLE_LOAD]], [[ADR_004_PERSISTENT_PHOTO_STORAGE]], [[ADR_005_MUSCLE_LOAD_NAMING]].
+Durum: `5c3ce35` kod + `d189f6c` graph commit’leri `codex/photo-load-calibration` dalında stacked draft PR #6 olarak yayınlandı ve PR #5’i hedefliyor.
+Çıktı: Room v9 photo thumbnail/dimension metadata; bounded decode, EXIF normalize, 2048 ana JPEG + 512 thumbnail ve iki dosyalı rollback/reconciliation; latest-valid measurement Flow’u ile kişisel bodyweight kalibrasyonu ve açık fallback UI.
+Kabul: 26 JVM + 50 API 34 instrumentation testi; lint 0 hata/78 uyarı; assemble başarılı.
+
 ## Sonraki dikey dilimler
 
-1. Photo EXIF/thumbnail + personal load calibration
-2. Uygulama geneli ikinci locale + adaptive navigation/accessibility/golden
-3. Performance/release
+1. Uygulama geneli ikinci locale + adaptive navigation/accessibility/golden
+2. Performance/release
 
 Detaylı süre: [[GELISTIRME_MASTER_PLANI#18. Fazlar ve süre tahmini]]. Aktif durum: [[SESSION_HANDOFF]].

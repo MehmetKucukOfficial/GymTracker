@@ -19,7 +19,7 @@ class DatabaseMigrationTest {
     )
 
     @Test
-    fun migrate3To8_preservesRowsAndMarksLegacyData() {
+    fun migrate3To9_preservesRowsAndMarksLegacyData() {
         migrationHelper.createDatabase(TEST_DATABASE, 3).apply {
             execSQL(
                 """
@@ -42,7 +42,7 @@ class DatabaseMigrationTest {
 
         migrationHelper.runMigrationsAndValidate(
             TEST_DATABASE,
-            8,
+            9,
             true,
             *DatabaseMigrations.ALL
         ).close()
@@ -66,10 +66,13 @@ class DatabaseMigrationTest {
         assertEquals("image/*", photo.mimeType)
         assertEquals(0L, photo.sizeBytes)
         assertEquals(0, photo.storageVersion)
+        assertEquals(null, photo.thumbnailUri)
+        assertEquals(0, photo.widthPx)
+        assertEquals(0, photo.heightPx)
     }
 
     @Test
-    fun migrate6To8_normalizesProgramExercisesAndPreservesLegacyPayload() {
+    fun migrate6To9_normalizesProgramExercisesAndPreservesLegacyPayload() {
         val legacyJson = """[{"name":"Bench Press","sets":3,"reps":"8-10","rest":120}]"""
         migrationHelper.createDatabase(TEST_DATABASE, 6).apply {
             execSQL(
@@ -114,7 +117,7 @@ class DatabaseMigrationTest {
 
         migrationHelper.runMigrationsAndValidate(
             TEST_DATABASE,
-            8,
+            9,
             true,
             *DatabaseMigrations.ALL
         ).close()
@@ -144,7 +147,7 @@ class DatabaseMigrationTest {
     }
 
     @Test
-    fun migrate7To8_preservesMeasurementsAndCreatesDateIndex() {
+    fun migrate7To9_preservesMeasurementsAndCreatesDateIndex() {
         migrationHelper.createDatabase(TEST_DATABASE, 7).apply {
             execSQL(
                 """
@@ -159,7 +162,7 @@ class DatabaseMigrationTest {
 
         val migrated = migrationHelper.runMigrationsAndValidate(
             TEST_DATABASE,
-            8,
+            9,
             true,
             *DatabaseMigrations.ALL
         )
@@ -182,6 +185,42 @@ class DatabaseMigrationTest {
         assertEquals(81.5f, measurement?.weightKg)
         assertEquals(84f, measurement?.waistCm)
         assertEquals("keep", measurement?.notes)
+    }
+
+    @Test
+    fun migrate8To9_preservesManagedPhotoAndAddsMediaMetadata() {
+        migrationHelper.createDatabase(TEST_DATABASE, 8).apply {
+            execSQL(
+                """
+                INSERT INTO progress_photos
+                    (id, date, photoUri, weightKg, notes, angle, mimeType, sizeBytes, storageVersion)
+                VALUES
+                    (7, 3000, 'file:///managed/photo.jpg', 79.0, 'v1 managed', 'BACK',
+                     'image/jpeg', 12345, 1)
+                """.trimIndent()
+            )
+            close()
+        }
+
+        migrationHelper.runMigrationsAndValidate(
+            TEST_DATABASE,
+            9,
+            true,
+            *DatabaseMigrations.ALL
+        ).close()
+
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val database = androidx.room.Room.databaseBuilder(context, AppDatabase::class.java, TEST_DATABASE)
+            .addMigrations(*DatabaseMigrations.ALL)
+            .build()
+        migrationHelper.closeWhenFinished(database)
+        val photo = runBlocking { database.progressPhotoDao().getAllSync().single() }
+        assertEquals(7L, photo.id)
+        assertEquals("file:///managed/photo.jpg", photo.photoUri)
+        assertEquals(1, photo.storageVersion)
+        assertEquals(null, photo.thumbnailUri)
+        assertEquals(0, photo.widthPx)
+        assertEquals(0, photo.heightPx)
     }
 
     private companion object {

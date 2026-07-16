@@ -130,11 +130,20 @@ object DatabaseMigrations {
         }
     }
 
+    val MIGRATION_8_9 = object : Migration(8, 9) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("ALTER TABLE `progress_photos` ADD COLUMN `thumbnailUri` TEXT DEFAULT NULL")
+            db.execSQL("ALTER TABLE `progress_photos` ADD COLUMN `widthPx` INTEGER NOT NULL DEFAULT 0")
+            db.execSQL("ALTER TABLE `progress_photos` ADD COLUMN `heightPx` INTEGER NOT NULL DEFAULT 0")
+        }
+    }
+
     val ALL: Array<Migration> = arrayOf(
         MIGRATION_3_4,
         MIGRATION_4_5,
         MIGRATION_5_6,
         MIGRATION_6_7,
-        MIGRATION_7_8
+        MIGRATION_7_8,
+        MIGRATION_8_9
     )
 }

@@ -2,7 +2,7 @@
 type: adr
 adr: 4
 status: accepted
-implementation_status: current-core
+implementation_status: current
 date: 2026-07-14
 tags: [gymtracker/decision, gymtracker/photos, gymtracker/risk/p0]
 ---
@@ -17,7 +17,7 @@ tags: [gymtracker/decision, gymtracker/photos, gymtracker/risk/p0]
 
 Varsayılan: sistem seçicisinden alınan içeriği background IO’da uygulamanın internal storage alanına kopyala. DB yalnızca başarılı kopyadan sonra `file://` URI, MIME, byte boyutu ve `storageVersion` kaydeder. Dış sağlayıcının geçici URI iznine çalışma zamanında bağımlı kalınmaz.
 
-İlk uygulama dilimi kopyalama, 25 MB sınırı, geçici dosya temizliği, DB hata telafisi ve kontrollü silmeyi kapsar. EXIF orientation, yeniden boyutlandırma/sıkıştırma, dimension ve thumbnail üretimi sonraki fotoğraf medya hattına bırakılmıştır.
+İlk uygulama dilimi kopyalama, 25 MB sınırı, geçici dosya temizliği, DB hata telafisi ve kontrollü silmeyi kapsar. PR13 medya hattı kaynak byte’ları geçici dosyaya sınırla kopyalar; gerçek decode doğrulaması ve EXIF orientation uygular; uzun kenarı en çok 2048 px ana JPEG ve en çok 512 px grid thumbnail’i üretir. Room v9 ana/thumbnail URI, normalize genişlik/yükseklik ve storage v2 sözleşmesini taşır.
 
 PR10 kararı: hassas ve yüksek boyutlu `files/progress_photos` içeriği cloud backup ve device transfer dışında kalır. Room metadata restore edilip dosya yoksa açılış reconciliation’ı yönetilen eksik satırı kaldırır. DB’de karşılığı olmayan managed orphan/temp dosyalar da temizlenir; legacy `storageVersion=0` dış URI’lara dokunulmaz.
 
@@ -28,8 +28,9 @@ PR10 kararı: hassas ve yüksek boyutlu `files/progress_photos` içeriği cloud 
 ## Tutarlılık
 
 - Import başarısızsa yarım dosya temizlenir.
-- DB insert başarısızsa dosya temizlenir.
-- Silme DB kaydını kaldırır ve yalnızca yönetilen `progress_photos` dizininin doğrudan çocuklarını fiziksel olarak temizler; dış `content://` kaynaklarına dokunmaz.
+- DB insert başarısızsa ana görsel ve thumbnail birlikte temizlenir.
+- Silme DB kaydını kaldırır ve yalnızca yönetilen `progress_photos` dizininin doğrudan çocukları olan ana/thumbnail dosyalarını temizler; dış `content://` kaynaklarına dokunmaz.
+- Ana görsel kayıpsa satır ve thumbnail kaldırılır; yalnız thumbnail kayıpsa satır korunur ve ana görsele geri düşülür.
 - Internal fotoğrafların Android backup kapsamı açık karardır.
 
 ## Kabul
@@ -40,7 +41,9 @@ PR10 kararı: hassas ve yüksek boyutlu `files/progress_photos` içeriği cloud 
 - [x] v3 legacy `content://` satırı v5 migration sırasında korunur ve `storageVersion=0` olarak işaretlenir.
 - [x] Orphan managed dosya ve eksik managed metadata açılışta uzlaştırılır.
 - [x] Progress fotoğraf dosyaları backup/device transfer dışında bırakılır ve politika UI’da açıklanır.
-- [ ] Gerçek process death/reboot, düşük alan, bozuk görsel decode ve backup/restore testleri.
-- [ ] EXIF/resize/compress/thumbnail medya hattı.
+- [x] EXIF orientation normalize edilir; bounded ana görsel + thumbnail ve dimension metadata üretilir.
+- [x] Bozuk decode, iki dosyalı DB rollback ve missing-thumbnail onarımı testlidir.
+- [ ] Gerçek process death/reboot, düşük alan ve backup/restore cihaz testleri.
+- [ ] Legacy v0 yeniden seçim ve v1 isteğe bağlı yeniden optimizasyon UX’i.
 
 Bağlar: [[FEATURE_PROGRESS_PHOTOS]], [[ARCH_DATABASE]], [[TEST_MATRIX]].

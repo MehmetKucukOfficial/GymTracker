@@ -49,7 +49,7 @@ class Converters {
         NutritionGoal::class,
         SeedMetadata::class
     ],
-    version = 8,
+    version = 9,
     exportSchema = true
 )
 @TypeConverters(Converters::class)

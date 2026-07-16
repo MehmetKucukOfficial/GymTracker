@@ -2,8 +2,8 @@
 type: workflow
 status: current
 implementation_status: active
-verified_commit: 9c90471
-updated: 2026-07-15
+verified_commit: 5c3ce35
+updated: 2026-07-16
 tags: [gymtracker/workflow, gymtracker/impact]
 ---
 
@@ -53,14 +53,14 @@ Graf: [[FEATURE_PROGRAMS]], [[ADR_007_RELATIONAL_PROGRAM_PLANS]], [[ARCH_DATABAS
 
 ## Fotoğraf saklama
 
-Oku: Progress Screen/VM/repository/DAO/entity, `PhotoFileStorage`, manifest, backup/data extraction rules, Coil config.
-Test: provider, import/DB rollback, limit, orphan/missing reconciliation, legacy v0, restart, reboot, bozuk dosya, low storage, delete cleanup, dark/%200 font.
+Oku: Progress Screen/VM/repository/DAO/entity, `PhotoFileStorage`, manifest, backup/data extraction rules, Coil config ve Room photo media metadata/migration.
+Test: provider, EXIF orientation, bounded decode/resize, thumbnail dimension, iki dosyalı import/DB rollback, limit, orphan/missing-main/missing-thumbnail reconciliation, legacy v0/v1, restart, reboot, bozuk dosya, low storage, delete cleanup, dark/%200 font.
 Graf: [[FEATURE_PROGRESS_PHOTOS]], [[ADR_004_PERSISTENT_PHOTO_STORAGE]].
 
 ## Kas yükü hesabı veya haritası
 
-Oku: `WorkoutDao`, `CompletedSetForLoad`, `MuscleLoadCalculator`, Fatigue ViewModel/Screen, `MuscleBodyMap`, exercise library ve Workout lifecycle sözleşmesi.
-Test: completed/active/incomplete ayrımı, recency, bodyweight fallback, unknown exercise, cap/level, Flow reactivity, front/back map, renk bağımsız liste, dark/%200 font.
+Oku: `WorkoutDao`, `CompletedSetForLoad`, `MeasurementDao`, `MuscleLoadCalculator`, Fatigue ViewModel/Screen, `MuscleBodyMap`, exercise library ve Workout lifecycle sözleşmesi.
+Test: completed/active/incomplete ayrımı, recency, latest valid personal bodyweight + fallback, invalid ölçüm, unknown exercise, cap/level, iki Flow’un reaktivitesi, front/back map, renk bağımsız liste, dark/%200 font.
 Graf: [[FEATURE_MUSCLE_LOAD]], [[ADR_005_MUSCLE_LOAD_NAMING]], [[FEATURE_WORKOUT]], [[ARCH_STATE_DATA_FLOW]].
 
 ## Tarih veya zaman hesabı

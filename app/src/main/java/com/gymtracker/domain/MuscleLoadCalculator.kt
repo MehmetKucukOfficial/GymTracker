@@ -19,12 +19,14 @@ data class MuscleLoad(
 data class MuscleLoadSummary(
     val muscles: List<MuscleLoad>,
     val completedSetCount: Int,
-    val unknownExerciseCount: Int
+    val unknownExerciseCount: Int,
+    val bodyweightCalibrationKg: Float = MuscleLoadCalculator.DEFAULT_BODYWEIGHT_EQUIVALENT_KG,
+    val usesPersonalBodyweight: Boolean = false
 )
 
 object MuscleLoadCalculator {
 
-    private const val BODYWEIGHT_EQUIVALENT_KG = 20f
+    const val DEFAULT_BODYWEIGHT_EQUIVALENT_KG = 20f
     private const val WINDOW_MILLIS = 7L * 24L * 60L * 60L * 1_000L
 
     private val maxWeeklyVolume = mapOf(
@@ -62,9 +64,16 @@ object MuscleLoadCalculator {
         MuscleGroup.RHOMBOIDS to 5000f
     )
 
-    fun calculate(sets: List<CompletedSetForLoad>, nowMillis: Long): MuscleLoadSummary {
+    fun calculate(
+        sets: List<CompletedSetForLoad>,
+        nowMillis: Long,
+        personalBodyweightKg: Float? = null
+    ): MuscleLoadSummary {
         val volumeByMuscle = mutableMapOf<MuscleGroup, Float>()
         var unknownExerciseCount = 0
+        val validPersonalBodyweight = personalBodyweightKg
+            ?.takeIf { it.isFinite() && it in 20f..400f }
+        val bodyweightEquivalent = validPersonalBodyweight ?: DEFAULT_BODYWEIGHT_EQUIVALENT_KG
 
         sets.forEach { set ->
             val definition = ExerciseLibrary.exercises.find { it.name == set.exerciseName }
@@ -73,7 +82,7 @@ object MuscleLoadCalculator {
                 return@forEach
             }
             if (set.reps <= 0 || !set.weightKg.isFinite() || set.weightKg < 0f) return@forEach
-            val effectiveWeight = set.weightKg.takeIf { it > 0f } ?: BODYWEIGHT_EQUIVALENT_KG
+            val effectiveWeight = set.weightKg.takeIf { it > 0f } ?: bodyweightEquivalent
             val ageMillis = (nowMillis - set.completedAt).coerceIn(0L, WINDOW_MILLIS)
             val recencyWeight = 1f - (ageMillis.toFloat() / WINDOW_MILLIS.toFloat() * 0.5f)
             definition.muscleActivations.forEach { activation ->
@@ -100,7 +109,9 @@ object MuscleLoadCalculator {
         return MuscleLoadSummary(
             muscles = loads,
             completedSetCount = sets.size,
-            unknownExerciseCount = unknownExerciseCount
+            unknownExerciseCount = unknownExerciseCount,
+            bodyweightCalibrationKg = bodyweightEquivalent,
+            usesPersonalBodyweight = validPersonalBodyweight != null
         )
     }
 }

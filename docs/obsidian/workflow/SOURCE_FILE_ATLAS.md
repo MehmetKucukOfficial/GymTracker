@@ -2,8 +2,8 @@
 type: atlas
 status: current
 implementation_status: active
-verified_commit: 9c90471
-updated: 2026-07-15
+verified_commit: 5c3ce35
+updated: 2026-07-16
 tags: [gymtracker/workflow, gymtracker/source-map]
 ---
 
@@ -26,11 +26,11 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 
 | Dosya | Sorumluluk | Kullanan |
 |---|---|---|
-| `data/entities/Entities.kt` | Room entity + v7 Programs + v8 measurement date index | bütün feature’lar |
-| `data/database/AppDatabase.kt` | DB v8 + converter + DAO registry | [[ARCH_DATABASE]] |
-| `data/database/DatabaseMigrations.kt` | explicit 3→4→5→6→7→8 migration zinciri | [[ARCH_DATABASE]] |
+| `data/entities/Entities.kt` | Room entity + v7 Programs + v8 measurement index + v9 photo media metadata | bütün feature’lar |
+| `data/database/AppDatabase.kt` | DB v9 + converter + DAO registry | [[ARCH_DATABASE]] |
+| `data/database/DatabaseMigrations.kt` | explicit 3→4→5→6→7→8→9 migration zinciri | [[ARCH_DATABASE]] |
 | `data/dao/WorkoutDao.kt` | active/completed session, planned-set/status mutation ve completed-set load Flow | Home, Workout, Programs, Load |
-| `data/dao/MeasurementDao.kt` | all/latest/indexed period + mutation queries | Home, Measurements |
+| `data/dao/MeasurementDao.kt` | all/latest/indexed period + latest valid weight Flow + mutation queries | Home, Measurements, Load |
 | `data/dao/NutritionDao.kt` | food/entry/goal + update/delete/restore queries | Home, Nutrition |
 | `data/dao/ProgressPhotoDao.kt` | photo queries | Photos |
 | `data/dao/ProgramDao.kt` | program + ilişkisel day/exercise queries | Programs |
@@ -41,14 +41,14 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | `data/programs/ProgramRepository.kt` | list/detail/demo erişim + atomic program→workout sınırı | Programs |
 | `data/programs/ProgramWorkoutPlan.kt` | Room relation modeli ve sıralı egzersiz görünümü | Programs |
 | `data/measurements/MeasurementRepository.kt` | all/period Flow ve measurement mutation sınırı | Measurements |
-| `data/photos/ProgressPhotoRepository.kt` | app-owned fotoğraf import/delete sınırı | Photos |
+| `data/photos/ProgressPhotoRepository.kt` | storage v2 medya import/delete/reconciliation sınırı | Photos |
 
 ## Domain
 
 | Dosya | Sorumluluk | Kritik bağ |
 |---|---|---|
 | `domain/MuscleGroup.kt` | 31 kas + 82 egzersiz/activation | Workout, Load, Programs |
-| `domain/MuscleLoadCalculator.kt` | activation + recency + bodyweight fallback → kas yükü | Load |
+| `domain/MuscleLoadCalculator.kt` | activation + recency + kişisel bodyweight/fallback → kas yükü | Load |
 | `data/workout/CompletedSetForLoad.kt` | completed-set DAO projeksiyonu | Load |
 | `domain/ProgramExercise.kt` | legacy JSON migration modeli + locale-independent stable ID | Programs, Workout |
 | `domain/LocalizedDecimal.kt` | virgül/nokta destekli sonlu sayı parser’ı | Nutrition, Measurements |
@@ -110,8 +110,8 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 |---|---|
 | `ui/screens/progress/ProgressViewModel.kt` | Fotoğraf doğrulama, kayıt/silme, typed mesajlar ve storage reconciliation |
 | `data/photos/ProgressPhotoRules.kt` | opsiyonel kilo/not validation |
-| `data/photos/PhotoFileStorage.kt` | atomik kopya + limit + managed reconciliation |
-| `ui/screens/progress/ProgressScreen.kt` | picker/adaptive filter-grid/viewer/legacy UI |
+| `data/photos/PhotoFileStorage.kt` | bounded decode + EXIF + 2048 ana/512 thumbnail + atomik publish/reconciliation |
+| `ui/screens/progress/ProgressScreen.kt` | picker/adaptive thumbnail grid/ana viewer/legacy UI |
 
 ## Programs
 
@@ -124,8 +124,8 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 
 | Dosya | Rol |
 |---|---|
-| `ui/screens/fatigue/FatigueViewModel.kt` | completed-set Flow + takvim rollover → load state |
-| `ui/screens/fatigue/FatigueScreen.kt` | front/back map + methodology + accessible list |
+| `ui/screens/fatigue/FatigueViewModel.kt` | completed-set + latest-weight Flow + takvim rollover → calibrated load state |
+| `ui/screens/fatigue/FatigueScreen.kt` | front/back map + calibration source + methodology + accessible list |
 
 ## Kaynaklar
 

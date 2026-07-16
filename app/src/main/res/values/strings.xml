@@ -271,9 +271,11 @@
     <string name="muscle_load_empty_body">Bir antrenmanı tamamladığında son yedi günlük kas yükün burada oluşur.</string>
     <string name="muscle_load_methodology_action">Kas yükü yöntemi hakkında bilgi</string>
     <string name="muscle_load_methodology_title">Kas yükü nasıl hesaplanır?</string>
-    <string name="muscle_load_methodology_body">Yalnız tamamlanmış antrenmanlardaki tamamlanmış setler kullanılır. Tekrar × dış yük × egzersiz aktivasyonu hesaplanır; eski setlerin etkisi yedi gün içinde kademeli azalır. Sıfır kilolu vücut ağırlığı setlerinde 20 kg eşdeğer yük kullanılır. Bu değer fizyolojik yorgunluk veya tıbbi toparlanma ölçümü değildir.</string>
+    <string name="muscle_load_methodology_body">Yalnız tamamlanmış antrenmanlardaki tamamlanmış setler kullanılır. Tekrar × yük × egzersiz aktivasyonu hesaplanır; eski setlerin etkisi yedi gün içinde kademeli azalır. Sıfır kilolu vücut ağırlığı setlerinde en güncel geçerli vücut ölçümü kullanılır; ölçüm yoksa 20 kg güvenli varsayılanı uygulanır. Bu değer fizyolojik yorgunluk veya tıbbi toparlanma ölçümü değildir.</string>
     <string name="muscle_load_completed_sets">%1$d tamamlanmış set</string>
     <string name="muscle_load_summary_support">En yeni setler daha yüksek ağırlıkla hesaba katılır.</string>
+    <string name="muscle_load_personal_calibration">Vücut ağırlığı kalibrasyonu: %1$.1f kg (son ölçüm)</string>
+    <string name="muscle_load_default_calibration">Vücut ağırlığı kalibrasyonu: %1$.1f kg (varsayılan)</string>
     <string name="muscle_load_unknown_exercises">%1$d set egzersiz kütüphanesiyle eşleşmedi ve skora eklenmedi.</string>
     <string name="muscle_load_front">Ön görünüm</string>
     <string name="muscle_load_back">Arka görünüm</string>

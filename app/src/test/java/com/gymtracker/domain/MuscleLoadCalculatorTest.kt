@@ -36,6 +36,38 @@ class MuscleLoadCalculatorTest {
 
         assertTrue(summary.muscles.first { it.muscle == MuscleGroup.LATS }.weightedVolume > 0f)
         assertEquals(1, summary.unknownExerciseCount)
+        assertEquals(20f, summary.bodyweightCalibrationKg, 0.001f)
+        assertEquals(false, summary.usesPersonalBodyweight)
+    }
+
+    @Test
+    fun calculate_usesPersonalBodyweightForZeroWeightSets() {
+        val summary = MuscleLoadCalculator.calculate(
+            sets = listOf(
+                CompletedSetForLoad("Pull-up", reps = 10, weightKg = 0f, completedAt = DAY)
+            ),
+            nowMillis = DAY,
+            personalBodyweightKg = 80f
+        )
+
+        val lats = summary.muscles.first { it.muscle == MuscleGroup.LATS }
+        assertEquals(480f, lats.weightedVolume, 0.001f)
+        assertEquals(80f, summary.bodyweightCalibrationKg, 0.001f)
+        assertTrue(summary.usesPersonalBodyweight)
+    }
+
+    @Test
+    fun calculate_rejectsInvalidPersonalBodyweightAndKeepsSafeFallback() {
+        val summary = MuscleLoadCalculator.calculate(
+            sets = listOf(
+                CompletedSetForLoad("Pull-up", reps = 10, weightKg = 0f, completedAt = DAY)
+            ),
+            nowMillis = DAY,
+            personalBodyweightKg = Float.NaN
+        )
+
+        assertEquals(20f, summary.bodyweightCalibrationKg, 0.001f)
+        assertEquals(false, summary.usesPersonalBodyweight)
     }
 
     @Test

@@ -3,6 +3,7 @@ package com.gymtracker.ui.screens.fatigue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gymtracker.data.dao.WorkoutDao
+import com.gymtracker.data.dao.MeasurementDao
 import com.gymtracker.data.home.homeDashboardPeriod
 import com.gymtracker.domain.MuscleLoadCalculator
 import com.gymtracker.domain.MuscleLoadSummary
@@ -14,9 +15,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -31,6 +32,7 @@ sealed interface MuscleLoadUiState {
 @OptIn(ExperimentalCoroutinesApi::class)
 class FatigueViewModel @Inject constructor(
     private val workoutDao: WorkoutDao,
+    private val measurementDao: MeasurementDao,
     private val clock: Clock
 ) : ViewModel() {
 
@@ -39,13 +41,19 @@ class FatigueViewModel @Inject constructor(
     val uiState = retryGeneration
         .flatMapLatest { loadPeriods() }
         .flatMapLatest { period ->
-            workoutDao.observeCompletedSetsForLoadSince(period.weekStartMillis)
-                .map { sets ->
+            combine(
+                workoutDao.observeCompletedSetsForLoadSince(period.weekStartMillis),
+                measurementDao.observeLatestWithWeight()
+            ) { sets, latestMeasurement ->
                     val content: MuscleLoadUiState = MuscleLoadUiState.Content(
-                        MuscleLoadCalculator.calculate(sets, clock.millis())
+                        MuscleLoadCalculator.calculate(
+                            sets = sets,
+                            nowMillis = clock.millis(),
+                            personalBodyweightKg = latestMeasurement?.weightKg
+                        )
                     )
                     content
-                }
+            }
         }
         .onStart { emit(MuscleLoadUiState.Loading) }
         .catch { emit(MuscleLoadUiState.Error) }

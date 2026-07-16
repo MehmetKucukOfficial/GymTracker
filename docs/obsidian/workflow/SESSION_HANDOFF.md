@@ -2,13 +2,13 @@
 type: handoff
 status: ready
 implementation_status: active
-code_baseline: 9c90471
-updated: 2026-07-15
-active_phase: "Phase 4 - PR12 publication"
-next_pr: "Wait for user command before PR13"
+code_baseline: 5c3ce35
+updated: 2026-07-16
+active_phase: "Phase 4 - PR13 published"
+next_pr: "Wait for user command before PR14"
 primary_nodes:
-  - FEATURE_NUTRITION
-  - FEATURE_MEASUREMENTS
+  - FEATURE_PROGRESS_PHOTOS
+  - FEATURE_MUSCLE_LOAD
   - ARCH_DATABASE
   - ARCH_STATE_DATA_FLOW
   - DESIGN_SYSTEM_GRAPH
@@ -25,35 +25,36 @@ tags: [gymtracker/workflow, gymtracker/session]
 - PR10 baseline: `2ad7ad8`; `codex/progress-load` dalı PR9’u hedefleyen stacked draft PR #3 olarak yayınlandı.
 - PR11 baseline: `7917358`; `codex/programs-normalization` dalı PR10’u hedefleyen stacked draft PR #4 olarak yayınlandı.
 - PR12 baseline: `9c90471`; `codex/nutrition-measurements-depth` dalı PR11’i hedefleyen stacked draft PR #5 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/5
-- Room v8; explicit 7→8 measurement date index migration aktif, destructive fallback yok; ilişkisel program planı ve indexed measurement period query aktiftir.
+- PR13 code baseline: `5c3ce35`; graph baseline `d189f6c`; `codex/photo-load-calibration` dalı PR12’yi hedefleyen stacked draft PR #6 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/6
+- Room v9; explicit 8→9 photo thumbnail/dimension metadata migration aktif, destructive fallback yok; v0/v1 fotoğraf satırları kayıpsız korunur.
 - Telefon navigation shell’i 5 ana hedefe indi; workout/program detail ID + SavedStateHandle + repository Flow kullanıyor.
 - Home completed/active workout, measurement ve nutrition kaynaklarına reaktif; aktif workout varsa CTA doğrudan session ID’ye devam ediyor.
 - Workout tek aktif seans, status-korumalı mutation, COMPLETED salt-okunur geçmiş ve adaptive modern UI kullanıyor.
 - Nutrition DST-safe tarih aralığı, SavedStateHandle tarih seçimi, snapshot-safe amount/meal edit, delete undo, locale sayı/tarih ve TR/EN adaptive UI kullanıyor.
 - Measurements repository + indexed 7/30/90/tümü query, gerçek kilo chart, özel tarih, edit/delete undo, latest/history/trend ve TR/EN adaptive UI kullanıyor.
-- Progress fotoğrafları cihaz-yerel backup politikası, orphan/missing reconciliation, doğrulama, viewer ve adaptive grid kullanıyor.
-- Muscle Load yalnız completed setlerden reaktif ve günlük yenilenen Flow üretir; recency/bodyweight/unknown sözleşmesi, metodoloji ve erişilebilir liste aktiftir.
+- Progress fotoğrafları cihaz-yerel backup politikası, bounded decode, EXIF normalize, 2048 ana/512 thumbnail, iki dosyalı rollback/reconciliation, viewer ve adaptive grid kullanıyor.
+- Muscle Load completed-set Flow’unu latest-valid measurement Flow’uyla birleştirir; recency/personal-bodyweight/fallback/unknown sözleşmesi, kalibrasyon kaynağı, metodoloji ve erişilebilir liste aktiftir.
 - Programs locked/ownership/target kurallarını repository’de doğrular; program günü atomik ACTIVE workout’a planlanan set olarak kopyalanır, tamamlanmayan set Muscle Load’a girmez ve finish’i kilitler.
 - Light/dark tasarım sistemi token temeli ve ortak Home bileşenleri aktif; Home loading/content/error, retry, midnight period tick ve adaptive kolon kullanıyor.
-- Test temeli aktif: 24 JVM + 46 API 34 instrumentation testi geçiyor.
-- Debug build başarılı; lint 0 error / 77 warning.
+- Test temeli aktif: 26 JVM + 50 API 34 instrumentation testi geçiyor.
+- Debug build başarılı; lint 0 error / 78 warning.
 
 ## Sıradaki önerilen iş
 
-PR12 commit/push/draft PR yayınından sonra kullanıcının yeni komutunu bekle. PR13’e otomatik geçme.
+PR13 commit/push/draft PR yayınından sonra kullanıcının yeni komutunu bekle. PR14’e otomatik geçme.
 
 ## Açık P0/P1
 
-- Legacy `storageVersion=0` fotoğraflar ve backup politikası
+- Legacy `storageVersion=0` fotoğraflar için yeniden seçim ve v1 re-optimize UX’i
 - CI kalite kapısı
 - Tam uygulama ikinci locale + screenshot golden altyapısı
 - Harici deep link ve navigation rail
 
 ## Son doğrulama
 
-- `testDebugUnitTest`: success, 24/24.
-- `connectedDebugAndroidTest`: success, 46/46, Pixel 6 Pro API 34.
-- `lintDebug`: success, 0 error / 77 warning.
+- `testDebugUnitTest`: success, 26/26.
+- `connectedDebugAndroidTest`: success, 50/50, Pixel 6 Pro API 34.
+- `lintDebug`: success, 0 error / 78 warning.
 - `assembleDebug`: success.
 - Görsel smoke: `app/build/pr12-nutrition-light.png`, `pr12-measurements-light.png`, `pr12-nutrition-dark-font200.png`, `pr12-measurements-dark-font200.png`, `pr12-measurements-chart-dark-font200.png`; emulator light/font 1.0’a geri alındı.
 
@@ -587,3 +588,43 @@ Next concrete action:
 
 Blockers:
 - No code blocker. PR12 remains intentionally stacked on PR #4 until its base lands or is rebased.
+
+## 2026-07-16 - PR 13 Photo media pipeline + personal load calibration
+
+Completed:
+- Added Room v9 `ProgressPhoto.thumbnailUri/widthPx/heightPx`, explicit `MIGRATION_8_9` and exported schema.
+- Added bounded real-image decode, EXIF orientation normalization, max-2048 main JPEG and max-512 grid thumbnail generation.
+- Made main/thumbnail publish, DB rollback, delete and reconciliation contracts two-file safe; missing thumbnail falls back to the main image.
+- Combined completed-set Flow with the newest valid body measurement; zero-weight sets use personal weight and visibly fall back to 20 kg when unavailable.
+- Updated Muscle Load methodology and summary UI to disclose the active calibration source.
+
+Files changed:
+- Photo entity/DAO/database/migration/schema, `PhotoFileStorage`, repository, Progress grid and photo tests.
+- `MeasurementDao`, `MuscleLoadCalculator`, Fatigue ViewModel/Screen, strings and calibration tests.
+- Related Obsidian feature/ADR/architecture/quality/roadmap/workflow nodes.
+
+Tests run/results:
+- `testDebugUnitTest`: 26 tests, 0 failures.
+- `connectedDebugAndroidTest`: 50 tests, 0 failures on Pixel 6 Pro API 34.
+- Targeted photo/migration/mutation/Muscle Load device suite: 16 tests, 0 failures after the final reconciliation change.
+- `lintDebug`: 0 errors / 78 warnings.
+- `assembleDebug`: success.
+
+Risks changed:
+- R2 mitigated-core: new imports no longer retain provider orientation, unbounded source dimensions or full-size grid decode; corrupt input and two-file rollback are tested.
+- R10 mitigated-core+: personal bodyweight calibration replaces the fixed fallback when a valid measurement exists; stable-ID load projection and per-movement coefficients remain.
+- Room v9 is explicit and tested from v3, v6, v7 and v8; no v1/v2 support claim is made.
+
+Graph notes updated:
+- [[FEATURE_PROGRESS_PHOTOS]], [[FEATURE_MUSCLE_LOAD]]
+- [[ADR_004_PERSISTENT_PHOTO_STORAGE]], [[ADR_005_MUSCLE_LOAD_NAMING]], [[ADR_INDEX]]
+- [[ARCH_DATABASE]], [[ARCH_STATE_DATA_FLOW]]
+- [[TEST_MATRIX]], [[RISK_REGISTER_GRAPH]], [[ROADMAP_EXECUTION_GRAPH]]
+- [[SOURCE_FILE_ATLAS]], [[CHANGE_IMPACT_MAP]], [[SESSION_HANDOFF]], [[00_START_HERE]]
+
+Next concrete action:
+- PR13 stacked draft PR #6 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/6
+- Stop and wait for the user before starting the app-wide locale/adaptive/golden slice.
+
+Blockers:
+- No code blocker. PR13 is intentionally stacked on PR #5 until its base lands or is rebased.

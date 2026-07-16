@@ -2,22 +2,22 @@
 type: quality
 status: current
 implementation_status: mixed
-verified_commit: 9c90471
-updated: 2026-07-15
+verified_commit: 5c3ce35
+updated: 2026-07-16
 tags: [gymtracker/quality, gymtracker/testing]
 ---
 
 # Test Matrisi
 
-## Mevcut temel (2026-07-15)
+## Mevcut temel (2026-07-16)
 
 - JVM unit test altyapisi `JUnit 4` ile aktiftir; `testDebugUnitTest` artik `NO-SOURCE` degildir.
 - [[FatigueCalculatorTest]] bilinen egzersiz aktivasyon dagilimini, cap davranisini ve bilinmeyen egzersiz davranisini korur.
 - Room instrumentation test altyapisi AndroidJUnitRunner ve `room-testing` ile aktiftir.
 - [[WorkoutDaoTest]] tarih sinirli set sorgusunu ve session -> set cascade davranisini cihaz/emulator calistirmasi icin tanimlar.
-- [[DatabaseMigrationTest]] v3→v8 satır korumasını; legacy workout/photo varsayılanlarını; v6 program JSON→ilişkisel satır dönüşümünü; bozuk JSON fallback’ini, yeni WorkoutSet kolonlarını ve v7→v8 measurement date index’ini doğrular.
+- [[DatabaseMigrationTest]] v3→v9 satır korumasını; legacy workout/photo varsayılanlarını; v6 program JSON→ilişkisel satır dönüşümünü; bozuk JSON fallback’ini, yeni WorkoutSet kolonlarını, v7 measurement date index’ini ve v8→v9 photo media metadata varsayılanlarını doğrular.
 - [[ProgramSeedInitializerTest]] tekrarlı, eşzamanlı ve legacy seed durumlarını kapsar.
-- [[ProgressPhotoRepositoryTest]] app-owned dosya kopyası, metadata, storage yeniden oluşturma, delete cleanup, kaynak/DB hata rollback ve 25 MB sınırında geçici dosya temizliğini kapsar.
+- [[ProgressPhotoRepositoryTest]] app-owned EXIF dönüşümü, 2048 ana/512 thumbnail, dimension metadata, storage yeniden oluşturma, iki dosyalı delete/DB rollback, bozuk decode, 25 MB sınırı ve orphan/missing-main/missing-thumbnail reconciliation’ını kapsar.
 - [[NavigationContractTest]] 5 hedef sırasını, nested route sahipliğini, detail görünürlük politikasını ve pozitif ID kuralını doğrular.
 - [[HomeDashboardPeriodTest]] Istanbul takvim/DST gün sınırını; [[HomeDashboardRepositoryTest]] completed/active workout, measurement ve nutrition Flow’larının reaktif birleşimini doğrular.
 - [[NavigationSmokeTest]] back, selected tab, workout/program ID detail ve Activity recreation davranışını gerçek Compose UI üzerinde doğrular.
@@ -29,9 +29,9 @@ tags: [gymtracker/quality, gymtracker/testing]
 - `MutationContractTest` Nutrition/Measurement update-delete-aynı-ID restore ve indexed period query’yi; `HomeDashboardRepositoryTest` edit sonrası Home reaktivitesini doğrular.
 - `NutritionScreenTest` over-goal/empty state’i; `MeasurementsScreenTest` latest/history, gerçek chart semantics ve period action’ını dark + %200 font koşulunda doğrular. `LocalizationResourcesTest` Nutrition/Measurements English kapsamını doğrular.
 - `ProgressPhotoRulesTest`, `ProgressPhotoRepositoryTest` ve `ProgressPhotoScreenTest` fotoğraf input aralığı, import/rollback/limit, orphan/missing reconciliation, legacy badge ve %200 font empty state’ini doğrular.
-- `MuscleLoadCalculatorTest`, `WorkoutDaoTest` ve `MuscleLoadScreenTest` recency/bodyweight/unknown/cap kurallarını, completed-only reaktif query’yi ve renk bağımsız adaptive UI’ı doğrular.
+- `MuscleLoadCalculatorTest`, `WorkoutDaoTest`, `MutationContractTest` ve `MuscleLoadScreenTest` recency/personal-bodyweight/fallback/invalid ölçüm/unknown/cap kurallarını, completed-only + latest-valid-weight reaktif query’lerini ve kalibrasyon kaynağı gösteren renk bağımsız adaptive UI’ı doğrular.
 - `ExerciseIdentityTest`, `ProgramSeedInitializerTest`, `ProgramRepositoryTest`, `WorkoutRepositoryTest` ve `ProgramsScreenTest`; unique/locale-independent ID, 5/23/108 seed, locked guard, atomic plan copy, incomplete-set finish engeli ve adaptive UI’yı doğrular.
-- Pixel 6 Pro API 34 emülatöründe 46 instrumentation testi ve 24 JVM testi, 0 failure ile geçer.
+- Pixel 6 Pro API 34 emülatöründe 50 instrumentation testi ve 26 JVM testi, 0 failure ile geçer.
 
 ## Feature matrisi
 
@@ -41,13 +41,13 @@ tags: [gymtracker/quality, gymtracker/testing]
 | Workout | state/validation | v3→v7, transaction/cascade/single-active/read-only/planned set | active/history/planned completion, light/dark, %200 font | Activity recreation; process death bekliyor |
 | Nutrition | totals/DST/parser/goal/snapshot scale | day query/update/delete/same-ID undo | over-goal/empty/edit action/dark/%200/English | gerçek process-death bekliyor |
 | Measurements | validation/trend/period | v3→v8, date index/range/update/delete/same-ID undo | latest/history/chart/period/empty/dark/%200/English | process-death/timezone bekliyor |
-| Photos | input/limit/backup policy | migration/import/delete/reconcile rollback | empty/legacy/viewer/dark/%200 | process kill/restart/reboot bekliyor |
+| Photos | input/limit/media bounds/backup policy | v3→v9 + v8→v9/import/EXIF/thumbnail/delete/reconcile rollback | thumbnail grid/legacy/viewer/dark/%200 | process kill/restart/reboot/low-storage bekliyor |
 | Programs | stable ID/content | idempotent 5/23/108 seed, v6→v7 JSON migration, atomic plan copy | list/detail/locked/start, dark/%200 | program→workout + Activity recreation |
-| Muscle load | activation/decay/bodyweight/unknown | completed-only set Flow | map/list/methodology/dark/%200 | midnight + TalkBack bekliyor |
+| Muscle load | activation/decay/personal bodyweight/fallback/unknown | completed-only set + latest-valid-weight Flow | map/list/calibration/methodology/dark/%200 | midnight + TalkBack bekliyor |
 
 ## Room ve migration
 
-- v3→latest (v8) doğrulandı; v1/v2 tarihi şema kanıtı olmadığı için destek iddiası yok
+- v3→latest (v9) doğrulandı; v1/v2 tarihi şema kanıtı olmadığı için destek iddiası yok
 - Seed repeated/concurrent
 - Transaction rollback
 - Cascade and unique constraint

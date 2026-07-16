@@ -2,8 +2,8 @@
 type: feature
 status: current
 implementation_status: current
-verified_commit: 341bf79
-updated: 2026-07-15
+verified_commit: 5c3ce35
+updated: 2026-07-16
 source_files:
   - app/src/main/java/com/gymtracker/ui/screens/progress/ProgressScreen.kt
   - app/src/main/java/com/gymtracker/ui/screens/progress/ProgressViewModel.kt
@@ -23,29 +23,28 @@ tags: [gymtracker/feature, gymtracker/feature/photos, gymtracker/risk/p0]
 
 ## Mevcut yetenek
 
-`GetContent` ile görsel seçer; repository içeriği IO dispatcher üzerinde `filesDir/progress_photos` dizinine kopyalar. Kopya tamamlanmadan DB satırı açılmaz. `ProgressPhoto` yönetilen URI yanında MIME, byte boyutu ve storage sürümünü tutar. Adaptive grid, yatay açı filtresi, boş/kayıt/hata state’leri, not/kilo metadata’sı ve büyük fotoğraf viewer uygulanmıştır.
+`GetContent` ile görsel seçer; repository içeriği IO dispatcher üzerinde `filesDir/progress_photos` dizinine alır. Medya hattı 25 MB sınırından sonra gerçek decode doğrulaması yapar, EXIF yönünü uygular, ana görseli en fazla 2048 px ve grid thumbnail’ini en fazla 512 px olacak şekilde JPEG’e dönüştürür. İki çıktı kalıcı konuma atomik olarak yayınlanmadan DB satırı açılmaz. `ProgressPhoto` ana/thumbnail URI, normalize genişlik/yükseklik, MIME, byte boyutu ve storage sürümünü tutar. Grid thumbnail’i, viewer optimize ana görseli kullanır.
 
-ViewModel açılışta DB ile yönetilen klasörü uzlaştırır: kaydı olmayan orphan/temp dosyaları siler; `storageVersion=1` olup dosyası bulunmayan metadata satırlarını kaldırır. Legacy `storageVersion=0` satırlara dokunmaz ve UI risk rozeti gösterir.
+ViewModel açılışta DB ile yönetilen klasörü uzlaştırır: kaydı olmayan orphan/temp dosyaları siler; `storageVersion>=1` olup ana dosyası bulunmayan metadata satırlarını ve ilişkili thumbnail’i kaldırır. Yalnız thumbnail kayıpsa satırı korur ve thumbnail referansını temizleyerek ana görsele geri düşer. Legacy `storageVersion=0` satırlara dokunmaz ve UI risk rozeti gösterir.
 
 ## P0 risk durumu
 
-Yeni importlar için geçici URI riski kapatıldı: kayıtlar `storageVersion=1` ve app-owned `file://` URI kullanır. v5 migration eski satırları veri kaybetmeden `storageVersion=0` olarak tutar; bu legacy `content://` satırları sağlayıcı izni kaybolmuşsa hâlâ açılamayabilir. Otomatik legacy re-import mümkün değildir; kullanıcıdan yeniden seçim gerekir. Cihaz içi fotoğraflar privacy/quota gerekçesiyle cloud backup ve device transfer dışında bırakılmış, restore sonrası metadata tutarlılığı reconciliation ile güvenceye alınmıştır.
+Yeni importlar için geçici URI ve kontrolsüz büyük decode riski kapatıldı: PR13 kayıtları `storageVersion=2`, normalize app-owned ana/thumbnail `file://` URI’ları ve dimension metadata kullanır. v5/v8 kayıtları veri kaybetmeden v0/v1 olarak korunur; bu kayıtlar mevcut ana URI üzerinden çalışmaya devam eder. Legacy `content://` satırları sağlayıcı izni kaybolmuşsa hâlâ açılamayabilir ve kullanıcıdan yeniden seçim gerekir. Cihaz içi fotoğraflar privacy/quota gerekçesiyle cloud backup ve device transfer dışında bırakılmıştır.
 
 ## Diğer sorunlar
 
 - Kamera ve medya izinleri kaldırıldı; sistem seçici akışı ek izin istemiyor.
-- EXIF orientation, resize/compress, thumbnail ve dimension metadata henüz yok.
 - Legacy yeniden seçim/iyileştirme akışı yok; yalnız açık risk etiketi vardır.
 - Import dialog URI’si gerçek OS process death sırasında korunmaz.
-- Kalıcı screenshot-golden ve gerçek düşük alan/reboot kabulü bekler.
+- Kalıcı screenshot-golden, gerçek düşük alan/reboot kabulü ve eski v1 görseller için isteğe bağlı yeniden optimizasyon bekler.
 
 ## Uygulanan karar
 
-[[ADR_004_PERSISTENT_PHOTO_STORAGE]] kabul edildi. Kalıcı internal kopya, atomik geçici dosya yaklaşımı, 25 MB sınırı, input validation, reconciliation ve cihaz-yerel backup politikası uygulandı. Medya optimizasyon hattı ve thumbnail sonraki dilimdir.
+[[ADR_004_PERSISTENT_PHOTO_STORAGE]] kabul edildi. Room v9 `thumbnailUri/widthPx/heightPx`, storage v2 EXIF/resize/compress/thumbnail hattı, iki dosyalı rollback ve reconciliation sözleşmesi uygulanmıştır.
 
 ## Zorunlu testler
 
-- Geçen: başarılı import/kopya/metadata, storage yeniden oluşturma, delete cleanup, kaynak/DB hatasında rollback, 25 MB temizliği, orphan/missing-row reconciliation, v3→v5 legacy satır koruma, legacy badge ve dark/%200 font empty state.
-- Bekleyen: gerçek process kill/restart, reboot, düşük alan, bozuk dosya decode, backup/restore cihaz kabulü ve thumbnail grid performansı.
+- Geçen: başarılı import/EXIF dönüşümü/2048 ana görsel/512 thumbnail/dimension metadata, storage yeniden oluşturma, iki dosyalı delete ve DB rollback, 25 MB ve bozuk decode temizliği, orphan/missing-main/missing-thumbnail reconciliation, v3→v9 ve v8→v9 satır koruma, legacy badge ve dark/%200 font empty state.
+- Bekleyen: gerçek process kill/restart, reboot, düşük alan, backup/restore cihaz kabulü ve geniş veri setinde thumbnail grid performans profili.
 
 Bağlar: [[ARCH_DATABASE]], [[RISK_REGISTER_GRAPH#R2 — Fotoğraf URI kaybı]], [[SCREEN_BLUEPRINT_GRAPH#Fotoğraflar]].

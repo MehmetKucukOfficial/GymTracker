@@ -3,8 +3,8 @@ aliases: [GymTracker Graph Start, Başlangıç]
 type: moc
 status: current
 implementation_status: mixed
-verified_commit: 9c90471
-updated: 2026-07-15
+verified_commit: 5c3ce35
+updated: 2026-07-16
 tags: [gymtracker/moc, gymtracker/graph]
 ---
 
@@ -17,11 +17,11 @@ tags: [gymtracker/moc, gymtracker/graph]
 
 - Android/Kotlin, tek `:app` modülü
 - Jetpack Compose + Navigation Compose
-- Room v8 + Hilt + KSP
+- Room v9 + Hilt + KSP
 - Local-first; backend ve gerçek ödeme yok
 - 5 ana navigation hedefi, 3 İlerleme alt hedefi, ID tabanlı workout/program detayları
 - 82 benzersiz egzersiz, 108 hazır program egzersiz referansı
-- Debug build başarılı; 24 JVM + 46 cihaz testi geçiyor; lint 0 hata/77 uyarı
+- Debug build başarılı; 26 JVM + 50 cihaz testi geçiyor; lint 0 hata/78 uyarı
 - Destructive migration, yeni fotoğraf URI kaybı, seed race ve temel navigation/state riskleri kapatıldı veya azaltıldı
 
 ## Ana haritalar
@@ -67,8 +67,8 @@ tags: [gymtracker/moc, gymtracker/graph]
 
 ## Grafın güncellik durumu
 
-- Kod baseline: `9c90471` (`codex/nutrition-measurements-depth`, stacked draft PR #5)
-- Kod değişikliği: PR12 Room v8 + edit/undo/chart/English kapsamı commit/push edildi ve PR #4’ü hedefleyen stacked draft PR #5 olarak yayınlandı
-- Dokümanlar: Room v8, snapshot-safe edit/undo, indexed measurement chart ve scoped second-locale commit’iyle senkron
-- Son tam doğrulama: 2026-07-15
-- Aktif önerilen iş: kullanıcı komutunu bekle; PR13 adayı Photo EXIF/thumbnail + kişisel load kalibrasyonu
+- Kod baseline: `5c3ce35` (`codex/photo-load-calibration`, stacked draft PR #6)
+- Kod değişikliği: Room v9 photo metadata, storage v2 bounded EXIF/resize/thumbnail hattı ve latest-measurement tabanlı Muscle Load kalibrasyonu yayınlandı
+- Dokümanlar: PR13 feature/ADR/database/state/risk/test/roadmap sözleşmeleriyle senkron
+- Son tam doğrulama: 2026-07-16
+- Aktif önerilen iş: kullanıcı komutunu bekle; sıradaki aday uygulama geneli ikinci locale + adaptive navigation/accessibility/golden
