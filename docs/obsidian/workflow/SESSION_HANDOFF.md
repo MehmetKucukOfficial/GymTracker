@@ -2,10 +2,10 @@
 type: handoff
 status: ready
 implementation_status: active
-code_baseline: 7917358
+code_baseline: 9c90471
 updated: 2026-07-15
-active_phase: "Phase 4 - PR12 Nutrition/Measurements depth"
-next_pr: "PR 12 - Nutrition/Measurements edit, undo, chart and second locale"
+active_phase: "Phase 4 - PR12 publication"
+next_pr: "Wait for user command before PR13"
 primary_nodes:
   - FEATURE_NUTRITION
   - FEATURE_MEASUREMENTS
@@ -24,42 +24,38 @@ tags: [gymtracker/workflow, gymtracker/session]
 - PR9 baseline: `341bf79`; `codex/nutrition-measurements` dalı PR8’i hedefleyen stacked draft PR #2 olarak yayınlandı.
 - PR10 baseline: `2ad7ad8`; `codex/progress-load` dalı PR9’u hedefleyen stacked draft PR #3 olarak yayınlandı.
 - PR11 baseline: `7917358`; `codex/programs-normalization` dalı PR10’u hedefleyen stacked draft PR #4 olarak yayınlandı.
-- Room v7; explicit 6→7 program migration aktif, destructive fallback yok; ilişkisel program planı + legacy JSON fallback, stable exercise ID ve planlanan WorkoutSet sözleşmesi aktiftir.
+- PR12 baseline: `9c90471`; `codex/nutrition-measurements-depth` dalı PR11’i hedefleyen stacked draft PR #5 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/5
+- Room v8; explicit 7→8 measurement date index migration aktif, destructive fallback yok; ilişkisel program planı ve indexed measurement period query aktiftir.
 - Telefon navigation shell’i 5 ana hedefe indi; workout/program detail ID + SavedStateHandle + repository Flow kullanıyor.
 - Home completed/active workout, measurement ve nutrition kaynaklarına reaktif; aktif workout varsa CTA doğrudan session ID’ye devam ediyor.
 - Workout tek aktif seans, status-korumalı mutation, COMPLETED salt-okunur geçmiş ve adaptive modern UI kullanıyor.
-- Nutrition DST-safe tarih aralığı, SavedStateHandle tarih seçimi, locale sayı doğrulaması, zero/over-goal güvenliği ve adaptive modern UI kullanıyor.
-- Measurements boş/aralık dışı kayıtları engelliyor; latest/history tekrarını kaldırıyor, en yeni iki kilo trendini üretiyor ve adaptive modern UI kullanıyor.
+- Nutrition DST-safe tarih aralığı, SavedStateHandle tarih seçimi, snapshot-safe amount/meal edit, delete undo, locale sayı/tarih ve TR/EN adaptive UI kullanıyor.
+- Measurements repository + indexed 7/30/90/tümü query, gerçek kilo chart, özel tarih, edit/delete undo, latest/history/trend ve TR/EN adaptive UI kullanıyor.
 - Progress fotoğrafları cihaz-yerel backup politikası, orphan/missing reconciliation, doğrulama, viewer ve adaptive grid kullanıyor.
 - Muscle Load yalnız completed setlerden reaktif ve günlük yenilenen Flow üretir; recency/bodyweight/unknown sözleşmesi, metodoloji ve erişilebilir liste aktiftir.
 - Programs locked/ownership/target kurallarını repository’de doğrular; program günü atomik ACTIVE workout’a planlanan set olarak kopyalanır, tamamlanmayan set Muscle Load’a girmez ve finish’i kilitler.
 - Light/dark tasarım sistemi token temeli ve ortak Home bileşenleri aktif; Home loading/content/error, retry, midnight period tick ve adaptive kolon kullanıyor.
-- Test temeli aktif: 22 JVM + 41 API 34 instrumentation testi geçiyor.
-- Debug build başarılı; lint 0 error / 71 warning.
+- Test temeli aktif: 24 JVM + 46 API 34 instrumentation testi geçiyor.
+- Debug build başarılı; lint 0 error / 77 warning.
 
 ## Sıradaki önerilen iş
 
-[[ROADMAP_EXECUTION_GRAPH#Sonraki dikey dilimler]] PR12 ile devam et:
-
-1. Nutrition/Measurements edit ve undo veri sözleşmesini çıkar; DAO/repository mutation’larını typed result ile güvenli yap.
-2. Measurement tarih index’i ve dönem query’siyle gerçek chart veri modelini kur; migration/test zorunluluklarını uygula.
-3. Nutrition/Measurements ekranlarını ikinci locale ve plural/birim formatlarıyla doğrula.
-4. Compose chart/undo/edit erişilebilirliğini, light/dark/%200 font ve Home reaktivitesini test et.
+PR12 commit/push/draft PR yayınından sonra kullanıcının yeni komutunu bekle. PR13’e otomatik geçme.
 
 ## Açık P0/P1
 
 - Legacy `storageVersion=0` fotoğraflar ve backup politikası
 - CI kalite kapısı
-- Nutrition/Measurements edit-undo-chart ve ikinci locale
+- Tam uygulama ikinci locale + screenshot golden altyapısı
 - Harici deep link ve navigation rail
 
 ## Son doğrulama
 
-- `testDebugUnitTest`: success, 22/22.
-- `connectedDebugAndroidTest`: success, 41/41, Pixel 6 Pro API 34.
-- `lintDebug`: success, 0 error / 71 warning.
+- `testDebugUnitTest`: success, 24/24.
+- `connectedDebugAndroidTest`: success, 46/46, Pixel 6 Pro API 34.
+- `lintDebug`: success, 0 error / 77 warning.
 - `assembleDebug`: success.
-- Görsel smoke: `app/build/pr11-programs-light.png`, `pr11-program-detail-light2.png`, `pr11-programs-dark-font200c.png`, `pr11-program-detail-dark-font200.png`, `pr11-planned-workout-dark-font200.png`; connected test sonrası final APK yeniden kurulmalıdır.
+- Görsel smoke: `app/build/pr12-nutrition-light.png`, `pr12-measurements-light.png`, `pr12-nutrition-dark-font200.png`, `pr12-measurements-dark-font200.png`, `pr12-measurements-chart-dark-font200.png`; emulator light/font 1.0’a geri alındı.
 
 ## Handoff güncelleme şablonu
 
@@ -550,3 +546,44 @@ Next concrete action:
 
 Blockers:
 - No code blocker. PR #4 remains stacked on PR #3 until its base lands or is rebased.
+
+## 2026-07-15 - PR 12 Nutrition/Measurements depth
+
+Completed:
+- Added Room v8 `body_measurements(date)` index, explicit `MIGRATION_7_8`, exported schema and v7 fixture/index preservation test.
+- Added `MeasurementRepository`, indexed 7/30/90/all period Flow, SavedState chart selection and real accessible weight chart.
+- Added measurement custom date, edit, latest/history delete and same-ID Snackbar undo.
+- Added Nutrition snapshot-safe amount/meal edit and same-ID delete undo; FoodEntry history never rereads mutable FoodItem macros.
+- Added scoped English Nutrition/Measurements resources, locale date formatting, plural chart count and language-independent UI assertions.
+- Added [[ADR_008_SNAPSHOT_SAFE_EDIT_UNDO]].
+
+Files changed:
+- Room entity/DAO/database/migration + schema v8
+- Nutrition/Measurement rules, repository, ViewModels, Screens and TR/EN resources
+- Migration, mutation, Home reactivity, locale, rules and Compose tests
+- Related Obsidian feature/ADR/architecture/design/quality/roadmap/workflow nodes
+
+Tests run/results:
+- `testDebugUnitTest`: 24 tests, 0 failures.
+- `connectedDebugAndroidTest`: 46 tests, 0 failures on a fresh Pixel 6 Pro API 34 emulator.
+- `lintDebug`: 0 errors / 77 warnings.
+- `assembleDebug`: success.
+- Manual light normal-font and dark %200-font visual acceptance passed for Nutrition, Measurements and the real chart.
+
+Risks changed:
+- R11 mitigated-core: edit/delete/undo identity and FoodEntry snapshot rules are explicit and tested.
+- R15 mitigated-core+: Nutrition/Measurements add scoped English, plural/unit formatting and language-independent tests; full-app locale/golden remains.
+- Room v8 is explicit and tested from v3, v6 and v7; no v1/v2 support claim is made.
+
+Graph notes updated:
+- [[FEATURE_NUTRITION]], [[FEATURE_MEASUREMENTS]], [[ADR_008_SNAPSHOT_SAFE_EDIT_UNDO]], [[ADR_INDEX]]
+- [[ARCH_DATABASE]], [[ARCH_STATE_DATA_FLOW]], [[DESIGN_SYSTEM_GRAPH]], [[SCREEN_BLUEPRINT_GRAPH]]
+- [[TEST_MATRIX]], [[RISK_REGISTER_GRAPH]], [[ROADMAP_EXECUTION_GRAPH]]
+- [[SOURCE_FILE_ATLAS]], [[CHANGE_IMPACT_MAP]], [[SESSION_HANDOFF]], [[00_START_HERE]]
+
+Next concrete action:
+- PR12 `9c90471` stacked draft PR #5 olarak yayınlandı.
+- Stop and wait for the user; do not start PR13 without a new command.
+
+Blockers:
+- No code blocker. PR12 remains intentionally stacked on PR #4 until its base lands or is rebased.

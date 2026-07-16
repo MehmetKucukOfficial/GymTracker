@@ -26,6 +26,9 @@ interface NutritionDao {
     @Insert
     suspend fun insertEntry(entry: FoodEntry): Long
 
+    @Update
+    suspend fun updateEntry(entry: FoodEntry)
+
     @Delete
     suspend fun deleteEntry(entry: FoodEntry)
 

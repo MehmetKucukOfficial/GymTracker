@@ -121,10 +121,20 @@ object DatabaseMigrations {
         }
     }
 
+    val MIGRATION_7_8 = object : Migration(7, 8) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL(
+                "CREATE INDEX IF NOT EXISTS `index_body_measurements_date` " +
+                    "ON `body_measurements` (`date`)"
+            )
+        }
+    }
+
     val ALL: Array<Migration> = arrayOf(
         MIGRATION_3_4,
         MIGRATION_4_5,
         MIGRATION_5_6,
-        MIGRATION_6_7
+        MIGRATION_6_7,
+        MIGRATION_7_8
     )
 }

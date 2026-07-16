@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="app_name">GymTracker</string>
     <string name="nav_home">Özet</string>
     <string name="nav_workout">Antrenman</string>
@@ -85,6 +85,8 @@
     <string name="action_delete">Sil</string>
     <string name="action_add">Ekle</string>
     <string name="action_save">Kaydet</string>
+    <string name="action_edit">Düzenle</string>
+    <string name="action_undo">Geri al</string>
     <string name="action_close">Kapat</string>
     <string name="workout_not_found">Antrenman bulunamadı</string>
     <string name="workout_loading">Antrenman yükleniyor…</string>
@@ -151,6 +153,12 @@
     <string name="nutrition_error_invalid_food">Besin adı gerekli; enerji ve makrolar negatif olamaz.</string>
     <string name="nutrition_error_invalid_goal">Bütün günlük hedefler sıfırdan büyük olmalı.</string>
     <string name="nutrition_error_save">Beslenme kaydı kaydedilemedi. Tekrar deneyebilirsin.</string>
+    <string name="nutrition_edit_entry">Öğünü düzenle</string>
+    <string name="nutrition_entry_deleted">Öğün silindi.</string>
+    <string name="nutrition_meal_breakfast">Kahvaltı</string>
+    <string name="nutrition_meal_lunch">Öğle</string>
+    <string name="nutrition_meal_dinner">Akşam</string>
+    <string name="nutrition_meal_snack">Ara öğün</string>
 
     <string name="measurements_title">Vücut ölçümleri</string>
     <string name="measurements_subtitle">Değişimi anlamlı ve karşılaştırılabilir kayıtlarla izle.</string>
@@ -191,6 +199,22 @@
     <string name="measurements_error_body_fat">Yağ oranı yüzde 1–75 aralığında olmalı.</string>
     <string name="measurements_error_circumference">Çevre ölçümleri 10–300 cm aralığında olmalı.</string>
     <string name="measurements_error_save">Ölçüm kaydedilemedi. Tekrar deneyebilirsin.</string>
+    <string name="measurements_edit_title">Ölçümü düzenle</string>
+    <string name="measurements_date_field">Tarih (YYYY-AA-GG)</string>
+    <string name="measurements_error_date">Geçerli bir tarih gir.</string>
+    <string name="measurements_deleted">Ölçüm silindi.</string>
+    <string name="measurements_chart_title">Kilo eğilimi</string>
+    <string name="measurements_chart_support">Seçilen dönemdeki gerçek kilo kayıtların.</string>
+    <string name="measurements_chart_empty">Bu dönemde grafik için en az iki kilo kaydı gerekli.</string>
+    <string name="measurements_period_7">7 gün</string>
+    <string name="measurements_period_30">30 gün</string>
+    <string name="measurements_period_90">90 gün</string>
+    <string name="measurements_period_all">Tümü</string>
+    <plurals name="measurements_chart_record_count">
+        <item quantity="one">%1$d kilo kaydı</item>
+        <item quantity="other">%1$d kilo kaydı</item>
+    </plurals>
+    <string name="measurements_chart_range">en düşük %1$.1f kg, en yüksek %2$.1f kg</string>
 
     <string name="progress_hub_title">İlerleme</string>
     <string name="progress_hub_subtitle">Ölçümlerini, fotoğraflarını ve kas yükünü tek yerde izle.</string>

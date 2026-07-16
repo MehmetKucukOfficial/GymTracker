@@ -17,5 +17,6 @@ tags: [gymtracker/decision, gymtracker/moc]
 | [[ADR_005_MUSCLE_LOAD_NAMING]] | proposed | not started | hesap + UI dili |
 | [[ADR_006_WORKOUT_SESSION_LIFECYCLE]] | accepted | current | Workout + Home + Room v6 |
 | [[ADR_007_RELATIONAL_PROGRAM_PLANS]] | accepted | current | Programs + Workout + Room v7 |
+| [[ADR_008_SNAPSHOT_SAFE_EDIT_UNDO]] | accepted | current | Nutrition + Measurements edit/undo |
 
 Yeni karar [[TEMPLATE_ADR]] ile eklenir. Karar değişirse eski ADR silinmez; superseded işaretlenip yeni ADR’ye bağlanır.

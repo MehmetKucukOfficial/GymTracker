@@ -15,7 +15,10 @@ interface MeasurementDao {
     @Query("SELECT * FROM body_measurements WHERE date >= :since ORDER BY date ASC")
     fun getSince(since: Long): Flow<List<BodyMeasurement>>
 
-    @Insert
+    @Query("SELECT * FROM body_measurements WHERE date >= :startInclusive AND date < :endExclusive ORDER BY date ASC")
+    fun getInRange(startInclusive: Long, endExclusive: Long): Flow<List<BodyMeasurement>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(measurement: BodyMeasurement): Long
 
     @Update

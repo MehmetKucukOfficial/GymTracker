@@ -2,7 +2,7 @@
 type: workflow
 status: current
 implementation_status: active
-verified_commit: 7917358
+verified_commit: 9c90471
 updated: 2026-07-15
 tags: [gymtracker/workflow, gymtracker/impact]
 ---
@@ -69,11 +69,11 @@ Oku: `TimeModule.kt`, `HomeDashboardPeriod.kt`, `NutritionRules.kt`, ilgili View
 Test: Istanbul/Berlin DST geçmiş örnekleri, 23/25 saat, midnight, zone change, inclusive/exclusive boundary, SavedStateHandle/process recreation.
 Graf: [[ARCH_STATE_DATA_FLOW]], feature notları.
 
-## Nutrition veya Measurements input/state
+## Nutrition veya Measurements input/state/edit/undo/chart
 
-Oku: ilgili Screen/ViewModel/DAO, `LocalizedDecimal.kt`, `NutritionRules.kt` veya `MeasurementRules.kt`, Home aggregate çağıranları ve string resources.
-Test: `LocalizedDecimalTest`, `NutritionRulesTest`, `MeasurementRulesTest`, `NutritionScreenTest`, `MeasurementsScreenTest`; empty, comma/dot, min/max, zero/over-goal, latest/history, 0/1/2+ trend, light/dark ve %200 font.
-Graf: [[FEATURE_NUTRITION]], [[FEATURE_MEASUREMENTS]], [[ARCH_STATE_DATA_FLOW]], [[DESIGN_SYSTEM_GRAPH]].
+Oku: ilgili Screen/ViewModel/DAO, `MeasurementRepository`, `LocalizedDecimal.kt`, Nutrition/Measurement rules, Home aggregate çağıranları ve TR/EN resources.
+Test: rules + `MutationContractTest`, `HomeDashboardRepositoryTest`, Screen/locale testleri; snapshot scale, aynı-ID undo, empty, comma/dot, min/max, zero/over-goal, period boundary, latest/history, 0/1/2+ chart, light/dark/%200 font ve second locale.
+Graf: [[FEATURE_NUTRITION]], [[FEATURE_MEASUREMENTS]], [[ADR_008_SNAPSHOT_SAFE_EDIT_UNDO]], [[ARCH_STATE_DATA_FLOW]], [[DESIGN_SYSTEM_GRAPH]].
 
 ## Gradle/dependency/SDK
 

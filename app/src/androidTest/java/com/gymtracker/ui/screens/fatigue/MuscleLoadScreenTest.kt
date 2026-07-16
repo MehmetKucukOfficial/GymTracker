@@ -12,6 +12,8 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.unit.Density
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import com.gymtracker.R
 import com.gymtracker.domain.MuscleLoad
 import com.gymtracker.domain.MuscleLoadLevel
 import com.gymtracker.domain.MuscleLoadSummary
@@ -75,7 +77,9 @@ class MuscleLoadScreenTest {
         composeRule.onNodeWithText("1 tamamlanmış set").assertIsDisplayed()
         composeRule.onNodeWithContentDescription("Kas yükü yöntemi hakkında bilgi").performClick()
         composeRule.onNodeWithText("Kas yükü nasıl hesaplanır?").assertIsDisplayed()
-        composeRule.onNodeWithText("Tamam").performClick()
+        composeRule.onNodeWithText(
+            InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.action_ok)
+        ).performClick()
         composeRule.onNodeWithTag("muscle-load-content")
             .performScrollToNode(hasText("Orta Göğüs"))
         composeRule.onNodeWithText("Orta Göğüs").assertIsDisplayed()

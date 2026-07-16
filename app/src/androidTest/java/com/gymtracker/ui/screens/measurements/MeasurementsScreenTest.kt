@@ -10,8 +10,11 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.unit.Density
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import com.gymtracker.R
 import com.gymtracker.data.entities.BodyMeasurement
 import com.gymtracker.data.measurements.WeightTrend
+import com.gymtracker.data.measurements.MeasurementChartPeriod
 import com.gymtracker.ui.theme.GymTrackerTheme
 import java.util.concurrent.atomic.AtomicInteger
 import org.junit.Assert.assertEquals
@@ -48,10 +51,10 @@ class MeasurementsScreenTest {
 
         composeRule.onNodeWithTag("measurements-latest").assertIsDisplayed()
         composeRule.onNodeWithText("81.5 kg").assertIsDisplayed()
-        composeRule.onNodeWithText("Geçmiş").performScrollTo().assertIsDisplayed()
-        composeRule.onNodeWithText("Bel: 84.0 cm", substring = true)
+        composeRule.onNodeWithText(text(R.string.measurements_history)).performScrollTo().assertIsDisplayed()
+        composeRule.onNodeWithText(text(R.string.measurements_cm_value, 84f), substring = true)
             .performScrollTo()
-            .assertIsDisplayed()
+            .fetchSemanticsNode()
     }
 
     @Test
@@ -67,8 +70,39 @@ class MeasurementsScreenTest {
             }
         }
 
-        composeRule.onNodeWithText("Henüz ölçüm yok").assertIsDisplayed()
-        composeRule.onNodeWithText("İlk ölçümü ekle").performClick()
+        composeRule.onNodeWithText(text(R.string.measurements_empty_title)).assertIsDisplayed()
+        composeRule.onNodeWithText(text(R.string.measurements_first_action)).performClick()
         assertEquals(1, clicks.get())
     }
+
+    @Test
+    fun realChartIsAccessibleAndPeriodSelectionIsReachable() {
+        val selections = AtomicInteger(0)
+        composeRule.setContent {
+            GymTrackerTheme(darkTheme = false) {
+                MeasurementsContent(
+                    uiState = MeasurementsUiState(
+                        latest = BodyMeasurement(id = 3, date = 3_000, weightKg = 80f),
+                        history = listOf(BodyMeasurement(id = 2, date = 2_000, weightKg = 81f)),
+                        chartPeriod = MeasurementChartPeriod.THIRTY_DAYS,
+                        chartMeasurements = listOf(
+                            BodyMeasurement(id = 1, date = 1_000, weightKg = 82f),
+                            BodyMeasurement(id = 2, date = 2_000, weightKg = 81f),
+                            BodyMeasurement(id = 3, date = 3_000, weightKg = 80f)
+                        )
+                    ),
+                    onAddMeasurement = {},
+                    onDeleteMeasurement = {},
+                    onSelectChartPeriod = { selections.incrementAndGet() }
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag("measurements-weight-chart").performScrollTo().assertIsDisplayed()
+        composeRule.onNodeWithText(text(R.string.measurements_period_7)).performClick()
+        assertEquals(1, selections.get())
+    }
+
+    private fun text(id: Int, vararg args: Any): String =
+        InstrumentationRegistry.getInstrumentation().targetContext.getString(id, *args)
 }

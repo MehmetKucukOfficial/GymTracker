@@ -3,7 +3,7 @@ aliases: [GymTracker Graph Start, Başlangıç]
 type: moc
 status: current
 implementation_status: mixed
-verified_commit: 7917358
+verified_commit: 9c90471
 updated: 2026-07-15
 tags: [gymtracker/moc, gymtracker/graph]
 ---
@@ -17,11 +17,11 @@ tags: [gymtracker/moc, gymtracker/graph]
 
 - Android/Kotlin, tek `:app` modülü
 - Jetpack Compose + Navigation Compose
-- Room v7 + Hilt + KSP
+- Room v8 + Hilt + KSP
 - Local-first; backend ve gerçek ödeme yok
 - 5 ana navigation hedefi, 3 İlerleme alt hedefi, ID tabanlı workout/program detayları
 - 82 benzersiz egzersiz, 108 hazır program egzersiz referansı
-- Debug build başarılı; 22 JVM + 41 cihaz testi geçiyor; lint 0 hata/71 uyarı
+- Debug build başarılı; 24 JVM + 46 cihaz testi geçiyor; lint 0 hata/77 uyarı
 - Destructive migration, yeni fotoğraf URI kaybı, seed race ve temel navigation/state riskleri kapatıldı veya azaltıldı
 
 ## Ana haritalar
@@ -67,8 +67,8 @@ tags: [gymtracker/moc, gymtracker/graph]
 
 ## Grafın güncellik durumu
 
-- Kod baseline: `7917358` (`codex/programs-normalization`, stacked draft PR #4)
-- Kod değişikliği: PR11 Programs normalizasyonu commit/push edildi ve PR #3’ü hedefleyen stacked draft PR #4 olarak yayınlandı
-- Dokümanlar: Room v7 ilişkisel plan, stable ID, program→planned-workout ve adaptive Programs commit’iyle senkron
+- Kod baseline: `9c90471` (`codex/nutrition-measurements-depth`, stacked draft PR #5)
+- Kod değişikliği: PR12 Room v8 + edit/undo/chart/English kapsamı commit/push edildi ve PR #4’ü hedefleyen stacked draft PR #5 olarak yayınlandı
+- Dokümanlar: Room v8, snapshot-safe edit/undo, indexed measurement chart ve scoped second-locale commit’iyle senkron
 - Son tam doğrulama: 2026-07-15
-- Aktif önerilen iş: Nutrition/Measurements edit-undo-chart + ikinci locale PR12 dilimine geç
+- Aktif önerilen iş: kullanıcı komutunu bekle; PR13 adayı Photo EXIF/thumbnail + kişisel load kalibrasyonu

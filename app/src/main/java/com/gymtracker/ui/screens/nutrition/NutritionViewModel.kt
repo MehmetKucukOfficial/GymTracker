@@ -13,6 +13,7 @@ import com.gymtracker.data.nutrition.isValidFoodItem
 import com.gymtracker.data.nutrition.isValidNutritionGoal
 import com.gymtracker.data.nutrition.nutritionDayRange
 import com.gymtracker.data.nutrition.nutritionEntryTime
+import com.gymtracker.data.nutrition.updateFoodEntrySnapshot
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.Clock
 import java.time.LocalDate
@@ -60,6 +61,9 @@ class NutritionViewModel @Inject constructor(
 
     private val _mutationError = MutableStateFlow<NutritionMutationError?>(null)
     val mutationError: StateFlow<NutritionMutationError?> = _mutationError.asStateFlow()
+
+    private val _deletedEntry = MutableStateFlow<FoodEntry?>(null)
+    val deletedEntry: StateFlow<FoodEntry?> = _deletedEntry.asStateFlow()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val dailyNutrition: StateFlow<DailyNutrition> = combine(
@@ -141,8 +145,40 @@ class NutritionViewModel @Inject constructor(
     fun deleteEntry(entry: FoodEntry) {
         viewModelScope.launch {
             runCatching { dao.deleteEntry(entry) }
+                .onSuccess { _deletedEntry.value = entry }
                 .onFailure { _mutationError.value = NutritionMutationError.SAVE_FAILED }
         }
+    }
+
+    fun updateEntry(
+        entry: FoodEntry,
+        amountGrams: Float,
+        mealType: MealType,
+        onSaved: () -> Unit = {}
+    ) {
+        val updated = updateFoodEntrySnapshot(entry, amountGrams)?.copy(mealType = mealType)
+        if (updated == null) {
+            _mutationError.value = NutritionMutationError.INVALID_AMOUNT
+            return
+        }
+        viewModelScope.launch {
+            runCatching { dao.updateEntry(updated) }
+                .onSuccess { onSaved() }
+                .onFailure { _mutationError.value = NutritionMutationError.SAVE_FAILED }
+        }
+    }
+
+    fun undoDelete(entry: FoodEntry) {
+        if (_deletedEntry.value?.id != entry.id) return
+        viewModelScope.launch {
+            runCatching { dao.insertEntry(entry) }
+                .onSuccess { _deletedEntry.value = null }
+                .onFailure { _mutationError.value = NutritionMutationError.SAVE_FAILED }
+        }
+    }
+
+    fun consumeDeletedEntry(entry: FoodEntry) {
+        if (_deletedEntry.value?.id == entry.id) _deletedEntry.value = null
     }
 
     fun updateGoal(goal: NutritionGoal, onSaved: () -> Unit = {}) {
