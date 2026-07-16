@@ -72,4 +72,4 @@ tags: [gymtracker/moc, gymtracker/graph]
 - Kod değişikliği: 840 dp ortak list-detail; Workout/Programs selection preview + mevcut ID detail eylemi; iki yeni kalıcı golden yerelde doğrulandı
 - Dokümanlar: PR17 navigation/design/feature/test/risk/roadmap sözleşmeleriyle senkron
 - Son tam doğrulama: 2026-07-16
-- Aktif önerilen iş: PR17 hosted run `29474876318` sonucunu doğrula; sonra kullanıcı komutunu bekle
+- Aktif önerilen iş: PR17 hosted run `29474876318` tamamen yeşil; kullanıcı komutunu bekle

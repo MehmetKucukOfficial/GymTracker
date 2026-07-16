@@ -4,8 +4,8 @@ status: ready
 implementation_status: active
 code_baseline: a573ab9
 updated: 2026-07-16
-active_phase: "Phase 6 - PR17 published; hosted CI running"
-next_pr: "Verify PR17 hosted CI, then wait for user"
+active_phase: "Phase 6 - PR17 published and hosted green"
+next_pr: "Wait for user direction"
 primary_nodes:
   - ARCH_NAVIGATION
   - DESIGN_SYSTEM_GRAPH
@@ -48,7 +48,7 @@ tags: [gymtracker/workflow, gymtracker/session]
 
 ## Sıradaki önerilen iş
 
-PR17 yerel kabulü ve draft PR yayını tamamlandı. Hosted Android quality run `29474876318` sonucunu doğrula; yeşil olduğunda kullanıcı komutunu bekle.
+PR17 yerel/hosted kabulü ve draft PR yayını tamamlandı. Yeni geliştirme başlatmadan kullanıcı komutunu bekle.
 
 ## Açık P0/P1
 
@@ -99,6 +99,7 @@ Tests run/results:
 - Full `connectedDebugAndroidTest`: 58/58, 0 failures on Pixel 6 Pro API 34 in 6m21s.
 - `ciQuality`: success including lint, debug, minified release APK/AAB/mapping and embedded profile verification.
 - Resource contract: default 356, English 356, key diff 0.
+- Hosted GitHub Actions run `29474876318`: quality 11m08s; API 34 device/golden 14m06s; artifact XML 58 tests, 0 failures/errors/skipped.
 
 Risks changed:
 - R13 resolved+: compact bottom bar, 600 dp+ rail and 840 dp+ Workout/Programs list-detail preserve one route/save-restore contract.
@@ -106,7 +107,7 @@ Risks changed:
 - No Room schema, DAO, repository or route definition changed.
 
 Next concrete action:
-- Draft PR #10 yayınlandı; hosted run `29474876318` yeşil olduğunda kullanıcı komutunu bekle.
+- Draft PR #10 yayınlandı ve hosted run yeşil; kullanıcı komutunu bekle.
 
 Blockers:
 - No code blocker. Production-key/Play access, physical benchmark hardware, external deep links and true OS process death remain external/follow-up acceptance inputs.

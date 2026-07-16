@@ -40,6 +40,7 @@ tags: [gymtracker/quality, gymtracker/testing]
 - GitHub Actions koşusu `29459249716`: quality 8 dk 51 sn; KVM hızlandırmalı API 34 device/golden 13 dk 13 sn; artifact XML toplamı 54 test, 0 failure/error/skipped.
 - PR16: 2 Baseline Profile üretici testi sıfır hatayla release baseline/startup profili yazdı; startup None/Partial, Home scroll ve Workout macrobenchmark senaryoları API 34 emülatörde çalıştı. Fiziksel cihaz performans kabulü açık.
 - PR16 hosted GitHub Actions koşusu `29473550009`: quality ve API 34 device/golden işleri tamamen yeşil.
+- PR17 hosted GitHub Actions koşusu `29474876318`: quality 11m08s; API 34 device/golden 14m06s; artifact XML 58 test, 0 failure/error/skipped.
 - `releaseDistribution` dummy upload keystore ile APK v2/v3, AAB JAR imzası ve embedded profile girdilerini doğruladı; secretsiz çağrı dört eksik environment değerini fail-fast raporladı.
 
 ## Feature matrisi
