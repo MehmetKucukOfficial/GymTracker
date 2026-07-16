@@ -43,6 +43,7 @@ tags: [gymtracker/quality, gymtracker/testing]
 - PR17 hosted GitHub Actions koşusu `29474876318`: quality 11m08s; API 34 device/golden 14m06s; artifact XML 58 test, 0 failure/error/skipped.
 - PR #11 post-merge bakım koşusu `29497592820`: quality 10m49s; API 34 device/golden 13m23s; artifact XML 58 test, 0 failure/error/skipped.
 - Otomatik `master` kabul koşusu `29499237460` (`3f2f8cf`): quality 11m54s; API 34 device/golden 9m26s; artifact XML 58 test, 0 failure/error/skipped.
+- PR18/GitHub PR #12 hosted koşusu `29503247012`: quality 7m23s; API 34 device/golden 9m41s; artifact XML 62 test, 0 failure/error/skipped.
 - `releaseDistribution` dummy upload keystore ile APK v2/v3, AAB JAR imzası ve embedded profile girdilerini doğruladı; secretsiz çağrı dört eksik environment değerini fail-fast raporladı.
 
 ## Feature matrisi

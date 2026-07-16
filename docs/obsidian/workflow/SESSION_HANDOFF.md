@@ -4,8 +4,8 @@ status: ready
 implementation_status: active
 code_baseline: e28a22d
 updated: 2026-07-16
-active_phase: "Phase 7 - PR18 legacy photo recovery validation"
-next_pr: "Publish PR18 and verify hosted quality/device checks"
+active_phase: "Phase 7 - PR18 ready for review"
+next_pr: "GitHub PR #12 is ready; wait for merge or next development direction"
 primary_nodes:
   - FEATURE_PROGRESS_PHOTOS
   - ADR_004_PERSISTENT_PHOTO_STORAGE
@@ -21,7 +21,7 @@ tags: [gymtracker/workflow, gymtracker/session]
 
 - GitHub PR #1–#11, 2026-07-16 tarihinde merge commit stratejisiyle sırayla `master`a alındı; son code baseline `3f2f8cf`, açık PR kalmadı ve first-parent geçmişinde on bir merge commit korunuyor.
 - PR #11, workflow push filtresini `main` yerine varsayılan `master` dalıyla eşledi. Otomatik `master` koşusu `29499237460` tamamen yeşil; artifact XML 58/58 cihaz testi gösteriyor.
-- PR18 code baseline `e28a22d`, `codex/legacy-photo-recovery` dalında: v0 yeniden seçim, v1 doğrudan yeniden optimizasyon, kimlik/metadata koruma ve update rollback akışları yerel kabulden geçti.
+- PR18 code baseline `e28a22d`, `codex/legacy-photo-recovery` dalında hazır GitHub PR #12 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/12 — v0 yeniden seçim, v1 doğrudan yeniden optimizasyon, kimlik/metadata koruma ve update rollback akışları yerel/hosted kabulden geçti.
 - Uygulama baseline: `f9d6d75`; PR8 `codex/workout-lifecycle` dalında draft PR #1 olarak yayınlandı.
 - PR9 baseline: `341bf79`; `codex/nutrition-measurements` dalı PR8’i hedefleyen stacked draft PR #2 olarak yayınlandı.
 - PR10 baseline: `2ad7ad8`; `codex/progress-load` dalı PR9’u hedefleyen stacked draft PR #3 olarak yayınlandı.
@@ -49,7 +49,7 @@ tags: [gymtracker/workflow, gymtracker/session]
 
 ## Sıradaki önerilen iş
 
-PR18 graf commit’ini tamamla, `ciQuality` çalıştır, dalı yayınla ve hosted quality/API 34 kontrollerini doğrula.
+PR18/GitHub PR #12 mergeable ve bütün kontrolleri yeşil. Kullanıcının merge veya sonraki geliştirme yönünü bekle.
 
 ## Açık P0/P1
 
@@ -97,12 +97,13 @@ Tests run/results:
 - Targeted photo repository/UI package: 13/13.
 - Full Pixel 6 Pro API 34 `connectedDebugAndroidTest`: 62/62, 0 failure/error/skipped.
 - `ciQuality`: success; debug APK, 2,661,123-byte minified APK, 4,928,049-byte AAB, R8 mapping and embedded Baseline Profile verified.
+- Hosted run `29503247012`: quality 7m23s; API 34 device/golden 9m41s; downloaded artifact XML 62 tests, 0 failure/error/skipped. PR #12 is mergeable and ready.
 
 Risks changed:
 - R2 improves from mitigated-core to mitigated++; legacy v0/v1 recovery is implemented. Real low-storage/reboot/backup-restore device acceptance remains.
 
 Next concrete action:
-- Publish PR18, verify hosted quality + API 34 device jobs, then update this handoff with the run URL/result.
+- Wait for the user's merge or next development direction; PR18/GitHub PR #12 is ready.
 
 Blockers:
 - No code blocker. Local Gradle must be invoked with JDK 17 because the machine default remains Java 11.

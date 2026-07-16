@@ -155,9 +155,9 @@ Kabul: 30 JVM + 58 API 34 instrumentation testi; `ciQuality`, lint, debug ve min
 ## PR 18 — Legacy photo recovery + optimization
 
 Node: [[FEATURE_PROGRESS_PHOTOS]], [[ADR_004_PERSISTENT_PHOTO_STORAGE]], [[TEST_MATRIX]].
-Durum: `e28a22d` kod commit’i `codex/legacy-photo-recovery` dalında; tam yerel kabul tamamlandı, yayın/hosted kabul sırada.
+Durum: `e28a22d` kod commit’i `codex/legacy-photo-recovery` dalında hazır GitHub PR #12 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/12
 Çıktı: v0 dış sağlayıcı kayıtları için yeniden seçim; v1 app-owned kayıtlar için doğrudan v2 optimizasyon; aynı Room kimliği ve kullanıcı metadata’sı; update başarısızlığında iki yeni dosyanın rollback’i; başarılı swap sonrasında eski yönetilen dosya temizliği; ayrı erişilebilir kart/viewer eylemleri.
-Kabul: 30 JVM + 62 API 34 instrumentation testi; hedefli photo paketi 13/13; `ciQuality`, lint, debug ve minified release/profile kapısı; light normal ve dark %200 yükseltme UI doğrulaması.
+Kabul: 30 JVM + 62 API 34 instrumentation testi; hedefli photo paketi 13/13; `ciQuality`, lint, debug ve minified release/profile kapısı; light normal ve dark %200 yükseltme UI doğrulaması. Hosted run `29503247012`: quality 7m23s, API 34 device/golden 9m41s, artifact XML 62/62.
 
 ## Sonraki dikey dilim
 

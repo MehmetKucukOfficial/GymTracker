@@ -70,7 +70,7 @@ tags: [gymtracker/moc, gymtracker/graph]
 
 - Master code baseline: `3f2f8cf`; GitHub PR #1–#11 merge commit ile sırayla birleştirildi, açık PR kalmadı ve kaynak dallar korundu
 - PR #11, CI push hedefini varsayılan `master` dalıyla eşledi; otomatik master koşusu `29499237460` tamamen yeşil
-- Aktif PR18 code baseline: `e28a22d` (`codex/legacy-photo-recovery`); v0 yeniden seçim ve v1 yeniden optimizasyon yerel kabulü tamamlandı
+- Aktif PR18 code baseline: `e28a22d` (`codex/legacy-photo-recovery`), GitHub PR #12; yerel ve hosted kabul tamamlandı
 - Dokümanlar: PR18 feature/ADR/test/risk/roadmap/handoff durumuyla senkron
 - Son tam doğrulama: 2026-07-16
-- Aktif önerilen iş: `ciQuality` kapısını çalıştır, PR18’i yayınla ve hosted kontrolleri doğrula
+- Aktif önerilen iş: hazır PR #12 için kullanıcının merge/sonraki geliştirme yönünü bekle
