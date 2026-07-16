@@ -2,10 +2,11 @@
 type: feature
 status: current
 implementation_status: current
-verified_commit: 7917358
-updated: 2026-07-15
+verified_commit: a573ab9
+updated: 2026-07-16
 source_files:
   - app/src/main/java/com/gymtracker/ui/screens/programs/ProgramsScreen.kt
+  - app/src/main/java/com/gymtracker/ui/components/GymTrackerComponents.kt
   - app/src/main/java/com/gymtracker/ui/screens/programs/ProgramsViewModel.kt
   - app/src/main/java/com/gymtracker/data/dao/ProgramDao.kt
   - app/src/main/java/com/gymtracker/data/programs/ProgramRepository.kt
@@ -29,6 +30,7 @@ tags: [gymtracker/feature, gymtracker/feature/programs]
 - Program günü tek transaction içinde aktif workout’a aktarılır. Başka aktif workout varsa yeni kopya üretmez ve mevcut seansı döndürür.
 - Kopyalanan setler `isCompleted=false`, `reps=0`, `targetReps`, `exerciseId` ve reçete sırasını koruyan `exerciseOrder` ile planlanır. Kullanıcı gerçek tekrar/kiloyu kaydedene kadar Muscle Load’a girmez ve workout bitirilemez.
 - Program list/detail; resource, token, adaptive grid/scroll, light/dark, %200 font, erişim/seviye metinleri ve açıklayıcı locked/empty/error state’leri kullanır.
+- 840 dp altında program kartı mevcut `programs/{programId}` rotasını doğrudan açar. 840 dp+ genişlikte ortak `GtListDetailScaffold`, seçili kart ile özet panelini birlikte tutar; açık eylemi aynı kararlı ID rotasına geçer. `rememberSaveable` seçimi Activity state restoration boyunca korur.
 
 ## Veri ve yaşam döngüsü
 
@@ -58,7 +60,7 @@ Karar: [[ADR_007_RELATIONAL_PROGRAM_PLANS]]. Workout yaşam döngüsü: [[ADR_00
 
 - `ProgramWorkout.exercises` legacy fallback kolonu, destek penceresi ve gerçek fixture telemetrisi sonrasında ayrı migration ile kaldırılabilir.
 - Fiyat `Float` ve `isPurchased` yalnız yerel demo durumudur; gerçek entitlement/billing değildir. Gerçek ödeme ayrı backend/billing ADR’ı gerektirir.
-- Harici deep link ve gerçek OS process-death kabulü bekliyor.
+- Harici deep link ve gerçek OS process-death kabulü bekliyor; Activity saved-state restoration kapsamı geçiyor.
 - Program ilerleme takvimi, tamamlanan gün işareti ve kullanıcıya özel programlar sonraki ürün dilimidir.
 
 ## Testler
@@ -67,5 +69,6 @@ Karar: [[ADR_007_RELATIONAL_PROGRAM_PLANS]]. Workout yaşam döngüsü: [[ADR_00
 - `ProgramSeedInitializerTest`: repeated/concurrent seed; 5 program, 23 gün, 108 ilişkisel egzersiz; legacy program koruma.
 - `ProgramRepositoryTest`: atomic planned-set copy, existing-active resume, locked-program reject.
 - `WorkoutRepositoryTest`: planlanan set tamamlanmadan finish reddi ve gerçek değerle completion.
-- `ProgramsScreenTest`: %200 font liste, ilişkisel detail/start, locked demo state.
+- `ProgramsScreenTest`: %200 font liste, ilişkisel detail/start, locked demo state; 840 dp+ yerel seçim, state restoration ve kararlı-ID detay eylemi.
+- `AdaptiveListDetailGoldenTest`: English/light 1000×700 program liste–özet baseline’ı.
 - `NavigationSmokeTest`: ID route, back/bottom-bar policy ve Activity recreation.

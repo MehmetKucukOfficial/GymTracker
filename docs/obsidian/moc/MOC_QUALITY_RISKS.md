@@ -2,7 +2,7 @@
 type: moc
 status: current
 implementation_status: current
-verified_commit: a2586d1
+verified_commit: a573ab9
 updated: 2026-07-16
 tags: [gymtracker/moc, gymtracker/risk, gymtracker/quality]
 ---
@@ -21,8 +21,8 @@ tags: [gymtracker/moc, gymtracker/risk, gymtracker/quality]
 | Kontrol | Durum |
 |---|---|
 | Debug compile/APK | Başarılı |
-| Unit test | 28/28 başarılı |
-| Android test | 54/54 başarılı, API 34 |
+| Unit test | 30/30 başarılı |
+| Android test | 58/58 başarılı, API 34; dört golden dahil |
 | Profil üretici | 2/2 başarılı |
 | Macrobenchmark | 4 senaryo çalışıyor; fiziksel cihaz kabulü açık |
 | Lint | 0 error |

@@ -70,6 +70,9 @@
     <string name="workout_empty_body">İlk seansını başlat; setlerin otomatik olarak kaydedilsin.</string>
     <string name="workout_empty_action">İlk antrenmanı başlat</string>
     <string name="workout_no_completed">Henüz tamamlanmış bir antrenman yok.</string>
+    <string name="workout_preview_title">Seans özeti</string>
+    <string name="workout_preview_support">Bir seans seç; özet burada açık kalır.</string>
+    <string name="workout_preview_date">Tarih: %1$s</string>
     <plurals name="workout_duration_minutes">
         <item quantity="one">%1$d dakika</item>
         <item quantity="other">%1$d dakika</item>
@@ -330,6 +333,9 @@
     <string name="programs_error_body">Program kütüphanesi okunamadı. Tekrar deneyebilirsin.</string>
     <string name="programs_empty_title">Henüz program yok</string>
     <string name="programs_empty_body">Yeni bir program eklendiğinde burada görünecek.</string>
+    <string name="program_preview_title">Program özeti</string>
+    <string name="program_preview_support">Bir program seç; temel bilgiler burada açık kalır.</string>
+    <string name="adaptive_open_full_details">Tüm ayrıntıları aç</string>
     <string name="program_creator">Hazırlayan: %1$s</string>
     <string name="program_access_free">Ücretsiz</string>
     <string name="program_access_locked">Kilitli demo</string>

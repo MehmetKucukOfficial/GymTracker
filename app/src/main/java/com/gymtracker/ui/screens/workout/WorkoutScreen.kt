@@ -5,6 +5,7 @@ package com.gymtracker.ui.screens.workout
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -50,6 +52,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -58,6 +61,7 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -71,6 +75,7 @@ import com.gymtracker.data.entities.WorkoutStatus
 import com.gymtracker.domain.ExerciseDefinition
 import com.gymtracker.ui.components.GtEmptyState
 import com.gymtracker.ui.components.GtLoadingState
+import com.gymtracker.ui.components.GtListDetailScaffold
 import com.gymtracker.ui.components.GtSectionHeader
 import com.gymtracker.ui.theme.GtSize
 import com.gymtracker.ui.theme.GtSpacing
@@ -114,6 +119,56 @@ fun WorkoutListContent(
     completedSessions: List<WorkoutSession>,
     onNewSession: () -> Unit,
     onOpenSession: (Long) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val sessions = listOfNotNull(activeSession) + completedSessions
+    var selectedSessionId by rememberSaveable { mutableStateOf(sessions.firstOrNull()?.id) }
+    val selectedSession = sessions.firstOrNull { it.id == selectedSessionId } ?: sessions.firstOrNull()
+
+    GtListDetailScaffold(
+        modifier = modifier,
+        listPane = { expanded ->
+            WorkoutListPane(
+                activeSession = activeSession,
+                completedSessions = completedSessions,
+                selectedSessionId = selectedSession?.id.takeIf { expanded },
+                onNewSession = onNewSession,
+                onOpenSession = { session ->
+                    if (expanded) selectedSessionId = session.id
+                    else onOpenSession(session.id)
+                }
+            )
+        },
+        detailPane = {
+            if (selectedSession == null) {
+                Box(
+                    modifier = Modifier.fillMaxSize().padding(GtSpacing.md),
+                    contentAlignment = Alignment.Center
+                ) {
+                    GtEmptyState(
+                        title = stringResource(R.string.workout_empty_title),
+                        body = stringResource(R.string.workout_empty_body),
+                        actionLabel = stringResource(R.string.workout_empty_action),
+                        onAction = onNewSession
+                    )
+                }
+            } else {
+                WorkoutPreviewPane(
+                    session = selectedSession,
+                    onOpenDetails = { onOpenSession(selectedSession.id) }
+                )
+            }
+        }
+    )
+}
+
+@Composable
+private fun WorkoutListPane(
+    activeSession: WorkoutSession?,
+    completedSessions: List<WorkoutSession>,
+    selectedSessionId: Long?,
+    onNewSession: () -> Unit,
+    onOpenSession: (WorkoutSession) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -164,7 +219,8 @@ fun WorkoutListContent(
                     SessionCard(
                         session = activeSession,
                         isActive = true,
-                        onClick = { onOpenSession(activeSession.id) },
+                        selected = activeSession.id == selectedSessionId,
+                        onClick = { onOpenSession(activeSession) },
                         modifier = Modifier.testTag("workout-active-card")
                     )
                 }
@@ -202,7 +258,9 @@ fun WorkoutListContent(
                         SessionCard(
                             session = session,
                             isActive = false,
-                            onClick = { onOpenSession(session.id) }
+                            selected = session.id == selectedSessionId,
+                            onClick = { onOpenSession(session) },
+                            modifier = Modifier.testTag("workout-session-card-${session.id}")
                         )
                     }
                 }
@@ -215,6 +273,7 @@ fun WorkoutListContent(
 private fun SessionCard(
     session: WorkoutSession,
     isActive: Boolean,
+    selected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -224,12 +283,19 @@ private fun SessionCard(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick, role = Role.Button)
-            .semantics(mergeDescendants = true) { role = Role.Button },
+            .semantics(mergeDescendants = true) {
+                role = Role.Button
+                this.selected = selected
+            },
         colors = CardDefaults.cardColors(
-            containerColor = if (isActive) MaterialTheme.colorScheme.primaryContainer
+            containerColor = if (selected) MaterialTheme.colorScheme.secondaryContainer
+            else if (isActive) MaterialTheme.colorScheme.primaryContainer
             else MaterialTheme.colorScheme.surface
         ),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+        border = BorderStroke(
+            if (selected) 2.dp else 1.dp,
+            if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant
+        )
     ) {
         if (largeFont) {
             Column(
@@ -261,6 +327,72 @@ private fun SessionCard(
                     modifier = Modifier.weight(1f)
                 )
                 SessionStatus(isActive = isActive)
+            }
+        }
+    }
+}
+
+@Composable
+private fun WorkoutPreviewPane(
+    session: WorkoutSession,
+    onOpenDetails: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val isActive = session.status == WorkoutStatus.ACTIVE
+    val formatter = remember { SimpleDateFormat("dd MMM yyyy - HH:mm", Locale.getDefault()) }
+    Surface(
+        modifier = modifier.fillMaxSize().testTag("workout-preview-pane"),
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(GtSpacing.lg),
+            verticalArrangement = Arrangement.spacedBy(GtSpacing.md)
+        ) {
+            GtSectionHeader(
+                title = stringResource(R.string.workout_preview_title),
+                supportingText = stringResource(R.string.workout_preview_support)
+            )
+            Text(session.name, style = MaterialTheme.typography.headlineSmall)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                SessionStatus(isActive = isActive)
+            }
+            Text(
+                text = stringResource(
+                    R.string.workout_preview_date,
+                    formatter.format(Date(session.date))
+                ),
+                style = MaterialTheme.typography.bodyLarge
+            )
+            if (session.durationMinutes > 0) {
+                Text(
+                    text = pluralStringResource(
+                        R.plurals.workout_duration_minutes,
+                        session.durationMinutes,
+                        session.durationMinutes
+                    ),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+            if (session.notes.isNotBlank()) {
+                Text(session.notes, style = MaterialTheme.typography.bodyMedium)
+            }
+            Button(
+                onClick = onOpenDetails,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = GtSize.minimumTouchTarget)
+                    .testTag("workout-open-detail")
+            ) {
+                Text(
+                    stringResource(
+                        if (isActive) R.string.workout_continue
+                        else R.string.adaptive_open_full_details
+                    )
+                )
             }
         }
     }

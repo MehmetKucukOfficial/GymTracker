@@ -2,7 +2,7 @@
 type: workflow
 status: current
 implementation_status: active
-verified_commit: a2586d1
+verified_commit: a573ab9
 updated: 2026-07-16
 tags: [gymtracker/workflow, gymtracker/impact]
 ---
@@ -32,6 +32,12 @@ Graf: [[ARCH_NAVIGATION]], [[ADR_002_FIVE_TARGET_NAVIGATION]].
 Oku: `Theme.kt`, `DesignTokens.kt`, `GymTrackerComponents.kt`, platform `values(-night)/themes.xml`, tüm call site’lar, design note.
 Test: `HomeLayoutConfigTest`, ilgili ScreenTest ve golden; light/dark, font 200%, TalkBack, screenshot, compact/expanded.
 Graf: [[DESIGN_SYSTEM_GRAPH]], [[SCREEN_BLUEPRINT_GRAPH]].
+
+## Feature list-detail veya genişlik eşiği
+
+Oku: `GymTrackerComponents.kt`, ilgili liste/detail Screen, mevcut ID route/ViewModel, TR/EN kaynaklar ve golden fixture’ları.
+Test: `GtListDetailLayoutTest`, ilgili ScreenTest ve `AdaptiveListDetailGoldenTest`; 839/840 dp, compact doğrudan route, expanded yerel seçim + açık eylemi, selected semantics, state restoration, light/dark ve büyük font.
+Graf: [[ARCH_NAVIGATION]], [[DESIGN_SYSTEM_GRAPH]], ilgili feature.
 
 ## Workout set/session modeli
 

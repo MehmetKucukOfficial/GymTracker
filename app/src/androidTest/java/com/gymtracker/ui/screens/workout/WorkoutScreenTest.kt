@@ -1,15 +1,18 @@
 package com.gymtracker.ui.screens.workout
 
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.gymtracker.R
@@ -65,6 +68,30 @@ class WorkoutScreenTest {
         composeRule.onNodeWithTag("workout-history-section").performScrollTo().assertIsDisplayed()
         composeRule.onNodeWithText("Sabah Kondisyon").performScrollTo().assertIsDisplayed()
         assertEquals(11, openedSessionId.get())
+    }
+
+    @Test
+    fun expandedList_selectsHistoryThenOpensStableIdRouteFromPreview() {
+        val openedSessionId = AtomicLong(0)
+        composeRule.setContent {
+            GymTrackerTheme(darkTheme = false) {
+                WorkoutListContent(
+                    activeSession = session(11, "Active session", WorkoutStatus.ACTIVE),
+                    completedSessions = listOf(
+                        session(7, "Completed session", WorkoutStatus.COMPLETED, completedAt = 2_000)
+                    ),
+                    onNewSession = {},
+                    onOpenSession = openedSessionId::set,
+                    modifier = androidx.compose.ui.Modifier.requiredSize(1_000.dp, 700.dp)
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag("list-detail-layout").assertIsDisplayed()
+        composeRule.onNodeWithTag("workout-session-card-7").performClick().assertIsSelected()
+        assertEquals(0L, openedSessionId.get())
+        composeRule.onNodeWithTag("workout-open-detail").performClick()
+        assertEquals(7L, openedSessionId.get())
     }
 
     @Test

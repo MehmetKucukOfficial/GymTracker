@@ -67,6 +67,9 @@
     <string name="workout_empty_body">Start your first session and your sets will be saved automatically.</string>
     <string name="workout_empty_action">Start first workout</string>
     <string name="workout_no_completed">No completed workouts yet.</string>
+    <string name="workout_preview_title">Session overview</string>
+    <string name="workout_preview_support">Select a session to keep its summary visible here.</string>
+    <string name="workout_preview_date">Date: %1$s</string>
     <plurals name="workout_duration_minutes">
         <item quantity="one">%1$d minute</item>
         <item quantity="other">%1$d minutes</item>
@@ -328,6 +331,9 @@
     <string name="programs_error_body">The program library could not be read. Try again.</string>
     <string name="programs_empty_title">No programs yet</string>
     <string name="programs_empty_body">New programs will appear here.</string>
+    <string name="program_preview_title">Program overview</string>
+    <string name="program_preview_support">Select a program to keep its essentials visible here.</string>
+    <string name="adaptive_open_full_details">Open full details</string>
     <string name="program_creator">Created by %1$s</string>
     <string name="program_access_free">Free</string>
     <string name="program_access_locked">Locked demo</string>

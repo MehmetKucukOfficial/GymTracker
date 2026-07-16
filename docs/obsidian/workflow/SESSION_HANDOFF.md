@@ -2,12 +2,15 @@
 type: handoff
 status: ready
 implementation_status: active
-code_baseline: a2586d1
+code_baseline: a573ab9
 updated: 2026-07-16
-active_phase: "Phase 6 - PR16 published; PR17 authorized"
-next_pr: "Implement PR17 list-detail and golden expansion"
+active_phase: "Phase 6 - PR17 published and hosted green"
+next_pr: "Wait for user direction"
 primary_nodes:
-  - ARCH_BUILD_DI
+  - ARCH_NAVIGATION
+  - DESIGN_SYSTEM_GRAPH
+  - FEATURE_PROGRAMS
+  - FEATURE_WORKOUT
   - TEST_MATRIX
   - RISK_REGISTER_GRAPH
   - ROADMAP_EXECUTION_GRAPH
@@ -26,9 +29,10 @@ tags: [gymtracker/workflow, gymtracker/session]
 - PR13 code baseline: `5c3ce35`; graph baseline `d189f6c`; `codex/photo-load-calibration` dalı PR12’yi hedefleyen stacked draft PR #6 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/6
 - PR14 code baseline: `41c2ceb`; graph baseline `f65e162`; `codex/adaptive-locale-goldens` dalı PR13’ü hedefleyen stacked draft PR #7 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/7
 - PR15 code baseline: `abd3fbe`; graph baseline: `cd331c8`; `codex/ci-release-hardening` dalı PR14’ü hedefleyen stacked draft PR #8 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/8
-- PR16 code baseline: `a2586d1`; `codex/release-performance` dalı PR15’i hedefleyen stacked draft PR #9 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/9
+- PR16 code baseline: `a2586d1`; `codex/release-performance` dalı PR15’i hedefleyen stacked draft PR #9 olarak yayınlandı ve hosted run `29473550009` iki işiyle yeşil: https://github.com/MehmetKucukOfficial/GymTracker/pull/9
+- PR17 code baseline: `a573ab9`; `codex/list-detail-goldens` dalı PR16’yı hedefleyen stacked draft PR #10 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/10
 - Room v9; explicit 8→9 photo thumbnail/dimension metadata migration aktif, destructive fallback yok; v0/v1 fotoğraf satırları kayıpsız korunur.
-- Compact navigation shell’i 5 ana hedefli bottom bar, 600 dp+ shell aynı hedeflerle rail kullanıyor; workout/program detail ID + SavedStateHandle + repository Flow kullanıyor.
+- Compact navigation shell’i 5 ana hedefli bottom bar, 600 dp+ shell aynı hedeflerle rail kullanıyor; Workout/Programs 840 dp+ ortak liste–özet düzenine geçiyor; full detail hâlâ ID + SavedStateHandle + repository Flow kullanıyor.
 - Home completed/active workout, measurement ve nutrition kaynaklarına reaktif; aktif workout varsa CTA doğrudan session ID’ye devam ediyor.
 - Workout tek aktif seans, status-korumalı mutation, COMPLETED salt-okunur geçmiş ve adaptive modern UI kullanıyor.
 - Nutrition DST-safe tarih aralığı, SavedStateHandle tarih seçimi, snapshot-safe amount/meal edit, delete undo, locale sayı/tarih ve TR/EN adaptive UI kullanıyor.
@@ -37,31 +41,31 @@ tags: [gymtracker/workflow, gymtracker/session]
 - Muscle Load completed-set Flow’unu latest-valid measurement Flow’uyla birleştirir; recency/personal-bodyweight/fallback/unknown sözleşmesi, kalibrasyon kaynağı, metodoloji ve erişilebilir liste aktiftir.
 - Programs locked/ownership/target kurallarını repository’de doğrular; program günü atomik ACTIVE workout’a planlanan set olarak kopyalanır, tamamlanmayan set Muscle Load’a girmez ve finish’i kilitler.
 - Light/dark tasarım sistemi token temeli ve ortak Home bileşenleri aktif; Home loading/content/error, retry, midnight period tick ve adaptive kolon kullanıyor.
-- Uygulama geneli Türkçe/English kaynak kataloğu 350/350 eşit; muscle adları ve program para biçimi locale-aware.
-- Test temeli aktif: 28 JVM + 54 API 34 instrumentation testi geçiyor; Progress Hub için iki kalıcı golden baseline var.
+- Uygulama geneli Türkçe/English kaynak kataloğu 356/356 eşit; muscle adları ve program para biçimi locale-aware.
+- Test temeli aktif: 30 JVM + 58 API 34 instrumentation testi geçiyor; Progress Hub, Programs ve Workout için dört kalıcı golden baseline var.
 - Debug build başarılı; lint 0 error; assemble başarılı.
 - `ciQuality` JVM/lint/debug ile R8/resource-shrunk unsigned APK, AAB ve mapping üretir; GitHub Actions quality + API 34 device/golden workflow’u kaynakta.
 
 ## Sıradaki önerilen iş
 
-PR16 yerel kabul ve draft PR ile tamamlandı. Hosted CI’ı izlerken PR17 feature list-detail + golden kapsamını uygula; kullanıcı arada onay istemeden PR17’ye geçişi yetkilendirdi.
+PR17 yerel/hosted kabulü ve draft PR yayını tamamlandı. Yeni geliştirme başlatmadan kullanıcı komutunu bekle.
 
 ## Açık P0/P1
 
 - Legacy `storageVersion=0` fotoğraflar için yeniden seçim ve v1 re-optimize UX’i
 - GitHub branch protection içinde quality + API 34 check’lerini zorunlu yapma
-- Golden baseline’ı bütün kritik ekranlara genişletme
-- Harici deep link, gerçek OS process-death ve feature list-detail
+- Golden baseline’ı kalan kritik ekran/state’lere genişletme
+- Harici deep link ve gerçek OS process-death
 - Gerçek production secret/Play internal-track smoke ve fiziksel cihaz benchmark kabulü
 
 ## Son doğrulama
 
-- `testDebugUnitTest`: success, 28/28.
-- `connectedDebugAndroidTest`: success, 54/54, Pixel 6 Pro API 34.
+- `testDebugUnitTest`: success, 30/30.
+- `connectedDebugAndroidTest`: success, 58/58, Pixel 6 Pro API 34 (6m21s).
 - `lintDebug`: success, 0 error.
 - `assembleDebug`: success.
 - `ciQuality`: success; minified APK 2,556,733 bayt, AAB 4,809,602 bayt ve R8 mapping üretildi.
-- Kalıcı görsel kapı: `progress_hub_light_en.png` ve `progress_hub_dark_tr_font200.png`, API 34 üzerinde pixel tolerance ile geçti.
+- Kalıcı görsel kapı: iki Progress Hub baseline’ına ek olarak `programs_list_detail_light_en.png` ve `workout_list_detail_dark_tr_font130.png`, API 34 üzerinde pixel tolerance ile geçti.
 
 ## Handoff güncelleme şablonu
 
@@ -74,6 +78,39 @@ Graph notes updated:
 Next concrete action:
 Blockers:
 ```
+
+## 2026-07-16 - PR 17 adaptive list-detail + golden expansion
+
+Completed:
+- Added shared 840 dp `GtListDetailScaffold` with deterministic 839/840 policy and 54/46 pane split.
+- Preserved compact direct ID-route behavior; expanded Workout/Programs card selection updates an in-place preview and the explicit action opens the existing stable-ID detail route.
+- Added `rememberSaveable` program/session selection, selected card semantics and color-independent border emphasis, scrollable preview panes and localized actions.
+- Added English/light Programs and Turkish/dark/%130 Workout 1000×700 permanent golden baselines.
+
+Files changed:
+- `GymTrackerComponents.kt`, Programs/Workout screens, TR/EN resources
+- `GtListDetailLayoutTest`, Programs/Workout Compose tests, `AdaptiveListDetailGoldenTest` and two PNG assets
+- Related feature, navigation, design, quality, risk, roadmap, atlas, impact, start and handoff nodes
+
+Tests run/results:
+- `testDebugUnitTest`: 30/30, 0 failures.
+- Targeted Programs/Workout Compose suite: 9/9, 0 failures.
+- Targeted adaptive golden suite: 2/2, 0 failures after committed baseline generation and visual inspection.
+- Full `connectedDebugAndroidTest`: 58/58, 0 failures on Pixel 6 Pro API 34 in 6m21s.
+- `ciQuality`: success including lint, debug, minified release APK/AAB/mapping and embedded profile verification.
+- Resource contract: default 356, English 356, key diff 0.
+- Hosted GitHub Actions run `29474876318`: quality 11m08s; API 34 device/golden 14m06s; artifact XML 58 tests, 0 failures/errors/skipped.
+
+Risks changed:
+- R13 resolved+: compact bottom bar, 600 dp+ rail and 840 dp+ Workout/Programs list-detail preserve one route/save-restore contract.
+- R15 mitigated++: four permanent golden baselines, selected semantics and expanded feature layout are active; remaining critical state coverage stays open.
+- No Room schema, DAO, repository or route definition changed.
+
+Next concrete action:
+- Draft PR #10 yayınlandı ve hosted run yeşil; kullanıcı komutunu bekle.
+
+Blockers:
+- No code blocker. Production-key/Play access, physical benchmark hardware, external deep links and true OS process death remain external/follow-up acceptance inputs.
 
 ## 2026-07-16 - PR 16 secret-backed release + performance baseline
 
@@ -92,6 +129,7 @@ Tests run/results:
 - `connectedDebugAndroidTest`: 54/54 success after clean AVD reboot; prior run reached 50/54 then emulator OS aborted with `DeadSystemException`, no product assertion failure.
 - Baseline generation: 2 producer tests, 0 failures; 4 macrobenchmark scenarios execute on API 34 emulator.
 - Dummy keystore `releaseDistribution`: APK v2/v3 + AAB signature + embedded profile success; temporary key deleted.
+- Hosted GitHub Actions run `29473550009`: quality job 11m05s and API 34 device/golden job 12m47s, both successful.
 
 Risks changed:
 - R16 mitigated-config; real protected secrets and Play internal-track smoke remain operational.
