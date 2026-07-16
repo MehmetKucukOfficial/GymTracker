@@ -40,6 +40,14 @@ class WorkoutRepository @Inject constructor(
         }
     }
 
+    suspend fun completePlannedSet(setId: Long, reps: Int, weightKg: Float) {
+        require(reps > 0) { "Repetitions must be positive" }
+        require(weightKg.isFinite() && weightKg >= 0f) { "Weight cannot be negative" }
+        check(dao.completePlannedSet(setId, reps, weightKg) == 1) {
+            "Only an incomplete set in an active session can be completed"
+        }
+    }
+
     suspend fun finishSession(
         sessionId: Long,
         durationMinutes: Int,
@@ -48,7 +56,7 @@ class WorkoutRepository @Inject constructor(
     ) {
         require(durationMinutes >= 0) { "Duration cannot be negative" }
         check(
-            dao.completeActiveSession(
+            dao.completeActiveSessionIfReady(
                 sessionId = sessionId,
                 completedAt = completedAt,
                 durationMinutes = durationMinutes,

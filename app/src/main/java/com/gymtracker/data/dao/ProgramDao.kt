@@ -2,8 +2,10 @@ package com.gymtracker.data.dao
 
 import androidx.room.*
 import com.gymtracker.data.entities.Program
+import com.gymtracker.data.entities.ProgramDayExercise
 import com.gymtracker.data.entities.ProgramWorkout
 import com.gymtracker.data.entities.SeedMetadata
+import com.gymtracker.data.programs.ProgramWorkoutPlan
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -17,20 +19,33 @@ interface ProgramDao {
     @Query("SELECT * FROM programs WHERE id = :id")
     fun observeById(id: Long): Flow<Program?>
 
+    @Transaction
     @Query("SELECT * FROM program_workouts WHERE programId = :programId ORDER BY weekNumber, dayNumber")
-    fun getWorkoutsForProgram(programId: Long): Flow<List<ProgramWorkout>>
+    fun observeWorkoutPlans(programId: Long): Flow<List<ProgramWorkoutPlan>>
+
+    @Query("SELECT * FROM program_workouts WHERE id = :workoutId AND programId = :programId")
+    suspend fun getWorkout(programId: Long, workoutId: Long): ProgramWorkout?
+
+    @Query("SELECT * FROM program_day_exercises WHERE programWorkoutId = :workoutId ORDER BY position")
+    suspend fun getDayExercises(workoutId: Long): List<ProgramDayExercise>
 
     @Insert
     suspend fun insertProgram(program: Program): Long
 
     @Insert
-    suspend fun insertWorkouts(workouts: List<ProgramWorkout>)
+    suspend fun insertWorkout(workout: ProgramWorkout): Long
+
+    @Insert
+    suspend fun insertDayExercises(exercises: List<ProgramDayExercise>)
 
     @Query("SELECT COUNT(*) FROM programs")
     suspend fun getProgramCount(): Int
 
     @Query("SELECT COUNT(*) FROM program_workouts")
     suspend fun getProgramWorkoutCount(): Int
+
+    @Query("SELECT COUNT(*) FROM program_day_exercises")
+    suspend fun getProgramDayExerciseCount(): Int
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertSeedMetadata(metadata: SeedMetadata): Long

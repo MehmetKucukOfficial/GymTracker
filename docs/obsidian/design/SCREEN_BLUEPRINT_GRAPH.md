@@ -2,7 +2,7 @@
 type: design
 status: current
 implementation_status: mixed
-verified_commit: 4d0cad8
+verified_commit: 7917358
 updated: 2026-07-15
 tags: [gymtracker/design, gymtracker/feature]
 ---
@@ -19,7 +19,7 @@ Tam ekran; timer; exercise card; previous/kg/reps/complete set row; add/copy/del
 
 ## Programlar
 
-Filter chip + card list; ID detail; week/day accordion; sticky “Programa başla/Devam et/Satın al”. Kaynak: [[FEATURE_PROGRAMS]].
+Uygulandı: adaptive program kart grid’i; free/demo erişim badge’i; ID detail; ilişkisel gün accordion’ı; gün bazlı “Bu antrenmana başla”; locked/empty/error state; light/dark/%200 font. Program günü gerçek ACTIVE workout’a planlanan setler olarak aktarılır. Filtreleme, program ilerleme takvimi ve expanded list-detail sonraki üründür. Kaynak: [[FEATURE_PROGRAMS]].
 
 ## Beslenme
 

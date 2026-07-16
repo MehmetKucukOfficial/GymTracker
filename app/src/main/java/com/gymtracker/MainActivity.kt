@@ -110,7 +110,12 @@ private fun AppNavHost(navController: NavHostController, modifier: Modifier = Mo
                 navArgument(Screen.ProgramDetail.ARG_PROGRAM_ID) { type = NavType.LongType }
             )
         ) {
-            ProgramDetailScreen(onBack = { navController.popBackStack() })
+            ProgramDetailScreen(
+                onBack = { navController.popBackStack() },
+                onOpenSession = { sessionId ->
+                    navController.navigate(Screen.WorkoutDetail.createRoute(sessionId))
+                }
+            )
         }
         composable(Screen.Measurements.route) {
             MeasurementsScreen()

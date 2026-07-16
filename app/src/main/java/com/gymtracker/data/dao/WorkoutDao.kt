@@ -27,10 +27,10 @@ interface WorkoutDao {
     @Query("SELECT * FROM workout_sessions WHERE id = :id")
     fun observeSessionById(id: Long): Flow<WorkoutSession?>
 
-    @Query("SELECT * FROM workout_sets WHERE sessionId = :sessionId ORDER BY exerciseName, setNumber")
+    @Query("SELECT * FROM workout_sets WHERE sessionId = :sessionId ORDER BY exerciseOrder, exerciseName, setNumber")
     fun getSetsBySession(sessionId: Long): Flow<List<WorkoutSet>>
 
-    @Query("SELECT * FROM workout_sets WHERE sessionId = :sessionId ORDER BY exerciseName, setNumber")
+    @Query("SELECT * FROM workout_sets WHERE sessionId = :sessionId ORDER BY exerciseOrder, exerciseName, setNumber")
     suspend fun getSetsBySessionSync(sessionId: Long): List<WorkoutSet>
 
     @Query("SELECT * FROM workout_sets WHERE date(sessionId) >= :since ORDER BY sessionId DESC")
@@ -91,6 +91,22 @@ interface WorkoutDao {
     @Update
     suspend fun updateSet(set: WorkoutSet)
 
+    @Query(
+        """
+        UPDATE workout_sets
+        SET reps = :reps,
+            weightKg = :weightKg,
+            isCompleted = 1
+        WHERE id = :setId
+          AND isCompleted = 0
+          AND EXISTS (
+              SELECT 1 FROM workout_sessions
+              WHERE id = workout_sets.sessionId AND status = 'ACTIVE'
+          )
+        """
+    )
+    suspend fun completePlannedSet(setId: Long, reps: Int, weightKg: Float): Int
+
     @Update
     suspend fun updateSession(session: WorkoutSession)
 
@@ -126,6 +142,20 @@ interface WorkoutDao {
         durationMinutes: Int,
         notes: String
     ): Int
+
+    @Query("SELECT COUNT(*) FROM workout_sets WHERE sessionId = :sessionId AND isCompleted = 0")
+    suspend fun getIncompleteSetCount(sessionId: Long): Int
+
+    @Transaction
+    suspend fun completeActiveSessionIfReady(
+        sessionId: Long,
+        completedAt: Long,
+        durationMinutes: Int,
+        notes: String
+    ): Int {
+        if (getIncompleteSetCount(sessionId) > 0) return 0
+        return completeActiveSession(sessionId, completedAt, durationMinutes, notes)
+    }
 
     @Delete
     suspend fun deleteSession(session: WorkoutSession)

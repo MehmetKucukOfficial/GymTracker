@@ -2,150 +2,247 @@
 
 package com.gymtracker.ui.screens.programs
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.FitnessCenter
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.gymtracker.R
 import com.gymtracker.data.entities.Program
+import com.gymtracker.data.entities.ProgramDayExercise
 import com.gymtracker.data.entities.ProgramDifficulty
-import com.gymtracker.data.entities.ProgramWorkout
-import com.gymtracker.domain.ProgramExercise
-import com.gymtracker.domain.ProgramExerciseSerializer
+import com.gymtracker.data.programs.ProgramWorkoutPlan
+import com.gymtracker.data.programs.orderedExercises
+import com.gymtracker.ui.components.GtEmptyState
+import com.gymtracker.ui.components.GtErrorState
+import com.gymtracker.ui.components.GtLoadingState
+import com.gymtracker.ui.components.GtSectionHeader
+import com.gymtracker.ui.theme.GtSize
+import com.gymtracker.ui.theme.GtSpacing
+import java.text.NumberFormat
+import java.util.Locale
 
 @Composable
 fun ProgramsScreen(
     onProgramSelected: (Long) -> Unit,
     viewModel: ProgramsViewModel = hiltViewModel()
 ) {
-    val programs by viewModel.programs.collectAsStateWithLifecycle()
-    var showPurchaseDialog by remember { mutableStateOf<Program?>(null) }
+    val state by viewModel.listState.collectAsStateWithLifecycle()
+    var purchase by remember { mutableStateOf<Program?>(null) }
 
-    val freePrograms = programs.filter { !it.isPaid }
-    val paidPrograms = programs.filter { it.isPaid }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(16.dp)
-    ) {
-        Text("Programlar", style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
-        Text("Antrenman programları", color = MaterialTheme.colorScheme.onSurfaceVariant,
-            style = MaterialTheme.typography.bodySmall)
-
-        Spacer(Modifier.height(20.dp))
-
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            if (freePrograms.isNotEmpty()) {
-                item {
-                    Text("Ücretsiz Programlar", fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        style = MaterialTheme.typography.titleMedium)
-                }
-                items(freePrograms) { program ->
-                    ProgramCard(program, onClick = { onProgramSelected(program.id) }, onPurchase = {})
-                }
-            }
-            if (paidPrograms.isNotEmpty()) {
-                item {
-                    Spacer(Modifier.height(8.dp))
-                    Text("Premium Programlar", fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        style = MaterialTheme.typography.titleMedium)
-                }
-                items(paidPrograms) { program ->
-                    ProgramCard(
-                        program = program,
-                        onClick = { onProgramSelected(program.id) },
-                        onPurchase = { showPurchaseDialog = it }
-                    )
-                }
-            }
+    when (val current = state) {
+        ProgramsListUiState.Loading -> GtLoadingState(
+            title = stringResource(R.string.programs_loading),
+            modifier = Modifier.fillMaxSize()
+        )
+        ProgramsListUiState.Error -> Box(
+            modifier = Modifier.fillMaxSize().padding(GtSpacing.md),
+            contentAlignment = Alignment.Center
+        ) {
+            GtErrorState(
+                title = stringResource(R.string.programs_error_title),
+                body = stringResource(R.string.programs_error_body),
+                retryLabel = stringResource(R.string.action_retry),
+                onRetry = viewModel::retryPrograms
+            )
         }
+        is ProgramsListUiState.Content -> ProgramsContent(
+            programs = current.programs,
+            onProgramSelected = onProgramSelected,
+            onPurchase = { purchase = it }
+        )
     }
 
-    showPurchaseDialog?.let { program ->
+    purchase?.let { program ->
         PurchaseDialog(
             program = program,
-            onDismiss = { showPurchaseDialog = null },
+            onDismiss = { purchase = null },
             onConfirm = {
                 viewModel.purchaseProgram(program)
-                showPurchaseDialog = null
+                purchase = null
             }
         )
     }
 }
 
 @Composable
-private fun ProgramCard(program: Program, onClick: () -> Unit, onPurchase: (Program) -> Unit) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        onClick = onClick
+fun ProgramsContent(
+    programs: List<Program>,
+    onProgramSelected: (Long) -> Unit,
+    onPurchase: (Program) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(minSize = 300.dp),
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(horizontal = GtSpacing.md),
+        horizontalArrangement = Arrangement.spacedBy(GtSpacing.sm),
+        verticalArrangement = Arrangement.spacedBy(GtSpacing.sm)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        item(span = { GridItemSpan(maxLineSpan) }) {
+            GtSectionHeader(
+                title = stringResource(R.string.programs_title),
+                supportingText = stringResource(R.string.programs_subtitle),
+                modifier = Modifier.padding(top = GtSpacing.lg, bottom = GtSpacing.sm)
+            )
+        }
+        if (programs.isEmpty()) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                GtEmptyState(
+                    title = stringResource(R.string.programs_empty_title),
+                    body = stringResource(R.string.programs_empty_body)
+                )
+            }
+        } else {
+            items(programs, key = { it.id }) { program ->
+                ProgramCard(
+                    program = program,
+                    onClick = { onProgramSelected(program.id) },
+                    onPurchase = { onPurchase(program) }
+                )
+            }
+        }
+        item(span = { GridItemSpan(maxLineSpan) }) { Spacer(Modifier.height(GtSpacing.lg)) }
+    }
+}
+
+@Composable
+private fun ProgramCard(program: Program, onClick: () -> Unit, onPurchase: () -> Unit) {
+    val locked = program.isPaid && !program.isPurchased
+    val access = stringResource(
+        when {
+            locked -> R.string.program_access_locked
+            program.isPurchased -> R.string.program_access_purchased
+            else -> R.string.program_access_free
+        }
+    )
+    val description = stringResource(
+        R.string.program_card_description,
+        program.name,
+        access,
+        program.durationWeeks,
+        program.daysPerWeek
+    )
+    Card(
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .semantics(mergeDescendants = true) {
+                role = Role.Button
+                contentDescription = description
+            },
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+    ) {
+        Column(
+            modifier = Modifier.padding(GtSpacing.md),
+            verticalArrangement = Arrangement.spacedBy(GtSpacing.sm)
+        ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.spacedBy(GtSpacing.sm),
                 verticalAlignment = Alignment.Top
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(program.name, fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        style = MaterialTheme.typography.titleMedium)
-                    Text("by ${program.creatorName}", fontSize = 11.sp,
-                        color = MaterialTheme.colorScheme.primary)
+                    Text(program.name, style = MaterialTheme.typography.titleLarge)
+                    Text(
+                        stringResource(R.string.program_creator, program.creatorName),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
                 }
-                if (program.isPaid && !program.isPurchased) {
-                    Column(horizontalAlignment = Alignment.End) {
-                        Icon(Icons.Default.Lock, null, tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(20.dp))
-                        Text("${program.price.toInt()}₺", fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary, fontSize = 14.sp)
-                    }
-                } else if (program.isPurchased) {
-                    Icon(Icons.Default.CheckCircle, null, tint = Color(0xFF4CAF50),
-                        modifier = Modifier.size(24.dp))
-                }
+                ProgramAccessBadge(program)
             }
-
-            Spacer(Modifier.height(8.dp))
-            Text(program.description, fontSize = 13.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2)
-
-            Spacer(Modifier.height(10.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                ProgramTag("${program.durationWeeks} hafta", Icons.Default.DateRange)
-                ProgramTag("${program.daysPerWeek} gün/hafta", Icons.Default.FitnessCenter)
-                DifficultyTag(program.difficulty)
+            Text(
+                text = program.description,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(GtSpacing.xs)) {
+                ProgramMetadataChip(
+                    text = pluralStringResource(R.plurals.program_weeks, program.durationWeeks, program.durationWeeks),
+                    icon = { Icon(Icons.Default.CalendarMonth, null, Modifier.size(GtSize.iconSmall)) }
+                )
+                ProgramMetadataChip(
+                    text = pluralStringResource(R.plurals.program_days_week, program.daysPerWeek, program.daysPerWeek),
+                    icon = { Icon(Icons.Default.FitnessCenter, null, Modifier.size(GtSize.iconSmall)) }
+                )
             }
-
-            if (program.isPaid && !program.isPurchased) {
-                Spacer(Modifier.height(10.dp))
+            DifficultyBadge(program.difficulty)
+            if (locked) {
                 Button(
-                    onClick = { onPurchase(program) },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                    onClick = onPurchase,
+                    modifier = Modifier.fillMaxWidth().heightIn(min = GtSize.minimumTouchTarget)
                 ) {
-                    Icon(Icons.Default.ShoppingCart, null, modifier = Modifier.size(16.dp))
-                    Spacer(Modifier.width(8.dp))
-                    Text("Satın Al - ${program.price.toInt()}₺")
+                    Icon(Icons.Default.ShoppingCart, contentDescription = null)
+                    Spacer(Modifier.width(GtSpacing.xs))
+                    Text(stringResource(R.string.program_purchase_price, formatPrice(program.price)))
                 }
             }
         }
@@ -153,223 +250,315 @@ private fun ProgramCard(program: Program, onClick: () -> Unit, onPurchase: (Prog
 }
 
 @Composable
-private fun ProgramTag(text: String, icon: androidx.compose.ui.graphics.vector.ImageVector) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(50))
-            .padding(horizontal = 8.dp, vertical = 4.dp)
+private fun ProgramMetadataChip(text: String, icon: @Composable () -> Unit) {
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        shape = MaterialTheme.shapes.small
     ) {
-        Icon(icon, null, modifier = Modifier.size(12.dp),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant)
-        Spacer(Modifier.width(4.dp))
-        Text(text, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Row(
+            modifier = Modifier.padding(horizontal = GtSpacing.xs, vertical = GtSpacing.xxs),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            icon()
+            Spacer(Modifier.width(GtSpacing.xxs))
+            Text(text, style = MaterialTheme.typography.labelMedium)
+        }
     }
 }
 
 @Composable
-private fun DifficultyTag(difficulty: ProgramDifficulty) {
-    val color = when (difficulty) {
-        ProgramDifficulty.BEGINNER -> Color(0xFF4CAF50)
-        ProgramDifficulty.INTERMEDIATE -> Color(0xFFFFC107)
-        ProgramDifficulty.ADVANCED -> Color(0xFFF44336)
+private fun ProgramAccessBadge(program: Program) {
+    val (icon, label) = when {
+        program.isPaid && !program.isPurchased -> Icons.Default.Lock to R.string.program_access_locked
+        program.isPurchased -> Icons.Default.CheckCircle to R.string.program_access_purchased
+        else -> Icons.Default.CheckCircle to R.string.program_access_free
     }
-    Box(
-        modifier = Modifier
-            .background(color.copy(alpha = 0.2f), RoundedCornerShape(50))
-            .padding(horizontal = 8.dp, vertical = 4.dp)
+    Surface(
+        color = MaterialTheme.colorScheme.secondaryContainer,
+        shape = MaterialTheme.shapes.small
     ) {
-        Text(difficulty.displayName, fontSize = 11.sp, color = color, fontWeight = FontWeight.SemiBold)
+        Row(
+            modifier = Modifier.padding(horizontal = GtSpacing.xs, vertical = GtSpacing.xxs),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(icon, null, Modifier.size(GtSize.iconSmall))
+            Spacer(Modifier.width(GtSpacing.xxs))
+            Text(stringResource(label), style = MaterialTheme.typography.labelMedium)
+        }
     }
+}
+
+@Composable
+private fun DifficultyBadge(difficulty: ProgramDifficulty) {
+    val label = when (difficulty) {
+        ProgramDifficulty.BEGINNER -> R.string.program_difficulty_beginner
+        ProgramDifficulty.INTERMEDIATE -> R.string.program_difficulty_intermediate
+        ProgramDifficulty.ADVANCED -> R.string.program_difficulty_advanced
+    }
+    Text(
+        text = stringResource(R.string.program_difficulty_label, stringResource(label)),
+        style = MaterialTheme.typography.labelLarge,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
+    )
 }
 
 @Composable
 fun ProgramDetailScreen(
     onBack: () -> Unit,
+    onOpenSession: (Long) -> Unit,
     viewModel: ProgramsViewModel = hiltViewModel()
 ) {
     val state by viewModel.detailState.collectAsStateWithLifecycle()
-    var showPurchaseDialog by remember { mutableStateOf<Program?>(null) }
-    if (state.isLoading) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
-        return
-    }
-    val program = state.program
-    if (program == null) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("Program bulunamadı", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                TextButton(onClick = onBack) { Text("Geri dön") }
-            }
-        }
-        return
-    }
-    val workouts = state.workouts
-    val locked = program.isPaid && !program.isPurchased
+    var purchase by remember { mutableStateOf<Program?>(null) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val startFailedMessage = stringResource(R.string.program_start_failed)
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(16.dp)
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = onBack) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = MaterialTheme.colorScheme.onBackground)
-            }
-            Text(program.name, style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
-        }
-
-        Spacer(Modifier.height(16.dp))
-
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            item {
-                Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                            StatItem("Süre", "${program.durationWeeks} hafta")
-                            StatItem("Gün/Hafta", "${program.daysPerWeek} gün")
-                            StatItem("Seviye", program.difficulty.displayName)
-                        }
-                        Spacer(Modifier.height(12.dp))
-                        Text(program.description, color = MaterialTheme.colorScheme.onSurface)
-                        Spacer(Modifier.height(8.dp))
-                        Text("Hazırlayan: ${program.creatorName}", fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.primary)
-                    }
-                }
-            }
-
-            if (locked) {
-                item {
-                    Card(colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))) {
-                        Row(
-                            modifier = Modifier.padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(Icons.Default.Lock, null,
-                                tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(32.dp))
-                            Spacer(Modifier.width(12.dp))
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text("Premium Program", fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary)
-                                Text("Antrenman planını görmek için satın alın",
-                                    fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            }
-                        }
-                    }
-                }
-                item {
-                    Button(
-                        onClick = { showPurchaseDialog = program },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                    ) {
-                        Text("Satın Al - ${program.price.toInt()}₺",
-                            style = MaterialTheme.typography.titleMedium)
-                    }
-                }
-            } else {
-                item {
-                    Column {
-                        Text("Haftalık Antrenman Planı", style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
-                        Text("Bu plan, programın ${program.durationWeeks} haftası boyunca tekrarlanır",
-                            fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                }
-                items(workouts) { workout ->
-                    WorkoutDayCard(workout)
-                }
-            }
+    LaunchedEffect(state.message) {
+        if (state.message == ProgramActionMessage.START_FAILED) {
+            snackbarHostState.showSnackbar(
+                message = startFailedMessage
+            )
+            viewModel.clearMessage()
         }
     }
 
-    showPurchaseDialog?.let { selectedProgram ->
+    Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }) { padding ->
+        when {
+            state.isLoading -> GtLoadingState(
+                title = stringResource(R.string.program_detail_loading),
+                modifier = Modifier.fillMaxSize().padding(padding)
+            )
+            state.program == null -> Box(
+                modifier = Modifier.fillMaxSize().padding(padding).padding(GtSpacing.md),
+                contentAlignment = Alignment.Center
+            ) {
+                GtEmptyState(
+                    title = stringResource(R.string.program_not_found_title),
+                    body = stringResource(R.string.program_not_found_body),
+                    actionLabel = stringResource(R.string.action_back),
+                    onAction = onBack
+                )
+            }
+            else -> ProgramDetailContent(
+                program = requireNotNull(state.program),
+                workouts = state.workouts,
+                isStarting = state.isStarting,
+                onBack = onBack,
+                onPurchase = { purchase = state.program },
+                onStartWorkout = { workoutId ->
+                    viewModel.startWorkout(workoutId) { sessionId ->
+                        viewModel.clearMessage()
+                        onOpenSession(sessionId)
+                    }
+                },
+                modifier = Modifier.padding(padding)
+            )
+        }
+    }
+
+    purchase?.let { program ->
         PurchaseDialog(
-            program = selectedProgram,
-            onDismiss = { showPurchaseDialog = null },
+            program = program,
+            onDismiss = { purchase = null },
             onConfirm = {
-                viewModel.purchaseProgram(selectedProgram)
-                showPurchaseDialog = null
+                viewModel.purchaseProgram(program)
+                purchase = null
             }
         )
     }
 }
 
 @Composable
-private fun WorkoutDayCard(workout: ProgramWorkout) {
-    var expanded by remember { mutableStateOf(false) }
-    val exercises = remember(workout.exercises) { ProgramExerciseSerializer.fromJson(workout.exercises) }
-
-    Card(
-        modifier = Modifier.fillMaxWidth().clickable { expanded = !expanded },
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+fun ProgramDetailContent(
+    program: Program,
+    workouts: List<ProgramWorkoutPlan>,
+    isStarting: Boolean,
+    onBack: () -> Unit,
+    onPurchase: () -> Unit,
+    onStartWorkout: (Long) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val locked = program.isPaid && !program.isPurchased
+    LazyColumn(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(horizontal = GtSpacing.md),
+        verticalArrangement = Arrangement.spacedBy(GtSpacing.sm)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        item {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth().padding(top = GtSpacing.sm),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
-                    Text("${workout.dayNumber}. Gün", fontSize = 11.sp,
-                        color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)
-                    Text(workout.dayName, fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface)
-                    Text("${exercises.size} hareket", fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant)
+                IconButton(onClick = onBack) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.action_back))
                 }
-                Icon(
-                    if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                GtSectionHeader(
+                    title = program.name,
+                    supportingText = stringResource(R.string.program_creator, program.creatorName),
+                    modifier = Modifier.weight(1f)
                 )
             }
-            if (expanded) {
-                Spacer(Modifier.height(8.dp))
-                HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
-                Spacer(Modifier.height(8.dp))
-                exercises.forEach { exercise -> ExerciseRow(exercise) }
+        }
+        item {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+            ) {
+                Column(
+                    modifier = Modifier.padding(GtSpacing.md),
+                    verticalArrangement = Arrangement.spacedBy(GtSpacing.sm)
+                ) {
+                    Text(program.description, style = MaterialTheme.typography.bodyLarge)
+                    Text(
+                        pluralStringResource(R.plurals.program_weeks, program.durationWeeks, program.durationWeeks),
+                        style = MaterialTheme.typography.labelLarge
+                    )
+                    Text(
+                        pluralStringResource(R.plurals.program_days_week, program.daysPerWeek, program.daysPerWeek),
+                        style = MaterialTheme.typography.labelLarge
+                    )
+                    DifficultyBadge(program.difficulty)
+                }
+            }
+        }
+        if (locked) {
+            item {
+                GtEmptyState(
+                    title = stringResource(R.string.program_locked_title),
+                    body = stringResource(R.string.program_locked_body),
+                    actionLabel = stringResource(R.string.program_purchase_price, formatPrice(program.price)),
+                    onAction = onPurchase
+                )
+            }
+        } else {
+            item {
+                GtSectionHeader(
+                    title = stringResource(R.string.program_plan_title),
+                    supportingText = stringResource(R.string.program_plan_repeat, program.durationWeeks)
+                )
+            }
+            if (workouts.isEmpty()) {
+                item {
+                    GtEmptyState(
+                        title = stringResource(R.string.program_plan_empty_title),
+                        body = stringResource(R.string.program_plan_empty_body)
+                    )
+                }
+            } else {
+                items(workouts, key = { it.workout.id }) { plan ->
+                    WorkoutDayCard(
+                        plan = plan,
+                        isStarting = isStarting,
+                        onStart = { onStartWorkout(plan.workout.id) }
+                    )
+                }
+            }
+        }
+        item { Spacer(Modifier.height(GtSpacing.lg)) }
+    }
+}
+
+@Composable
+private fun WorkoutDayCard(
+    plan: ProgramWorkoutPlan,
+    isStarting: Boolean,
+    onStart: () -> Unit
+) {
+    var expanded by remember(plan.workout.id) { mutableStateOf(false) }
+    val exercises = plan.orderedExercises
+    val expandDescription = stringResource(
+        if (expanded) R.string.program_collapse_exercises else R.string.program_expand_exercises
+    )
+    Card(
+        modifier = Modifier.fillMaxWidth().testTag("program-day-${plan.workout.id}"),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+    ) {
+        Column(modifier = Modifier.padding(GtSpacing.md)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        stringResource(R.string.program_day_number, plan.workout.dayNumber),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Text(plan.workout.dayName, style = MaterialTheme.typography.titleLarge)
+                    Text(
+                        pluralStringResource(R.plurals.program_exercises, exercises.size, exercises.size),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                IconButton(
+                    onClick = { expanded = !expanded },
+                    modifier = Modifier.semantics {
+                        contentDescription = expandDescription
+                    }
+                ) {
+                    Icon(if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore, null)
+                }
+            }
+            AnimatedVisibility(expanded) {
+                Column {
+                    HorizontalDivider(modifier = Modifier.padding(vertical = GtSpacing.sm))
+                    exercises.forEach { ExerciseRow(it) }
+                }
+            }
+            Button(
+                onClick = onStart,
+                enabled = !isStarting && exercises.isNotEmpty(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = GtSpacing.sm)
+                    .heightIn(min = GtSize.minimumTouchTarget)
+            ) {
+                if (isStarting) {
+                    CircularProgressIndicator(Modifier.size(GtSize.iconSmall), strokeWidth = 2.dp)
+                } else {
+                    Icon(Icons.Default.PlayArrow, contentDescription = null)
+                }
+                Spacer(Modifier.width(GtSpacing.xs))
+                Text(stringResource(R.string.program_start_workout))
             }
         }
     }
 }
 
 @Composable
-private fun ExerciseRow(exercise: ProgramExercise) {
+private fun ExerciseRow(exercise: ProgramDayExercise) {
+    val description = stringResource(
+        R.string.program_exercise_description,
+        exercise.exerciseName,
+        exercise.targetSets,
+        exercise.targetReps,
+        exercise.restSeconds
+    )
     Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = GtSpacing.xs)
+            .semantics(mergeDescendants = true) {
+                contentDescription = description
+            },
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(GtSpacing.sm)
     ) {
-        Icon(Icons.Default.FitnessCenter, null, modifier = Modifier.size(16.dp),
-            tint = MaterialTheme.colorScheme.primary)
-        Spacer(Modifier.width(10.dp))
+        Icon(Icons.Default.FitnessCenter, null, Modifier.size(GtSize.iconSmall), tint = MaterialTheme.colorScheme.primary)
         Column(modifier = Modifier.weight(1f)) {
-            Text(exercise.name, color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
-            Text("${exercise.sets} set x ${exercise.reps}", fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(exercise.exerciseName, style = MaterialTheme.typography.bodyLarge)
+            Text(
+                stringResource(R.string.program_exercise_target, exercise.targetSets, exercise.targetReps),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Default.Timer, null, modifier = Modifier.size(14.dp),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant)
-            Spacer(Modifier.width(4.dp))
-            Text("${exercise.restSeconds} sn", fontSize = 11.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Icon(Icons.Default.Schedule, null, Modifier.size(GtSize.iconSmall))
+            Spacer(Modifier.width(GtSpacing.xxs))
+            Text(stringResource(R.string.program_rest_seconds, exercise.restSeconds))
         }
-    }
-}
-
-@Composable
-private fun StatItem(label: String, value: String) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(value, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface,
-            fontSize = 16.sp)
-        Text(label, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
@@ -377,18 +566,27 @@ private fun StatItem(label: String, value: String) {
 private fun PurchaseDialog(program: Program, onDismiss: () -> Unit, onConfirm: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Programı Satın Al") },
+        title = { Text(stringResource(R.string.program_purchase_title)) },
         text = {
-            Column {
-                Text("\"${program.name}\" programını ${program.price.toInt()}₺ karşılığında satın almak istiyor musunuz?")
-                Spacer(Modifier.height(8.dp))
-                Text("Bu bir demo uygulamasıdır. Gerçek ödeme sistemi entegre edilmemiştir.",
-                    fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Column(verticalArrangement = Arrangement.spacedBy(GtSpacing.xs)) {
+                Text(stringResource(R.string.program_purchase_question, program.name, formatPrice(program.price)))
+                Text(
+                    stringResource(R.string.program_purchase_demo_notice),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         },
         confirmButton = {
-            Button(onClick = onConfirm) { Text("Satın Al (Demo)") }
+            Button(onClick = onConfirm) { Text(stringResource(R.string.program_purchase_demo_action)) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("İptal") } }
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
+        }
     )
+}
+
+@Composable
+private fun formatPrice(price: Float): String = remember(price) {
+    NumberFormat.getCurrencyInstance(Locale("tr", "TR")).format(price)
 }

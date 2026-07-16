@@ -2,7 +2,7 @@
 type: atlas
 status: current
 implementation_status: active
-verified_commit: 341bf79
+verified_commit: 7917358
 updated: 2026-07-15
 tags: [gymtracker/workflow, gymtracker/source-map]
 ---
@@ -26,19 +26,20 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 
 | Dosya | Sorumluluk | Kullanan |
 |---|---|---|
-| `data/entities/Entities.kt` | 9 Room entity + status/meal enum’ları | bütün feature’lar |
-| `data/database/AppDatabase.kt` | DB v6 + converter + DAO registry | [[ARCH_DATABASE]] |
-| `data/database/DatabaseMigrations.kt` | explicit 3→4→5→6 migration zinciri | [[ARCH_DATABASE]] |
-| `data/dao/WorkoutDao.kt` | active/completed session, status-korumalı mutation ve completed-set load Flow | Home, Workout, Load |
+| `data/entities/Entities.kt` | Room entity + v7 ProgramDayExercise/planned-set alanları | bütün feature’lar |
+| `data/database/AppDatabase.kt` | DB v7 + converter + DAO registry | [[ARCH_DATABASE]] |
+| `data/database/DatabaseMigrations.kt` | explicit 3→4→5→6→7 migration zinciri + JSON backfill | [[ARCH_DATABASE]] |
+| `data/dao/WorkoutDao.kt` | active/completed session, planned-set/status mutation ve completed-set load Flow | Home, Workout, Programs, Load |
 | `data/dao/MeasurementDao.kt` | measurement queries | Home, Measurements |
 | `data/dao/NutritionDao.kt` | food/entry/goal queries | Home, Nutrition |
 | `data/dao/ProgressPhotoDao.kt` | photo queries | Photos |
-| `data/dao/ProgramDao.kt` | program/day queries | Programs |
+| `data/dao/ProgramDao.kt` | program + ilişkisel day/exercise queries | Programs |
 | `di/DatabaseModule.kt` | Room singleton + DAO providers | bütün ViewModel’ler |
 | `di/TimeModule.kt` | dinamik sistem ZoneId kullanan injectable Clock | Nutrition/zaman kuralları |
 | `data/home/HomeDashboardRepository.kt` | completed/active workout + measurement + nutrition Flow combine | Home |
-| `data/workout/WorkoutRepository.kt` | tek aktif start/resume, detail ve status-korumalı mutation sınırı | Workout |
-| `data/programs/ProgramRepository.kt` | program list/detail ve purchase sınırı | Programs |
+| `data/workout/WorkoutRepository.kt` | tek aktif start/resume, planned-set completion ve status-korumalı mutation | Workout, Programs |
+| `data/programs/ProgramRepository.kt` | list/detail/demo erişim + atomic program→workout sınırı | Programs |
+| `data/programs/ProgramWorkoutPlan.kt` | Room relation modeli ve sıralı egzersiz görünümü | Programs |
 | `data/photos/ProgressPhotoRepository.kt` | app-owned fotoğraf import/delete sınırı | Photos |
 
 ## Domain
@@ -48,7 +49,7 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | `domain/MuscleGroup.kt` | 31 kas + 82 egzersiz/activation | Workout, Load, Programs |
 | `domain/MuscleLoadCalculator.kt` | activation + recency + bodyweight fallback → kas yükü | Load |
 | `data/workout/CompletedSetForLoad.kt` | completed-set DAO projeksiyonu | Load |
-| `domain/ProgramExercise.kt` | program exercise + JSON | Programs |
+| `domain/ProgramExercise.kt` | legacy JSON migration modeli + locale-independent stable ID | Programs, Workout |
 | `domain/LocalizedDecimal.kt` | virgül/nokta destekli sonlu sayı parser’ı | Nutrition, Measurements |
 
 ## Navigation, tema ve component
@@ -115,8 +116,8 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 
 | Dosya | Rol |
 |---|---|
-| `ui/screens/programs/ProgramsViewModel.kt` | SavedStateHandle ID + repository list/detail state |
-| `ui/screens/programs/ProgramsScreen.kt` | route tabanlı list/detail/purchase/workout cards |
+| `ui/screens/programs/ProgramsViewModel.kt` | SavedStateHandle ID + list/detail/start UiState ve typed mesaj |
+| `ui/screens/programs/ProgramsScreen.kt` | adaptive list/detail/demo erişim/ilişkisel plan/start UI |
 
 ## Muscle load
 

@@ -2,7 +2,7 @@
 type: risk-register
 status: current
 implementation_status: current
-verified_commit: 341bf79
+verified_commit: 7917358
 updated: 2026-07-15
 tags: [gymtracker/risk, gymtracker/quality]
 ---
@@ -21,10 +21,10 @@ tags: [gymtracker/risk, gymtracker/quality]
 | R8 | P1 | resolved (v6) | Legacy workout `COMPLETED` migrate edilir; geçmiş detail salt okunurdur | [[FEATURE_WORKOUT]] | [[ADR_006_WORKOUT_SESSION_LIFECYCLE]] |
 | R9 | P1 | resolved | Nutrition DST-safe takvim aralığı, pozitif hedef ve sonlu progress uygulandı | [[FEATURE_NUTRITION]] | Clock + validation + unit/UI test |
 | R10 | P1 | resolved-core | UI kas yükü/seviye/skor olarak adlandırıldı; formül ve sınırlar metodoloji dialogunda açık | [[FEATURE_MUSCLE_LOAD]] | [[ADR_005_MUSCLE_LOAD_NAMING]] |
-| R11 | P1 | partial+ | Workout, Nutrition ve Measurements input/mutation doğrulandı; kalan feature’lar açık | bütün feature’lar | shared validator |
-| R12 | P2 | open | Program JSON kırılgan | [[ARCH_DATABASE]] | relational migration |
+| R11 | P1 | partial++ | Workout, Nutrition, Measurements ve Programs input/mutation doğrulandı; kalan feature’lar açık | bütün feature’lar | shared validator |
+| R12 | P2 | resolved-core (v7) | Program aktif okuma modeli ilişkisel; JSON yalnız kayıpsız legacy fallback ve bozuk payload UI’da güvenli boş state | [[ARCH_DATABASE]] | [[ADR_007_RELATIONAL_PROGRAM_PLANS]] |
 | R13 | P2 | resolved (phone) | 7 öğeli navigation; adaptive rail bekliyor | [[ARCH_NAVIGATION]] | [[ADR_002_FIVE_TARGET_NAVIGATION]] |
 | R14 | P2 | mitigated+ | Permission azaltıldı; hassas progress fotoğrafları cloud backup/device transfer dışında | [[ARCH_BUILD_DI]] | permission + extraction rules |
-| R15 | P2 | partial+++ | Home/nav, Workout, Nutrition, Measurements ve Progress yüzeyleri string, semantics, light/dark ve %200 font kullanıyor; Programs açık | [[DESIGN_SYSTEM_GRAPH]] | design DoD |
+| R15 | P2 | mitigated-core | Home/nav, Workout, Nutrition, Measurements, Progress ve Programs çekirdek yüzeyleri string, semantics, light/dark ve %200 font kullanıyor; app-geneli adaptive/golden açık | [[DESIGN_SYSTEM_GRAPH]] | design DoD |
 
 Aktif risk durumu [[SESSION_HANDOFF]] içinde tutulur; çözülen risk silinmez, `resolved` ve commit ile işaretlenir.

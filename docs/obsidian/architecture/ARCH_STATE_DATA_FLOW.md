@@ -2,7 +2,7 @@
 type: architecture
 status: current
 implementation_status: mixed
-verified_commit: 341bf79
+verified_commit: 7917358
 updated: 2026-07-15
 source_files:
   - app/src/main/java/com/gymtracker/ui/screens/home/HomeViewModel.kt
@@ -26,11 +26,12 @@ tags: [gymtracker/architecture, gymtracker/state]
 - Home: workout + measurement + günün nutrition Room Flow’ları `HomeDashboardRepository.combine` ile tek state üretir.
 - Home ViewModel: `Loading/Content/Error`, retry ve yerel gece yarısında period Flow’unu `flatMapLatest` ile yeniden kurma uygular.
 - Workout: active/completed Room Flow’ları ayrı state üretir; detail ID `SavedStateHandle` kaynağındandır. Mutation repository/transaction sınırından geçer ve hata state’i UI’da gösterilir.
-- Program list ve detail: repository Flow → ViewModel `stateIn(WhileSubscribed)`; detail ID `SavedStateHandle` kaynağındandır.
+- Program list/detail: ilişkisel repository Flow → ViewModel `Loading/Content/Error`; detail ID `SavedStateHandle` kaynağındandır. Program günü başlatma, locked/ownership/target doğrulaması ve active-session kontrolüyle tek transaction’da planlanan WorkoutSet’ler üretir.
 - Nutrition: seçili `LocalDate` ISO biçiminde `SavedStateHandle` içinde korunur; `Clock`/dinamik sistem `ZoneId` ile takvim günü aralığı hesaplanır ve `flatMapLatest` yeni Room Flow’una geçer. Mutation validation/error state üzerinden yönetilir.
 - Measurements: DAO Flow’u `MeasurementsUiState(latest, history, weightTrend)` üretir; latest geçmişten ayrılır ve saf validation/trend kuralları yazma öncesinde çalışır.
 - Muscle Load: takvim tabanlı son yedi gün period Flow’u `flatMapLatest` ile completed-set Room Flow’una geçer; saf calculator loading/content/error state üretir ve gece yarısında query sınırını yeniler.
 - Bütün ana Compose ekranları `collectAsStateWithLifecycle()` kullanır.
+- Programdan gelen `WorkoutSet.isCompleted=false` satırları gerçek reps/kg mutation’ıyla tamamlanır; çözülmemiş planlı set varken finish reddedilir ve Muscle Load yalnız session + set tamamlandığında etkilenir.
 - Gün sınırı sabit 86.400.000 ms yerine `ZoneId` + takvim günü ile hesaplanır; tarihsel Istanbul DST unit testi vardır.
 
 ## Kalan desenler
@@ -69,5 +70,6 @@ flowchart TD
 3. [[FEATURE_MUSCLE_LOAD]] — son yedi günlük tamamlanmış set Flow + günlük rollover tamamlandı.
 4. [[FEATURE_HOME]] — Clock injection; aktif-seans CTA entegrasyonu tamamlandı.
 5. [[FEATURE_MEASUREMENTS]] — validation/latest/history/trend state’i tamamlandı; chart ve repository sınırı bekliyor.
+6. [[FEATURE_PROGRAMS]] — ilişkisel plan Flow’u, locked repository guard ve atomic program→planned-workout entegrasyonu tamamlandı.
 
 Test eşleşmesi: [[TEST_MATRIX#ViewModel ve state]].

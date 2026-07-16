@@ -112,6 +112,36 @@ class WorkoutRepositoryTest {
         assertTrue(repository.observeSets(sessionId).first().isNotEmpty())
     }
 
+    @Test
+    fun plannedSet_mustBeCompletedBeforeSessionCanFinish() = runBlocking {
+        val sessionId = repository.startOrResumeSession("Planned", startedAt = 1_000L)
+        val setId = database.workoutDao().insertSetForActiveSession(
+            WorkoutSet(
+                sessionId = sessionId,
+                exerciseName = "Squat",
+                setNumber = 1,
+                reps = 0,
+                weightKg = 0f,
+                isCompleted = false,
+                exerciseId = "exercise.squat",
+                targetReps = "8-10"
+            )
+        )
+
+        assertIllegalState {
+            repository.finishSession(sessionId, 45, "Too early", completedAt = 2_000L)
+        }
+
+        repository.completePlannedSet(setId, reps = 9, weightKg = 80f)
+        val completedSet = repository.observeSets(sessionId).first().single()
+        assertTrue(completedSet.isCompleted)
+        assertEquals(9, completedSet.reps)
+        assertEquals(80f, completedSet.weightKg)
+
+        repository.finishSession(sessionId, 45, "Done", completedAt = 3_000L)
+        assertEquals(WorkoutStatus.COMPLETED, repository.observeSession(sessionId).first()?.status)
+    }
+
     private suspend fun assertIllegalState(block: suspend () -> Unit) {
         try {
             block()
