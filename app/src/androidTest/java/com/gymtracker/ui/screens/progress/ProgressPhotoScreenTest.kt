@@ -53,6 +53,7 @@ class ProgressPhotoScreenTest {
 
     @Test
     fun legacyPhotoHasExplicitDeviceRiskBadge() {
+        val reselectClicks = AtomicInteger(0)
         composeRule.setContent {
             GymTrackerTheme(darkTheme = false) {
                 ProgressPhotoContent(
@@ -68,7 +69,8 @@ class ProgressPhotoScreenTest {
                     ),
                     uiState = ProgressPhotoUiState(),
                     onAddPhoto = {},
-                    onDeletePhoto = {}
+                    onDeletePhoto = {},
+                    onReselectPhoto = { reselectClicks.incrementAndGet() }
                 )
             }
         }
@@ -78,6 +80,45 @@ class ProgressPhotoScreenTest {
             .performScrollToNode(hasTestTag("progress-photo-legacy"))
         composeRule.onNodeWithTag("progress-photo-legacy").assertIsDisplayed()
         composeRule.onNodeWithText(text(R.string.progress_photos_legacy_badge)).assertIsDisplayed()
+        composeRule.onNodeWithTag("progress-photo-upgrade-1")
+            .assertIsDisplayed()
+            .performClick()
+        assertEquals(1, reselectClicks.get())
+    }
+
+    @Test
+    fun v1PhotoOffersOptionalOptimizationAtLargeFontInDarkTheme() {
+        val optimizeClicks = AtomicInteger(0)
+        composeRule.setContent {
+            val density = LocalDensity.current
+            CompositionLocalProvider(LocalDensity provides Density(density.density, 2f)) {
+                GymTrackerTheme(darkTheme = true) {
+                    ProgressPhotoContent(
+                        photos = listOf(
+                            ProgressPhoto(
+                                id = 2,
+                                date = 2_000,
+                                photoUri = "file:///legacy-v1.jpg",
+                                angle = PhotoAngle.BACK,
+                                storageVersion = 1
+                            )
+                        ),
+                        uiState = ProgressPhotoUiState(),
+                        onAddPhoto = {},
+                        onDeletePhoto = {},
+                        onReoptimizePhoto = { optimizeClicks.incrementAndGet() }
+                    )
+                }
+            }
+        }
+
+        composeRule.onNodeWithTag("progress-photo-grid")
+            .performScrollToNode(hasTestTag("progress-photo-v1"))
+        composeRule.onNodeWithTag("progress-photo-v1").assertIsDisplayed()
+        composeRule.onNodeWithTag("progress-photo-upgrade-2")
+            .assertIsDisplayed()
+            .performClick()
+        assertEquals(1, optimizeClicks.get())
     }
 
     private fun text(id: Int): String =

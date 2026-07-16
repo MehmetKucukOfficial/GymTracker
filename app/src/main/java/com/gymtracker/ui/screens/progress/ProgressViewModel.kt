@@ -25,8 +25,10 @@ data class ProgressPhotoUiState(
 
 enum class ProgressPhotoMessage {
     SAVED,
+    UPGRADED,
     DELETED,
     SAVE_FAILED,
+    UPGRADE_FAILED,
     DELETE_FAILED,
     MAINTENANCE_FAILED,
     WEIGHT_OUT_OF_RANGE,
@@ -95,6 +97,28 @@ class ProgressViewModel @Inject constructor(
                     message = result.fold(
                         onSuccess = { ProgressPhotoMessage.DELETED },
                         onFailure = { ProgressPhotoMessage.DELETE_FAILED }
+                    )
+                )
+            }
+        }
+    }
+
+    fun upgradePhoto(
+        photo: ProgressPhoto,
+        uri: Uri,
+        onUpgraded: () -> Unit = {}
+    ) {
+        if (_uiState.value.isSaving) return
+        _uiState.update { it.copy(isSaving = true, message = null) }
+        viewModelScope.launch {
+            val result = repository.upgradePhoto(photo, uri)
+            if (result.isSuccess) onUpgraded()
+            _uiState.update {
+                it.copy(
+                    isSaving = false,
+                    message = result.fold(
+                        onSuccess = { ProgressPhotoMessage.UPGRADED },
+                        onFailure = { ProgressPhotoMessage.UPGRADE_FAILED }
                     )
                 )
             }

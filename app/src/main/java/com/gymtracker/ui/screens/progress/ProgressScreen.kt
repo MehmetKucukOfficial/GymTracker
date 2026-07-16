@@ -97,8 +97,14 @@ fun ProgressScreen(viewModel: ProgressViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     var selectedUri by remember { mutableStateOf<Uri?>(null) }
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+    var pendingReselectPhoto by remember { mutableStateOf<ProgressPhoto?>(null) }
+    val addPhotoLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         selectedUri = uri
+    }
+    val reselectPhotoLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        val photo = pendingReselectPhoto
+        pendingReselectPhoto = null
+        if (uri != null && photo != null) viewModel.upgradePhoto(photo, uri)
     }
     val messageText = uiState.message?.let { progressMessageText(it) }
 
@@ -112,7 +118,7 @@ fun ProgressScreen(viewModel: ProgressViewModel = hiltViewModel()) {
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
-            FloatingActionButton(onClick = { launcher.launch("image/*") }) {
+            FloatingActionButton(onClick = { addPhotoLauncher.launch("image/*") }) {
                 Icon(Icons.Default.Add, contentDescription = stringResource(R.string.progress_photos_add))
             }
         }
@@ -120,8 +126,15 @@ fun ProgressScreen(viewModel: ProgressViewModel = hiltViewModel()) {
         ProgressPhotoContent(
             photos = photos,
             uiState = uiState,
-            onAddPhoto = { launcher.launch("image/*") },
+            onAddPhoto = { addPhotoLauncher.launch("image/*") },
             onDeletePhoto = viewModel::deletePhoto,
+            onReselectPhoto = { photo ->
+                pendingReselectPhoto = photo
+                reselectPhotoLauncher.launch("image/*")
+            },
+            onReoptimizePhoto = { photo ->
+                viewModel.upgradePhoto(photo, Uri.parse(photo.photoUri))
+            },
             modifier = Modifier.padding(padding)
         )
     }
@@ -143,6 +156,8 @@ fun ProgressPhotoContent(
     uiState: ProgressPhotoUiState,
     onAddPhoto: () -> Unit,
     onDeletePhoto: (ProgressPhoto) -> Unit,
+    onReselectPhoto: (ProgressPhoto) -> Unit = {},
+    onReoptimizePhoto: (ProgressPhoto) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var selectedAngleName by rememberSaveable { mutableStateOf<String?>(null) }
@@ -220,7 +235,12 @@ fun ProgressPhotoContent(
                     PhotoGridItem(
                         photo = photo,
                         onOpen = { selectedPhoto = photo },
-                        onDelete = { pendingDelete = photo }
+                        onDelete = { pendingDelete = photo },
+                        onUpgrade = {
+                            if (photo.storageVersion == 0) onReselectPhoto(photo)
+                            else onReoptimizePhoto(photo)
+                        },
+                        upgradeEnabled = !uiState.isSaving
                     )
                 }
             }
@@ -248,7 +268,16 @@ fun ProgressPhotoContent(
     }
 
     selectedPhoto?.let { photo ->
-        PhotoViewerDialog(photo = photo, onDismiss = { selectedPhoto = null })
+        PhotoViewerDialog(
+            photo = photo,
+            onDismiss = { selectedPhoto = null },
+            onUpgrade = {
+                selectedPhoto = null
+                if (photo.storageVersion == 0) onReselectPhoto(photo)
+                else onReoptimizePhoto(photo)
+            },
+            upgradeEnabled = !uiState.isSaving
+        )
     }
 
     pendingDelete?.let { photo ->
@@ -278,7 +307,9 @@ fun ProgressPhotoContent(
 private fun PhotoGridItem(
     photo: ProgressPhoto,
     onOpen: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    onUpgrade: () -> Unit,
+    upgradeEnabled: Boolean
 ) {
     var loadFailed by remember(photo.photoUri) { mutableStateOf(false) }
     val date = remember(photo.date) { DateFormat.getDateInstance(DateFormat.MEDIUM).format(Date(photo.date)) }
@@ -286,9 +317,15 @@ private fun PhotoGridItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .then(if (photo.storageVersion == 0) Modifier.testTag("progress-photo-legacy") else Modifier)
+            .then(
+                when (photo.storageVersion) {
+                    0 -> Modifier.testTag("progress-photo-legacy")
+                    1 -> Modifier.testTag("progress-photo-v1")
+                    else -> Modifier
+                }
+            )
             .clickable(onClick = onOpen, role = Role.Button)
-            .semantics(mergeDescendants = true) {
+            .semantics {
                 contentDescription = description
                 role = Role.Button
             },
@@ -343,6 +380,20 @@ private fun PhotoGridItem(
                         style = MaterialTheme.typography.labelMedium
                     )
                 }
+            } else if (photo.storageVersion == 1) {
+                Surface(
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(GtSpacing.xs),
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    shape = MaterialTheme.shapes.small
+                ) {
+                    Text(
+                        stringResource(R.string.progress_photos_optimize_badge),
+                        modifier = Modifier.padding(horizontal = GtSpacing.xs, vertical = GtSpacing.xxs),
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                }
             }
         }
         Column(
@@ -362,12 +413,28 @@ private fun PhotoGridItem(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
+            if (photo.storageVersion < 2) {
+                TextButton(
+                    onClick = onUpgrade,
+                    enabled = upgradeEnabled,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("progress-photo-upgrade-${photo.id}")
+                ) {
+                    Text(photoUpgradeAction(photo.storageVersion))
+                }
+            }
         }
     }
 }
 
 @Composable
-private fun PhotoViewerDialog(photo: ProgressPhoto, onDismiss: () -> Unit) {
+private fun PhotoViewerDialog(
+    photo: ProgressPhoto,
+    onDismiss: () -> Unit,
+    onUpgrade: () -> Unit,
+    upgradeEnabled: Boolean
+) {
     val date = remember(photo.date) { DateFormat.getDateInstance(DateFormat.LONG).format(Date(photo.date)) }
     Dialog(onDismissRequest = onDismiss) {
         Surface(
@@ -409,6 +476,20 @@ private fun PhotoViewerDialog(photo: ProgressPhoto, onDismiss: () -> Unit) {
                             stringResource(R.string.progress_photos_legacy_support),
                             color = MaterialTheme.colorScheme.error
                         )
+                    } else if (photo.storageVersion == 1) {
+                        Text(
+                            stringResource(R.string.progress_photos_optimize_support),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    if (photo.storageVersion < 2) {
+                        Button(
+                            onClick = onUpgrade,
+                            enabled = upgradeEnabled,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(photoUpgradeAction(photo.storageVersion))
+                        }
                     }
                 }
             }
@@ -508,11 +589,19 @@ private fun angleLabel(angle: PhotoAngle): String = stringResource(
 private fun progressMessageText(message: ProgressPhotoMessage): String = stringResource(
     when (message) {
         ProgressPhotoMessage.SAVED -> R.string.progress_photos_saved
+        ProgressPhotoMessage.UPGRADED -> R.string.progress_photos_upgraded
         ProgressPhotoMessage.DELETED -> R.string.progress_photos_deleted
         ProgressPhotoMessage.SAVE_FAILED -> R.string.progress_photos_save_failed
+        ProgressPhotoMessage.UPGRADE_FAILED -> R.string.progress_photos_upgrade_failed
         ProgressPhotoMessage.DELETE_FAILED -> R.string.progress_photos_delete_failed
         ProgressPhotoMessage.MAINTENANCE_FAILED -> R.string.progress_photos_maintenance_failed
         ProgressPhotoMessage.WEIGHT_OUT_OF_RANGE -> R.string.progress_photos_weight_error
         ProgressPhotoMessage.NOTES_TOO_LONG -> R.string.progress_photos_notes_error
     }
+)
+
+@Composable
+private fun photoUpgradeAction(storageVersion: Int): String = stringResource(
+    if (storageVersion == 0) R.string.progress_photos_reselect_action
+    else R.string.progress_photos_reoptimize_action
 )
