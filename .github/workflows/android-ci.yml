@@ -90,9 +90,7 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-metrics -camera-back none
           script: |
             ./gradlew connectedDebugAndroidTest --no-daemon --max-workers=2 --stacktrace
-            ./gradlew :baselineprofile:connectedBenchmarkReleaseAndroidTest \
-              -Pandroid.testInstrumentationRunnerArguments.class=com.gymtracker.baselineprofile.ProcessDeathNavigationTest \
-              --no-daemon --max-workers=2 --stacktrace
+            ./gradlew :baselineprofile:connectedBenchmarkReleaseAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.gymtracker.baselineprofile.ProcessDeathNavigationTest --no-daemon --max-workers=2 --stacktrace
 
       - name: Upload device-test reports
         if: always()
