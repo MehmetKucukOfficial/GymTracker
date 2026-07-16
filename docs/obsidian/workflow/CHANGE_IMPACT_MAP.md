@@ -2,7 +2,7 @@
 type: workflow
 status: current
 implementation_status: active
-verified_commit: abd3fbe
+verified_commit: a2586d1
 updated: 2026-07-16
 tags: [gymtracker/workflow, gymtracker/impact]
 ---
@@ -80,6 +80,18 @@ Graf: [[FEATURE_NUTRITION]], [[FEATURE_MEASUREMENTS]], [[ADR_008_SNAPSHOT_SAFE_E
 Oku: root/app build, version catalog, wrapper props/scripts, ProGuard, manifest ve `.github/workflows/android-ci.yml`.
 Test: `ciQuality`, API 34 device/golden, R8 mapping, APK/AAB output ve release manifest; signing değişikliği varsa secret erişimi olmadan fail-fast ve ayrı dağıtım smoke’u. Major güncellemeyi ayrı PR yap.
 Graf: [[ARCH_BUILD_DI]], [[ROADMAP_EXECUTION_GRAPH]].
+
+## Release signing veya distribution
+
+Oku: `app/build.gradle.kts`, `.github/workflows/android-release.yml`, `.gitignore`, production environment secret adları ve artifact yolları.
+Test: secretsiz fail-fast; geçici test keystore ile `releaseDistribution`; APK `apksigner`, AAB `jarsigner`, embedded profile ve mapping; gerçek key materyalini/log secret’larını repoya alma.
+Graf: [[ADR_009_SECRET_BACKED_RELEASES]], [[ARCH_BUILD_DI]], [[RISK_REGISTER_GRAPH]].
+
+## Baseline Profile veya macrobenchmark
+
+Oku: `baselineprofile/`, app baseline plugin/dependency, generated profile kaynakları ve kritik UI semantics/navigation metinleri.
+Test: `generateBaselineProfile`; startup None/Partial, Home scroll, Workout navigation; release APK/AAB embedded profile. Emülatör sonucu yalnız ön baseline, kabul fiziksel release cihazında.
+Graf: [[PERFORMANCE_BASELINE]], [[TEST_MATRIX]], ilgili feature.
 
 ## String/locale/birim
 

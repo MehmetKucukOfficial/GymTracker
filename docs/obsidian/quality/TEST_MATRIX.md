@@ -2,7 +2,7 @@
 type: quality
 status: current
 implementation_status: mixed
-verified_commit: abd3fbe
+verified_commit: a2586d1
 updated: 2026-07-16
 tags: [gymtracker/quality, gymtracker/testing]
 ---
@@ -36,6 +36,8 @@ tags: [gymtracker/quality, gymtracker/testing]
 - `ExerciseIdentityTest`, `ProgramSeedInitializerTest`, `ProgramRepositoryTest`, `WorkoutRepositoryTest` ve `ProgramsScreenTest`; unique/locale-independent ID, 5/23/108 seed, locked guard, atomic plan copy, incomplete-set finish engeli ve adaptive UI’yı doğrular.
 - Pixel 6 Pro API 34 emülatöründe 54 instrumentation testi ve 28 JVM testi, 0 failure ile geçer.
 - GitHub Actions koşusu `29459249716`: quality 8 dk 51 sn; KVM hızlandırmalı API 34 device/golden 13 dk 13 sn; artifact XML toplamı 54 test, 0 failure/error/skipped.
+- PR16: 2 Baseline Profile üretici testi sıfır hatayla release baseline/startup profili yazdı; startup None/Partial, Home scroll ve Workout macrobenchmark senaryoları API 34 emülatörde çalıştı. Fiziksel cihaz performans kabulü açık.
+- `releaseDistribution` dummy upload keystore ile APK v2/v3, AAB JAR imzası ve embedded profile girdilerini doğruladı; secretsiz çağrı dört eksik environment değerini fail-fast raporladı.
 
 ## Feature matrisi
 
@@ -71,6 +73,6 @@ Home’un takvim sınırı saf fonksiyonla testlidir; canlı rollover akışına
 
 ## CI sırası
 
-`ciQuality`: unit → lintDebug → debug APK → minified/resource-shrunk release APK + AAB + mapping. GitHub Actions quality job’u geçtikten sonra API 34 Pixel 6 Pro üzerinde 54 Room/Compose/navigation/golden cihaz testi çalışır. Lint, release ve device raporları artifact olarak saklanır. Production signing ve fiziksel cihaz smoke’u ayrı release kapısıdır.
+`ciQuality`: unit → lintDebug → debug APK → minified/resource-shrunk release APK + AAB + mapping + embedded Baseline Profile doğrulaması. GitHub Actions quality job’u geçtikten sonra API 34 Pixel 6 Pro üzerinde 54 Room/Compose/navigation/golden cihaz testi çalışır. Lint, release ve device raporları artifact olarak saklanır. Production signing manuel protected-environment kapısıdır; fiziksel cihaz benchmark ve Play internal-track smoke’u ayrıca gerekir.
 
 Definition of Done ayrıntısı: [[GELISTIRME_MASTER_PLANI#Definition of Done]].

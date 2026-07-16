@@ -2,7 +2,7 @@
 type: roadmap
 status: current
 implementation_status: active
-verified_commit: abd3fbe
+verified_commit: a2586d1
 updated: 2026-07-16
 tags: [gymtracker/roadmap, gymtracker/workflow]
 ---
@@ -27,7 +27,9 @@ flowchart TD
     PG --> ND[PR 12 Nutrition + Measurements depth]
     ND --> PC[PR 13 Photo pipeline + Load calibration]
     PC --> AL[PR 14 Locale + Adaptive + Golden]
-    AL --> B[Beta hardening]
+    AL --> B[PR 15 CI + Release hardening]
+    B --> RP[PR 16 Signing + Performance]
+    RP --> LG[PR 17 List-detail + Golden]
 ```
 
 ## PR 1 — Build hygiene
@@ -131,9 +133,15 @@ Durum: `abd3fbe` kod commit’i `codex/ci-release-hardening` dalında PR14’ü 
 Çıktı: Linux-executable wrapper, tek `ciQuality`, PR/main quality job’u, API 34 device/golden job’u, 14 günlük rapor/release artifact’leri, R8 + resource shrinking ve APK/AAB/mapping üretimi.
 Kabul: 28 JVM + 54 API 34 instrumentation testi; lint/debug; 2.56 MB minified APK, 4.81 MB AAB ve mapping başarılı. Hosted koşu `29459249716` quality 8 dk 51 sn ve API 34 device/golden 13 dk 13 sn ile tamamen yeşil.
 
-## Sonraki dikey dilimler
+## PR 16 — Secret-backed release + measured performance
 
-1. Production signing/distribution + ölçümlü Baseline Profile/macrobenchmark
-2. Feature list-detail + golden kapsam genişletme
+Node: [[ARCH_BUILD_DI]], [[ADR_009_SECRET_BACKED_RELEASES]], [[PERFORMANCE_BASELINE]], [[TEST_MATRIX]].
+Durum: `a2586d1` kod commit’i `codex/release-performance` dalında PR15’i hedefleyen stacked draft PR #9 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/9
+Çıktı: protected production workflow, fail-fast dört secret, runner-temp keystore, APK v2/v3 + AAB JAR signature doğrulaması; generated Baseline/Startup Profile; startup/Home scroll/Workout macrobenchmark.
+Kabul: `ciQuality`, 54/54 API 34 regresyon; 2/2 profil üretici; 4 macrobenchmark senaryosu; dummy keystore ile signed releaseDistribution yeşil. Gerçek secret/Play smoke ve fiziksel-device performans kabulü operasyonel takip.
+
+## Sonraki dikey dilim
+
+1. PR17 feature list-detail + golden kapsam genişletme
 
 Detaylı süre: [[GELISTIRME_MASTER_PLANI#18. Fazlar ve süre tahmini]]. Aktif durum: [[SESSION_HANDOFF]].

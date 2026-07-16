@@ -2,10 +2,10 @@
 type: handoff
 status: ready
 implementation_status: active
-code_baseline: abd3fbe
+code_baseline: a2586d1
 updated: 2026-07-16
-active_phase: "Phase 5 - PR15 hosted green"
-next_pr: "Wait for user command before PR16"
+active_phase: "Phase 6 - PR16 published; PR17 authorized"
+next_pr: "Implement PR17 list-detail and golden expansion"
 primary_nodes:
   - ARCH_BUILD_DI
   - TEST_MATRIX
@@ -26,6 +26,7 @@ tags: [gymtracker/workflow, gymtracker/session]
 - PR13 code baseline: `5c3ce35`; graph baseline `d189f6c`; `codex/photo-load-calibration` dalı PR12’yi hedefleyen stacked draft PR #6 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/6
 - PR14 code baseline: `41c2ceb`; graph baseline `f65e162`; `codex/adaptive-locale-goldens` dalı PR13’ü hedefleyen stacked draft PR #7 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/7
 - PR15 code baseline: `abd3fbe`; graph baseline: `cd331c8`; `codex/ci-release-hardening` dalı PR14’ü hedefleyen stacked draft PR #8 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/8
+- PR16 code baseline: `a2586d1`; `codex/release-performance` dalı PR15’i hedefleyen stacked draft PR #9 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/9
 - Room v9; explicit 8→9 photo thumbnail/dimension metadata migration aktif, destructive fallback yok; v0/v1 fotoğraf satırları kayıpsız korunur.
 - Compact navigation shell’i 5 ana hedefli bottom bar, 600 dp+ shell aynı hedeflerle rail kullanıyor; workout/program detail ID + SavedStateHandle + repository Flow kullanıyor.
 - Home completed/active workout, measurement ve nutrition kaynaklarına reaktif; aktif workout varsa CTA doğrudan session ID’ye devam ediyor.
@@ -43,7 +44,7 @@ tags: [gymtracker/workflow, gymtracker/session]
 
 ## Sıradaki önerilen iş
 
-PR15 tamamlandı. PR16 production signing/performance kapsamını başlatmadan kullanıcı komutunu bekle.
+PR16 yerel kabul ve draft PR ile tamamlandı. Hosted CI’ı izlerken PR17 feature list-detail + golden kapsamını uygula; kullanıcı arada onay istemeden PR17’ye geçişi yetkilendirdi.
 
 ## Açık P0/P1
 
@@ -51,7 +52,7 @@ PR15 tamamlandı. PR16 production signing/performance kapsamını başlatmadan k
 - GitHub branch protection içinde quality + API 34 check’lerini zorunlu yapma
 - Golden baseline’ı bütün kritik ekranlara genişletme
 - Harici deep link, gerçek OS process-death ve feature list-detail
-- Production signing/keystore ve mağaza dağıtım smoke’u
+- Gerçek production secret/Play internal-track smoke ve fiziksel cihaz benchmark kabulü
 
 ## Son doğrulama
 
@@ -73,6 +74,34 @@ Graph notes updated:
 Next concrete action:
 Blockers:
 ```
+
+## 2026-07-16 - PR 16 secret-backed release + performance baseline
+
+Completed:
+- Added protected manual production workflow, atomic four-secret signing configuration, runner-temp keystore cleanup and signed APK/AAB artifact retention.
+- Added Gradle fail-fast, APK v2/v3, AAB JAR signature and embedded Baseline Profile verification gates.
+- Added `:baselineprofile` producer with shared startup/Home scroll/Workout CUJs, generated release Baseline/Startup Profiles and four macrobenchmark scenarios.
+
+Files changed:
+- `.github/workflows/android-release.yml`, root/app/version-catalog/settings Gradle files, `.gitignore`
+- `baselineprofile/`, `app/src/release/generated/baselineProfiles/`
+- Related build, ADR, performance, test, risk, roadmap, atlas, impact, MOC, start and handoff nodes
+
+Tests run/results:
+- `ciQuality`: success, including embedded APK/AAB profile verification.
+- `connectedDebugAndroidTest`: 54/54 success after clean AVD reboot; prior run reached 50/54 then emulator OS aborted with `DeadSystemException`, no product assertion failure.
+- Baseline generation: 2 producer tests, 0 failures; 4 macrobenchmark scenarios execute on API 34 emulator.
+- Dummy keystore `releaseDistribution`: APK v2/v3 + AAB signature + embedded profile success; temporary key deleted.
+
+Risks changed:
+- R16 mitigated-config; real protected secrets and Play internal-track smoke remain operational.
+- R17 partial; emulator performance baseline exists, physical release-device acceptance remains open.
+
+Next concrete action:
+- Implement PR17 list-detail and golden expansion on a branch stacked on `codex/release-performance`; keep monitoring PR16 hosted CI.
+
+Blockers:
+- No code blocker. Real production key/Play access and physical benchmark hardware are external operational inputs.
 
 ## 2026-07-14 - PR 1A build reproducibility
 

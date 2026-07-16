@@ -2,8 +2,8 @@
 type: moc
 status: current
 implementation_status: current
-verified_commit: a8e019e
-updated: 2026-07-15
+verified_commit: a2586d1
+updated: 2026-07-16
 tags: [gymtracker/moc, gymtracker/risk, gymtracker/quality]
 ---
 
@@ -11,6 +11,7 @@ tags: [gymtracker/moc, gymtracker/risk, gymtracker/quality]
 
 - [[RISK_REGISTER_GRAPH]] — P0–P3 risk düğümleri
 - [[TEST_MATRIX]] — feature/değişiklik/test eşleşmesi
+- [[PERFORMANCE_BASELINE]] — startup/scroll/navigation ölçüm sözleşmesi
 - [[ARCH_BUILD_DI]] — build/lint/toolchain
 - [[CHANGE_IMPACT_MAP]] — regresyon alanı
 - [[SESSION_HANDOFF]] — aktif blokajlar
@@ -20,12 +21,14 @@ tags: [gymtracker/moc, gymtracker/risk, gymtracker/quality]
 | Kontrol | Durum |
 |---|---|
 | Debug compile/APK | Başarılı |
-| Unit test | 8/8 başarılı |
-| Android test | 15/15 başarılı, API 34 |
-| Lint | 0 error, 52 warning |
+| Unit test | 28/28 başarılı |
+| Android test | 54/54 başarılı, API 34 |
+| Profil üretici | 2/2 başarılı |
+| Macrobenchmark | 4 senaryo çalışıyor; fiziksel cihaz kabulü açık |
+| Lint | 0 error |
 | Wrapper | Mevcut |
-| CI | Yok |
-| Migration test | v3→v5 satır koruma geçiyor |
+| CI | quality + API 34 hosted yeşil; production release manuel/protected |
+| Migration test | v3→v9 satır koruma geçiyor |
 
 ## Beta kapısı
 
@@ -35,3 +38,4 @@ tags: [gymtracker/moc, gymtracker/risk, gymtracker/quality]
 - Wrapper + CI yeşil
 - Kritik migration/DAO/use case/UI akışları testli
 - Aktif workout process recreation sonrası korunur
+- Signed artifact secret-backed ve imza/profile doğrulamalı
