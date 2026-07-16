@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "GymTracker"
 include(":app")
+include(":baselineprofile")
