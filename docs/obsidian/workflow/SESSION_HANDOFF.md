@@ -4,11 +4,12 @@ status: ready
 implementation_status: active
 code_baseline: 4d0cad8
 updated: 2026-07-15
-active_phase: "Phase 3 - Workout dikey dilimi"
-next_pr: "PR 8 - Workout status + active session modernization"
+active_phase: "Phase 4 - Nutrition + Measurement dikey dilimi"
+next_pr: "PR 9 - Nutrition + Measurement correctness and modernization"
 primary_nodes:
-  - FEATURE_WORKOUT
-  - ARCH_DATABASE
+  - FEATURE_NUTRITION
+  - FEATURE_MEASUREMENTS
+  - ARCH_STATE_DATA_FLOW
   - DESIGN_SYSTEM_GRAPH
   - ROADMAP_EXECUTION_GRAPH
 tags: [gymtracker/workflow, gymtracker/session]
@@ -18,39 +19,39 @@ tags: [gymtracker/workflow, gymtracker/session]
 
 ## Şu anki durum
 
-- Uygulama baseline: `4d0cad8`; PR1–PR7 kod ve test checkpoint’i commitlendi.
-- Room v5; destructive fallback yok, program seed transaction/idempotent, yeni fotoğraflar app-owned storage’da kalıcı.
+- Uygulama baseline: `4d0cad8`; PR1–PR7 commitlendi, bu handoff doğrulanmış PR8 yayın kapsamını taşıyor.
+- Room v6; explicit 5→6 workout migration aktif, destructive fallback yok, program seed transaction/idempotent, yeni fotoğraflar app-owned storage’da kalıcı.
 - Telefon navigation shell’i 5 ana hedefe indi; workout/program detail ID + SavedStateHandle + repository Flow kullanıyor.
-- Home workout/measurement/nutrition kaynaklarına reaktif; bütün ana ekranlar lifecycle-aware state topluyor.
+- Home completed/active workout, measurement ve nutrition kaynaklarına reaktif; aktif workout varsa CTA doğrudan session ID’ye devam ediyor.
+- Workout tek aktif seans, status-korumalı mutation, COMPLETED salt-okunur geçmiş ve adaptive modern UI kullanıyor.
 - Light/dark tasarım sistemi token temeli ve ortak Home bileşenleri aktif; Home loading/content/error, retry, midnight period tick ve adaptive kolon kullanıyor.
-- Test temeli aktif: 11 JVM + 18 API 34 instrumentation testi geçiyor.
-- Debug build başarılı; lint 0 error / 52 warning.
+- Test temeli aktif: 11 JVM + 23 API 34 instrumentation testi geçiyor.
+- Debug build başarılı; lint 0 error / 53 warning.
 
 ## Sıradaki önerilen iş
 
-[[ROADMAP_EXECUTION_GRAPH#Sonraki dikey dilimler]] — [[FEATURE_WORKOUT]]:
+[[ROADMAP_EXECUTION_GRAPH#Sonraki dikey dilimler]] — [[FEATURE_NUTRITION]] + [[FEATURE_MEASUREMENTS]]:
 
-1. Workout entity/status sözleşmesini (`ACTIVE/COMPLETED`, completion time) ADR ve explicit v6 migration ile tasarla.
-2. Tek aktif seans ve resume/finish/read-only-history repository kurallarını transaction testleriyle sabitle.
-3. Aktif workout ekranını PR7 token/bileşenleriyle modernleştir; eski tamamlanan detail’i düzenlenemez yap.
-4. Home CTA’yı aktif seansa göre “Devam et/Antrenmana başla” yap.
-5. Process recreation, back, light/dark, %200 font, accessibility ve screenshot kabulünü çalıştır.
+1. Nutrition tarih aralığı, DST ve zero-goal kurallarını Clock/ZoneId + validator ile sabitle.
+2. Nutrition selected-day state’ini lifecycle/process recreation boyunca koru; add/delete/error akışını testle.
+3. Measurement input doğrulama, sıralama ve trend hesabını repository/use-case sınırına taşı.
+4. İki ekranı PR7/PR8 token ve adaptive yerleşim diliyle modernleştir; hardcoded kullanıcı metinlerini resource’a taşı.
+5. Home reaktivitesi, navigation/back, light/dark, %200 font, semantics ve screenshot kabulünü çalıştır.
 
 ## Açık P0/P1
 
-- Eski workout’un aktif gibi açılması
 - Legacy `storageVersion=0` fotoğraflar ve backup politikası
 - CI kalite kapısı
-- Uygulamanın Home dışındaki hardcoded string/accessibility/adaptive layout borcu
+- Uygulamanın Home/Workout dışındaki hardcoded string/accessibility/adaptive layout borcu
 - Harici deep link ve navigation rail
 
 ## Son doğrulama
 
 - `testDebugUnitTest`: success, 11/11.
-- `connectedDebugAndroidTest`: success, 18/18, Pixel 6 Pro API 34.
-- `lintDebug`: success, 0 error / 52 warning.
-- `assembleDebug`: success; test sonrasında debug APK yeniden kuruldu ve açıldı.
-- Görsel smoke: `app/build/reports/pr7-home-light.png`, `pr7-home-dark.png`, `pr7-home-font-200.png`.
+- `connectedDebugAndroidTest`: success, 23/23, Pixel 6 Pro API 34.
+- `lintDebug`: success, 0 error / 53 warning.
+- `assembleDebug`: success.
+- Görsel smoke: `app/build/pr8-active-light2.png`, `pr8-active-dark-font200.png`, `pr8-readonly-dark-font200.png`; test sonrası final APK yeniden kurulmalıdır.
 
 ## Handoff güncelleme şablonu
 
@@ -375,3 +376,44 @@ Next concrete action:
 
 Blockers:
 - None. Navigation rail, permanent screenshot-golden infrastructure, Clock injection and true process-death smoke remain explicit follow-up work.
+
+## 2026-07-15 - PR 8 workout lifecycle and modernization
+
+Completed:
+- Added [[ADR_006_WORKOUT_SESSION_LIFECYCLE]] and Room v6 `ACTIVE/COMPLETED` + `completedAt` contract.
+- Added explicit `MIGRATION_5_6`; legacy sessions are preserved as `COMPLETED`, never guessed to be active.
+- Added transactional start-or-resume and status-conditional add/delete/finish operations; completed sessions reject mutation.
+- Split active and completed Flow state through repository/ViewModel and exposed explicit mutation errors.
+- Connected Home CTA to the active session ID while excluding active records from completed metrics.
+- Rebuilt Workout list/detail with PR7 tokens, active/history hierarchy, read-only completed detail and large-font adaptive rows/headers.
+
+Files changed:
+- `Entities.kt`, `AppDatabase.kt`, `DatabaseMigrations.kt`, `WorkoutDao.kt`, v6 schema JSON
+- `WorkoutRepository.kt`, `WorkoutViewModel.kt`, `WorkoutScreen.kt`
+- `HomeDashboardRepository.kt`, `HomeScreen.kt`, `strings.xml`
+- `DatabaseMigrationTest.kt`, `HomeDashboardRepositoryTest.kt`, `WorkoutRepositoryTest.kt`, `WorkoutScreenTest.kt`
+
+Tests run/results:
+- `testDebugUnitTest`: BUILD SUCCESSFUL; 11 tests, 0 failures.
+- `connectedDebugAndroidTest`: BUILD SUCCESSFUL; 23 tests, 0 failures on Pixel 6 Pro API 34.
+- `lintDebug`: BUILD SUCCESSFUL; 0 errors / 53 warnings.
+- `assembleDebug`: BUILD SUCCESSFUL.
+- Manual API 34 visual QA: active light, active dark at %200 font, finish dialog at %200 font and completed read-only detail. The first completed-list screenshot exposed a cramped status row; final code switches list cards and detail headers to vertical large-font layouts and the 23-test quality gate was rerun successfully.
+
+Risks changed:
+- R8 resolved: legacy sessions migrate to completed and historical details are read-only.
+- R11 partial: Workout set/finish validation is enforced; other features remain.
+- R15 partial+: Home/navigation/Workout now cover resources, adaptive %200 font and light/dark; Nutrition/Measurements are next.
+- Remaining Workout limitation: single-active is guaranteed by the app’s transactional write path, not a partial unique DB index; revisit if multi-process or external writers are introduced.
+
+Graph notes updated:
+- [[ADR_006_WORKOUT_SESSION_LIFECYCLE]], [[ADR_INDEX]]
+- [[FEATURE_WORKOUT]], [[FEATURE_HOME]], [[ARCH_DATABASE]], [[ARCH_STATE_DATA_FLOW]]
+- [[TEST_MATRIX]], [[RISK_REGISTER_GRAPH]], [[ROADMAP_EXECUTION_GRAPH]]
+- [[SOURCE_FILE_ATLAS]], [[SESSION_HANDOFF]], [[00_START_HERE]]
+
+Next concrete action:
+- Start PR9 with [[FEATURE_NUTRITION]] and [[FEATURE_MEASUREMENTS]] source_files plus their Clock/validation/change-impact obligations.
+
+Blockers:
+- None. True OS process-death smoke, permanent screenshot-golden infrastructure and DB-level single-active uniqueness remain explicit follow-ups.

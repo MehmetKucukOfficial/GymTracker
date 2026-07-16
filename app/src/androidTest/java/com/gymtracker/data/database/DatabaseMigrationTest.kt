@@ -19,7 +19,7 @@ class DatabaseMigrationTest {
     )
 
     @Test
-    fun migrate3To5_preservesRowsAndMarksLegacyPhotos() {
+    fun migrate3To6_preservesRowsAndMarksLegacyData() {
         migrationHelper.createDatabase(TEST_DATABASE, 3).apply {
             execSQL(
                 """
@@ -42,7 +42,7 @@ class DatabaseMigrationTest {
 
         migrationHelper.runMigrationsAndValidate(
             TEST_DATABASE,
-            5,
+            6,
             true,
             *DatabaseMigrations.ALL
         ).close()
@@ -58,6 +58,8 @@ class DatabaseMigrationTest {
         assertEquals("Baseline session", session?.name)
         assertEquals(45, session?.durationMinutes)
         assertEquals("must survive", session?.notes)
+        assertEquals(com.gymtracker.data.entities.WorkoutStatus.COMPLETED, session?.status)
+        assertEquals(2_701_000L, session?.completedAt)
         assertEquals(null, runBlocking { database.programDao().getSeedMetadata("default-programs-v1") })
         val photo = runBlocking { database.progressPhotoDao().getAllSync().single() }
         assertEquals("content://legacy/photo", photo.photoUri)

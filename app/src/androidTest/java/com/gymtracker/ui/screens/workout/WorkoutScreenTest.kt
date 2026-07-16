@@ -1,0 +1,148 @@
+package com.gymtracker.ui.screens.workout
+
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.unit.Density
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.gymtracker.data.entities.WorkoutSession
+import com.gymtracker.data.entities.WorkoutSet
+import com.gymtracker.data.entities.WorkoutStatus
+import com.gymtracker.ui.theme.GymTrackerTheme
+import java.util.concurrent.atomic.AtomicLong
+import org.junit.Assert.assertEquals
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+
+@RunWith(AndroidJUnit4::class)
+class WorkoutScreenTest {
+
+    @get:Rule
+    val composeRule = createComposeRule()
+
+    @Test
+    fun workoutList_distinguishesActiveSessionFromCompletedHistory() {
+        val openedSessionId = AtomicLong(0)
+
+        composeRule.setContent {
+            val density = LocalDensity.current
+            CompositionLocalProvider(
+                LocalDensity provides Density(density.density, fontScale = 2f)
+            ) {
+                GymTrackerTheme(darkTheme = true) {
+                    WorkoutListContent(
+                        activeSession = session(
+                            id = 11,
+                            name = "Akşam Güç",
+                            status = WorkoutStatus.ACTIVE
+                        ),
+                        completedSessions = listOf(
+                            session(
+                                id = 7,
+                                name = "Sabah Kondisyon",
+                                status = WorkoutStatus.COMPLETED,
+                                completedAt = 2_000,
+                                durationMinutes = 42
+                            )
+                        ),
+                        onNewSession = {},
+                        onOpenSession = openedSessionId::set
+                    )
+                }
+            }
+        }
+
+        composeRule.onNodeWithTag("workout-active-card").assertIsDisplayed().performClick()
+        composeRule.onNodeWithText("Tamamlananlar").performScrollTo().assertIsDisplayed()
+        composeRule.onNodeWithText("Sabah Kondisyon").performScrollTo().assertIsDisplayed()
+        assertEquals(11, openedSessionId.get())
+    }
+
+    @Test
+    fun completedWorkout_isReadOnlyAndDoesNotExposeMutationActions() {
+        composeRule.setContent {
+            GymTrackerTheme(darkTheme = true) {
+                WorkoutDetailContent(
+                    session = session(
+                        id = 7,
+                        name = "Tamamlanan Seans",
+                        status = WorkoutStatus.COMPLETED,
+                        completedAt = 4_000,
+                        durationMinutes = 55
+                    ),
+                    sets = listOf(workoutSet(sessionId = 7)),
+                    onBack = {},
+                    onFinishRequest = {},
+                    onAddSetRequest = {},
+                    onDeleteSet = {}
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag("workout-detail-read-only").assertIsDisplayed()
+        composeRule.onNodeWithText("Antrenman özeti").assertIsDisplayed()
+        composeRule.onNodeWithTag("workout-finish-action").assertDoesNotExist()
+        composeRule.onNodeWithTag("workout-add-set-action").assertDoesNotExist()
+        composeRule.onNodeWithText("Sil").assertDoesNotExist()
+    }
+
+    @Test
+    fun activeWorkout_atTwoHundredPercentFontScaleKeepsPrimaryActionsReachable() {
+        composeRule.setContent {
+            val density = LocalDensity.current
+            CompositionLocalProvider(
+                LocalDensity provides Density(density.density, fontScale = 2f)
+            ) {
+                GymTrackerTheme(darkTheme = false) {
+                    WorkoutDetailContent(
+                        session = session(
+                            id = 11,
+                            name = "Büyük Yazı Seansı",
+                            status = WorkoutStatus.ACTIVE
+                        ),
+                        sets = listOf(workoutSet(sessionId = 11)),
+                        onBack = {},
+                        onFinishRequest = {},
+                        onAddSetRequest = {},
+                        onDeleteSet = {}
+                    )
+                }
+            }
+        }
+
+        composeRule.onNodeWithTag("workout-detail-active").assertIsDisplayed()
+        composeRule.onNodeWithTag("workout-finish-action").assertIsDisplayed()
+        composeRule.onNodeWithTag("workout-add-set-action").assertIsDisplayed()
+        composeRule.onNodeWithText("Sil").assertIsDisplayed()
+    }
+
+    private fun session(
+        id: Long,
+        name: String,
+        status: WorkoutStatus,
+        completedAt: Long? = null,
+        durationMinutes: Int = 0
+    ) = WorkoutSession(
+        id = id,
+        name = name,
+        date = 1_000,
+        durationMinutes = durationMinutes,
+        status = status,
+        completedAt = completedAt
+    )
+
+    private fun workoutSet(sessionId: Long) = WorkoutSet(
+        id = 3,
+        sessionId = sessionId,
+        exerciseName = "Bench Press",
+        setNumber = 1,
+        reps = 8,
+        weightKg = 60f
+    )
+}

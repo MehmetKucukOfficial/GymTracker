@@ -20,7 +20,8 @@ tags: [gymtracker/architecture, gymtracker/state]
 
 - Home: workout + measurement + günün nutrition Room Flow’ları `HomeDashboardRepository.combine` ile tek state üretir.
 - Home ViewModel: `Loading/Content/Error`, retry ve yerel gece yarısında period Flow’unu `flatMapLatest` ile yeniden kurma uygular.
-- Workout/program list ve detail: repository Flow → ViewModel `stateIn(WhileSubscribed)`; detail ID `SavedStateHandle` kaynağındandır.
+- Workout: active/completed Room Flow’ları ayrı state üretir; detail ID `SavedStateHandle` kaynağındandır. Mutation repository/transaction sınırından geçer ve hata state’i UI’da gösterilir.
+- Program list ve detail: repository Flow → ViewModel `stateIn(WhileSubscribed)`; detail ID `SavedStateHandle` kaynağındandır.
 - Bütün ana Compose ekranları `collectAsStateWithLifecycle()` kullanır.
 - Gün sınırı sabit 86.400.000 ms yerine `ZoneId` + takvim günü ile hesaplanır; tarihsel Istanbul DST unit testi vardır.
 
@@ -29,7 +30,6 @@ tags: [gymtracker/architecture, gymtracker/state]
 - Fatigue: init sırasında tek suspend query; reaktif değil.
 - Nutrition selected day gece yarısında otomatik tick ile yeniden kurulmaz.
 - Home rollover çalışır; Clock/ZoneId injection, timezone-change gözlemi ve deterministik ViewModel testi bekler.
-- Workout ACTIVE/COMPLETED ayrımı şemada olmadığı için geçmiş detay hâlâ düzenlenebilir.
 
 ## Sorun grafı
 
@@ -42,6 +42,8 @@ flowchart TD
     F --> R
     R --> U[HomeUiState]
     U --> UI[Lifecycle-aware Home]
+    A[Active workout Flow] --> R
+    A --> CTA[Resume CTA by session ID]
 ```
 
 ## Hedef desen
@@ -55,9 +57,9 @@ flowchart TD
 
 ## İlk dönüşümler
 
-1. [[FEATURE_WORKOUT]] — status/read-only detail ve active session sözleşmesi.
+1. [[FEATURE_WORKOUT]] — status/read-only detail ve active session sözleşmesi tamamlandı.
 2. [[FEATURE_NUTRITION]] — selectedDate setter, Clock ve DST-safe range.
-3. [[FEATURE_MUSCLE_LOAD]] — son N günlük set Flow.
-4. [[FEATURE_HOME]] — Clock injection ve aktif-seans CTA entegrasyonu.
+3. [[FEATURE_MUSCLE_LOAD]] — son N günlük tamamlanmış set Flow.
+4. [[FEATURE_HOME]] — Clock injection; aktif-seans CTA entegrasyonu tamamlandı.
 
 Test eşleşmesi: [[TEST_MATRIX#ViewModel ve state]].

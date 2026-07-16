@@ -6,14 +6,24 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "workout_sessions")
+@Entity(
+    tableName = "workout_sessions",
+    indices = [Index("status")]
+)
 data class WorkoutSession(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String,
     val date: Long = System.currentTimeMillis(),
     val durationMinutes: Int = 0,
-    val notes: String = ""
+    val notes: String = "",
+    @ColumnInfo(defaultValue = "'ACTIVE'") val status: WorkoutStatus = WorkoutStatus.ACTIVE,
+    val completedAt: Long? = null
 )
+
+enum class WorkoutStatus {
+    ACTIVE,
+    COMPLETED
+}
 
 @Entity(
     tableName = "workout_sets",

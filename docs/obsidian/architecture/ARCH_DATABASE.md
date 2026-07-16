@@ -3,7 +3,7 @@ type: architecture
 status: current
 implementation_status: current
 verified_commit: a8e019e
-updated: 2026-07-14
+updated: 2026-07-15
 source_files:
   - app/src/main/java/com/gymtracker/data/entities/Entities.kt
   - app/src/main/java/com/gymtracker/data/database/AppDatabase.kt
@@ -17,6 +17,8 @@ tags: [gymtracker/architecture, gymtracker/data]
 ---
 
 > Update (2026-07-14, v5): `ProgressPhoto` için `mimeType`, `sizeBytes` ve `storageVersion` kolonları eklendi. `MIGRATION_4_5`, v3→v5 fixture koruma testi ve v3/v4/v5 schema JSON’ları kaynak kontrolündedir. Legacy fotoğraflar `storageVersion=0`, yeni app-owned importlar `storageVersion=1` olur.
+
+> Update (2026-07-15, v6): `WorkoutSession.status`, nullable `completedAt` ve status index’i eklendi. `MIGRATION_5_6` legacy workout’ları veri kaybetmeden `COMPLETED` yapar; v3→v6 fixture ve repository transaction testleri API 34’te geçer. Karar: [[ADR_006_WORKOUT_SESSION_LIFECYCLE]].
 
 > Implementation update (2026-07-14): `exportSchema=true`; v3 schema hash `bb80650678afbc615c5dec81809ab042` is stored under `app/schemas`; `fallbackToDestructiveMigration()` is removed; migrations are registered through `DatabaseMigrations.ALL`. [[DatabaseMigrationTest]] and [[WorkoutDaoTest]] pass on the API 34 emulator. v3 is the minimum evidence-backed migration baseline.
 
@@ -34,6 +36,8 @@ erDiagram
       string name
       long date
       int durationMinutes
+      string status
+      long completedAt
     }
     WorkoutSet {
       long id PK
@@ -70,9 +74,10 @@ erDiagram
 
 ## Kritik mevcut gerçekler
 
-- DB version 5, `exportSchema=true`; v3, v4 ve v5 schema JSON’ları version control altında.
+- DB version 6, `exportSchema=true`; v3, v4, v5 ve v6 schema JSON’ları version control altında.
 - Destructive fallback kaldırıldı; bilinmeyen sürümler veri silmek yerine fail-closed davranır.
-- `DatabaseMigrations.ALL`, 3→4 ve 4→5 kenarlarını kaydeder; v3→latest satır koruma testi API 34’te geçer.
+- `DatabaseMigrations.ALL`, 3→4, 4→5 ve 5→6 kenarlarını kaydeder; v3→latest satır koruma/status testi API 34’te geçer.
+- Workout yazma yolu tek transaction içinde start-or-resume uygular; set/finish mutation’ları `status='ACTIVE'` koşuluyla korunur.
 - `ProgramWorkout.exercises` JSON string.
 - Tarih kolonlarında index yok.
 - `WorkoutDao.getSetsSince()` içindeki `date(sessionId)` semantik olarak yanlış ve kullanılmıyor.
@@ -82,7 +87,7 @@ erDiagram
 ## Hedef değişiklikler
 
 - [[ADR_003_EXPLICIT_ROOM_MIGRATIONS]]
-- Workout status/startedAt/finishedAt/exerciseId/position
+- Workout için `startedAt` adlandırmasını netleştirme, exerciseId/position ve gerekirse DB seviyesinde partial unique active index
 - ProgramDayExercise ilişkisel tablo
 - Program seedKey/contentVersion unique
 - Photo thumbnail/dimension/media-transform metadata ve legacy re-import UX

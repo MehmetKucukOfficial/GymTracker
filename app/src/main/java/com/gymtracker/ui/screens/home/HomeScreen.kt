@@ -123,7 +123,17 @@ fun HomeContent(
             ) {
                 HomeHeader(greeting = greeting)
                 Spacer(Modifier.height(GtSpacing.lg))
-                StartWorkoutCard(onClick = { onNavigate(Screen.Workout.route) })
+                val dashboard = (uiState as? HomeUiState.Content)?.dashboard
+                StartWorkoutCard(
+                    activeWorkoutName = dashboard?.activeWorkoutName,
+                    onClick = {
+                        val activeId = dashboard?.activeWorkoutId
+                        onNavigate(
+                            if (activeId != null) Screen.WorkoutDetail.createRoute(activeId)
+                            else Screen.Workout.route
+                        )
+                    }
+                )
                 Spacer(Modifier.height(GtSpacing.xl))
 
                 when (uiState) {
@@ -188,7 +198,20 @@ private fun HomeHeader(greeting: String) {
 }
 
 @Composable
-private fun StartWorkoutCard(onClick: () -> Unit) {
+private fun StartWorkoutCard(
+    activeWorkoutName: String?,
+    onClick: () -> Unit
+) {
+    val title = if (activeWorkoutName != null) {
+        stringResource(R.string.home_resume_workout)
+    } else {
+        stringResource(R.string.home_start_workout)
+    }
+    val supportingText = if (activeWorkoutName != null) {
+        stringResource(R.string.home_resume_workout_support, activeWorkoutName)
+    } else {
+        stringResource(R.string.home_start_workout_support)
+    }
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
         shape = MaterialTheme.shapes.large
@@ -199,12 +222,12 @@ private fun StartWorkoutCard(onClick: () -> Unit) {
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(GtSpacing.xs)) {
                 Text(
-                    text = stringResource(R.string.home_start_workout),
+                    text = title,
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
                 Text(
-                    text = stringResource(R.string.home_start_workout_support),
+                    text = supportingText,
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
@@ -219,7 +242,7 @@ private fun StartWorkoutCard(onClick: () -> Unit) {
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 )
             ) {
-                Text(stringResource(R.string.home_start_workout))
+                Text(title)
                 Spacer(Modifier.width(GtSpacing.xs))
                 Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null)
             }

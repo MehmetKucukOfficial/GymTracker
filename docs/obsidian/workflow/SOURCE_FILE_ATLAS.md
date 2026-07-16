@@ -26,16 +26,17 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 
 | Dosya | Sorumluluk | Kullanan |
 |---|---|---|
-| `data/entities/Entities.kt` | 9 Room entity + enum | bütün feature’lar |
-| `data/database/AppDatabase.kt` | DB v5 + converter + DAO registry | [[ARCH_DATABASE]] |
-| `data/dao/WorkoutDao.kt` | session/set queries | Home, Workout, Load |
+| `data/entities/Entities.kt` | 9 Room entity + status/meal enum’ları | bütün feature’lar |
+| `data/database/AppDatabase.kt` | DB v6 + converter + DAO registry | [[ARCH_DATABASE]] |
+| `data/database/DatabaseMigrations.kt` | explicit 3→4→5→6 migration zinciri | [[ARCH_DATABASE]] |
+| `data/dao/WorkoutDao.kt` | active/completed session, status-korumalı set/finish transaction’ları | Home, Workout, Load |
 | `data/dao/MeasurementDao.kt` | measurement queries | Home, Measurements |
 | `data/dao/NutritionDao.kt` | food/entry/goal queries | Home, Nutrition |
 | `data/dao/ProgressPhotoDao.kt` | photo queries | Photos |
 | `data/dao/ProgramDao.kt` | program/day queries | Programs |
 | `di/DatabaseModule.kt` | Room singleton + DAO providers | bütün ViewModel’ler |
-| `data/home/HomeDashboardRepository.kt` | workout/measurement/nutrition Flow combine | Home |
-| `data/workout/WorkoutRepository.kt` | workout list/detail ve mutation sınırı | Workout |
+| `data/home/HomeDashboardRepository.kt` | completed/active workout + measurement + nutrition Flow combine | Home |
+| `data/workout/WorkoutRepository.kt` | tek aktif start/resume, detail ve status-korumalı mutation sınırı | Workout |
 | `data/programs/ProgramRepository.kt` | program list/detail ve purchase sınırı | Programs |
 | `data/photos/ProgressPhotoRepository.kt` | app-owned fotoğraf import/delete sınırı | Photos |
 
@@ -71,8 +72,16 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 
 | Dosya | Rol |
 |---|---|
-| `ui/screens/workout/WorkoutViewModel.kt` | SavedStateHandle ID + repository list/detail state |
-| `ui/screens/workout/WorkoutScreen.kt` | list + tam ekran ID detail/dialog/set UI |
+| `ui/screens/workout/WorkoutViewModel.kt` | active/completed list, SavedStateHandle detail ve mutation error state |
+| `ui/screens/workout/WorkoutScreen.kt` | adaptive aktif/geçmiş listesi + salt-okunur veya editable ID detail |
+
+## Kritik test dosyaları
+
+| Dosya | Güvence |
+|---|---|
+| `data/database/DatabaseMigrationTest.kt` | v3→latest satır/status koruması |
+| `data/workout/WorkoutRepositoryTest.kt` | eşzamanlı tek aktif + finish sonrası read-only |
+| `ui/screens/workout/WorkoutScreenTest.kt` | aktif/geçmiş, read-only, light/dark ve %200 font |
 
 ## Nutrition
 

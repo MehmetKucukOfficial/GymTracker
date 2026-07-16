@@ -36,8 +36,8 @@ Graf: [[DESIGN_SYSTEM_GRAPH]], [[SCREEN_BLUEPRINT_GRAPH]].
 ## Workout set/session modeli
 
 Oku: Workout feature + DAO/entity + Home + Muscle Load + Programs.
-Test: active/resume/finish, program copy, Home update, load calculation.
-Graf: [[FEATURE_WORKOUT]], [[FEATURE_HOME]], [[FEATURE_MUSCLE_LOAD]], [[FEATURE_PROGRAMS]].
+Test: `DatabaseMigrationTest`, `WorkoutRepositoryTest`, `WorkoutScreenTest`, `HomeDashboardRepositoryTest`; active/resume/finish/read-only, program copy, Home update, load calculation.
+Graf: [[ADR_006_WORKOUT_SESSION_LIFECYCLE]], [[FEATURE_WORKOUT]], [[FEATURE_HOME]], [[FEATURE_MUSCLE_LOAD]], [[FEATURE_PROGRAMS]].
 
 ## Exercise adı/kütüphanesi
 
