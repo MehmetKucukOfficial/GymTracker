@@ -2,7 +2,7 @@
 type: roadmap
 status: current
 implementation_status: active
-verified_commit: a2586d1
+verified_commit: a573ab9
 updated: 2026-07-16
 tags: [gymtracker/roadmap, gymtracker/workflow]
 ---
@@ -140,8 +140,17 @@ Durum: `a2586d1` kod commit’i `codex/release-performance` dalında PR15’i he
 Çıktı: protected production workflow, fail-fast dört secret, runner-temp keystore, APK v2/v3 + AAB JAR signature doğrulaması; generated Baseline/Startup Profile; startup/Home scroll/Workout macrobenchmark.
 Kabul: `ciQuality`, 54/54 API 34 regresyon; 2/2 profil üretici; 4 macrobenchmark senaryosu; dummy keystore ile signed releaseDistribution yeşil. Gerçek secret/Play smoke ve fiziksel-device performans kabulü operasyonel takip.
 
+## PR 17 — Workout/Programs list-detail + golden expansion
+
+Node: [[ARCH_NAVIGATION]], [[DESIGN_SYSTEM_GRAPH]], [[FEATURE_WORKOUT]], [[FEATURE_PROGRAMS]], [[TEST_MATRIX]].
+Durum: `a573ab9` kod commit’i `codex/list-detail-goldens` dalında PR16’yı hedefleyen stacked draft PR #10 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/10
+Çıktı: ortak 840 dp `GtListDetailScaffold`; compact ID-route davranışını koruyan Workout/Programs expanded seçim + özet panelleri; saved selection; selected semantics; English/light Programs ve Turkish/dark/%130 Workout kalıcı golden’ları.
+Kabul: 30 JVM + 58 API 34 instrumentation testi; `ciQuality`, lint, debug ve minified release/profile kapısı başarılı; 356/356 TR/EN kaynak eşitliği.
+
 ## Sonraki dikey dilim
 
-1. PR17 feature list-detail + golden kapsam genişletme
+1. Production secret + Play internal-track smoke ve fiziksel cihaz performans kabulü
+2. Harici deep link + gerçek OS process-death kabul paketi
+3. Kalan kritik ekran/state golden kapsamı ve ortak top-app-bar/feedback bileşenleri
 
 Detaylı süre: [[GELISTIRME_MASTER_PLANI#18. Fazlar ve süre tahmini]]. Aktif durum: [[SESSION_HANDOFF]].

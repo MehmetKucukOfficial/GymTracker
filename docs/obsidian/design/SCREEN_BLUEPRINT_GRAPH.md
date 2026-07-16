@@ -2,8 +2,8 @@
 type: design
 status: current
 implementation_status: mixed
-verified_commit: 9c90471
-updated: 2026-07-15
+verified_commit: a573ab9
+updated: 2026-07-16
 tags: [gymtracker/design, gymtracker/feature]
 ---
 
@@ -13,13 +13,13 @@ tags: [gymtracker/design, gymtracker/feature]
 
 Uygulandı: başlat CTA → açıklayıcı empty → haftalık/toplam/nutrition/measurement metrikleri → hızlı işlemler → son workout. Veri yoksa sahte `0` yok; loading/error ayrıdır. Aktif-seans “Devam et” CTA’sı ve gerçek trend datasına dayalı mini grafik [[FEATURE_WORKOUT]] status modelinden sonra eklenecek. Kaynak: [[FEATURE_HOME]].
 
-## Aktif workout
+## Antrenman
 
-Tam ekran; timer; exercise card; previous/kg/reps/complete set row; add/copy/delete; rest timer; auto-save; finish summary. Kaynak: [[FEATURE_WORKOUT]].
+Uygulandı: compact aktif/geçmiş liste → ID tabanlı tam ekran detail; 840 dp+ seçili seans özeti; planned/kg/reps completion; add/delete; auto-save; read-only completed summary. Timer, previous values, edit/undo, rest timer ve gelişmiş finish summary sonraki üründür. Kaynak: [[FEATURE_WORKOUT]].
 
 ## Programlar
 
-Uygulandı: adaptive program kart grid’i; free/demo erişim badge’i; ID detail; ilişkisel gün accordion’ı; gün bazlı “Bu antrenmana başla”; locked/empty/error state; light/dark/%200 font. Program günü gerçek ACTIVE workout’a planlanan setler olarak aktarılır. Filtreleme, program ilerleme takvimi ve expanded list-detail sonraki üründür. Kaynak: [[FEATURE_PROGRAMS]].
+Uygulandı: adaptive program kart grid’i; 840 dp+ seçili program özeti; free/demo erişim badge’i; ID detail; ilişkisel gün accordion’ı; gün bazlı “Bu antrenmana başla”; locked/empty/error state; light/dark/%200 font. Program günü gerçek ACTIVE workout’a planlanan setler olarak aktarılır. Filtreleme ve program ilerleme takvimi sonraki üründür. Kaynak: [[FEATURE_PROGRAMS]].
 
 ## Beslenme
 
@@ -33,9 +33,9 @@ Uygulandı: token tabanlı Overview kartları; Measurements latest/edit/delete-u
 
 - Compact: bottom navigation; Home normal fontta iki metrik kolonu, %200 fontta tek kolon
 - Medium: navigation rail, 2 kolon uygun yerlerde
-- Expanded: rail/drawer + list-detail
+- Expanded 840 dp+: rail + Workout/Programs list-detail
 - Active workout compact dahil alt barı gizler
 
-PR7’de Home içeriği 720 dp üstünde dört metrik kolonuna geçer; navigation rail/drawer uygulama shell’i henüz uygulanmadı.
+Home içeriği 720 dp üstünde dört metrik kolonuna geçer; shell 600 dp+ rail, Workout/Programs ise 840 dp+ list-detail kullanır. Drawer henüz gerekli görülmedi.
 
 Tam ekran wireframe ve token’lar: [[GELISTIRME_MASTER_PLANI#7. Ekran bazlı UX/UI planı]].

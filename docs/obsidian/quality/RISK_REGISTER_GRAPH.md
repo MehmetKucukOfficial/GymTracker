@@ -2,7 +2,7 @@
 type: risk-register
 status: current
 implementation_status: current
-verified_commit: a2586d1
+verified_commit: a573ab9
 updated: 2026-07-16
 tags: [gymtracker/risk, gymtracker/quality]
 ---
@@ -23,9 +23,9 @@ tags: [gymtracker/risk, gymtracker/quality]
 | R10 | P1 | mitigated-core+ | UI kas yükü/seviye/skor olarak adlandırıldı; formül açık ve sıfır kilolu setler son ölçümle kalibre edilir. Stable-ID load projeksiyonu, hareket katsayısı ve kişisel hacim baseline’ı açık | [[FEATURE_MUSCLE_LOAD]] | [[ADR_005_MUSCLE_LOAD_NAMING]] |
 | R11 | P1 | mitigated-core | Workout, Nutrition, Measurements ve Programs input/mutation doğrulandı; Nutrition/Measurements edit-delete-undo kimliği ve snapshot’ı testli | bütün feature’lar | shared validator + [[ADR_008_SNAPSHOT_SAFE_EDIT_UNDO]] |
 | R12 | P2 | resolved-core (v7) | Program aktif okuma modeli ilişkisel; JSON yalnız kayıpsız legacy fallback ve bozuk payload UI’da güvenli boş state | [[ARCH_DATABASE]] | [[ADR_007_RELATIONAL_PROGRAM_PLANS]] |
-| R13 | P2 | resolved-core | 5 hedefli compact bottom bar ve 600 dp+ adaptive rail aynı seçim/save-restore sözleşmesini kullanıyor; feature list-detail iyileştirmesi açık | [[ARCH_NAVIGATION]] | [[ADR_002_FIVE_TARGET_NAVIGATION]] |
+| R13 | P2 | resolved+ | 5 hedefli compact bottom bar, 600 dp+ rail ve 840 dp+ Workout/Programs liste–detay aynı route sahipliği/save-restore sözleşmesini kullanıyor | [[ARCH_NAVIGATION]] | [[ADR_002_FIVE_TARGET_NAVIGATION]] |
 | R14 | P2 | mitigated+ | Permission azaltıldı; hassas progress fotoğrafları cloud backup/device transfer dışında | [[ARCH_BUILD_DI]] | permission + extraction rules |
-| R15 | P2 | mitigated+ | Uygulama geneli 350/350 TR/EN kaynak, locale-aware kas/para biçimi, adaptive shell, semantics ve ilk kalıcı golden baseline aktif; bütün ekranlara golden ve list-detail yayılımı açık | [[DESIGN_SYSTEM_GRAPH]] | design DoD |
+| R15 | P2 | mitigated++ | Uygulama geneli 356/356 TR/EN kaynak, adaptive shell, 840 dp+ Workout/Programs list-detail, selected semantics ve dört kalıcı golden aktif; kalan kritik ekran/state golden yayılımı açık | [[DESIGN_SYSTEM_GRAPH]] | design DoD |
 | R16 | P1 | mitigated-config | Protected environment, fail-fast secrets, geçici keystore, APK/AAB imza doğrulaması ve artifact kapısı tanımlı; gerçek production secret + Play internal-track smoke’u açık | [[ADR_009_SECRET_BACKED_RELEASES]] | production environment + release smoke |
 | R17 | P1 | partial | Baseline/Startup Profile ve macrobenchmark CUJ’ları üretildi; emülatör yalnız karşılaştırma baseline’ı, fiziksel referans cihaz kabulü yapılmadı | [[PERFORMANCE_BASELINE]] | physical release benchmark |
 

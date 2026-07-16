@@ -2,8 +2,8 @@
 type: moc
 status: current
 implementation_status: mixed
-verified_commit: 4d0cad8
-updated: 2026-07-15
+verified_commit: a573ab9
+updated: 2026-07-16
 tags: [gymtracker/moc, gymtracker/design]
 ---
 
@@ -19,10 +19,11 @@ tags: [gymtracker/moc, gymtracker/design]
 
 1. Tema token’ları ve ortak Home bileşenleri — tamamlandı
 2. Home referans ekranı — tamamlandı
-3. Adaptive scaffold/navigation rail — bekliyor
-4. Aktif workout kritik akışı
-5. Nutrition ve Progress hub
-6. Programs ve kas yükü
-7. Accessibility/golden/performance sweep
+3. Adaptive shell/navigation rail — tamamlandı
+4. Aktif workout kritik akışı — çekirdek tamamlandı
+5. Nutrition ve Progress hub — çekirdek tamamlandı
+6. Programs ve kas yükü — çekirdek tamamlandı
+7. Workout/Programs 840 dp list-detail — tamamlandı
+8. Accessibility/golden/performance sweep — aktif; dört golden ve Baseline Profile mevcut
 
 Tasarım değişikliği yapılırken [[CHANGE_IMPACT_MAP#Theme veya ortak Compose bileşeni]] okunur.

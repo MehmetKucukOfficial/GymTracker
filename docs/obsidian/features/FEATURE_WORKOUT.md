@@ -2,10 +2,11 @@
 type: feature
 status: current
 implementation_status: current
-verified_commit: a8e019e
-updated: 2026-07-15
+verified_commit: a573ab9
+updated: 2026-07-16
 source_files:
   - app/src/main/java/com/gymtracker/ui/screens/workout/WorkoutScreen.kt
+  - app/src/main/java/com/gymtracker/ui/components/GymTrackerComponents.kt
   - app/src/main/java/com/gymtracker/ui/screens/workout/WorkoutViewModel.kt
   - app/src/main/java/com/gymtracker/data/dao/WorkoutDao.kt
   - app/src/main/java/com/gymtracker/data/workout/WorkoutRepository.kt
@@ -22,6 +23,8 @@ tags: [gymtracker/feature, gymtracker/feature/workout]
 
 Tek bir `ACTIVE` session başlatır veya devam ettirir; 82 egzersiz kütüphanesinden doğrulanmış set ekler/siler, süre ve notla bitirip `COMPLETED` yapar ve geçmişi salt okunur gösterir. Liste `workouts`, detay `workouts/{sessionId}` route’undadır. Home ve Workout CTA’ları aktif ID varsa aynı detaya devam eder; detail recreation sonrası aynı ID’den yeniden yüklenir.
 
+840 dp altında seans kartları mevcut `workouts/{sessionId}` rotasına doğrudan gider. 840 dp+ düzende liste ve seçili seans özeti birlikte görünür; kart seçimi rotayı değiştirmez, özet panelindeki eylem aynı kararlı ID detayını açar. Seçim `rememberSaveable` ile korunur; kompakt back/full-screen detay sözleşmesi değişmez.
+
 ## Mevcut state
 
 - `activeSession`: DAO status Flow → repository → ViewModel `stateIn`.
@@ -35,7 +38,7 @@ Tek bir `ACTIVE` session başlatır veya devam ettirir; 82 egzersiz kütüphanes
 - Activity recreation ve route ID testi geçer; tam process death ayrıca smoke edilmelidir.
 - DB, status alanında tek-active unique constraint taşımıyor; garanti uygulamanın tek transaction yazma yoluna dayanır. Çok süreçli/yabancı DB writer desteği eklenirse partial unique index gerekir.
 - Set validation var; unique sıra/edit/undo yok.
-- `isCompleted` UI’da kullanılmıyor.
+- `isCompleted` aktif detaydaki planlanan set tamamlama durumunda kullanılır.
 - Exercise string ID olarak kullanılır.
 
 ## Hedef model
@@ -54,7 +57,8 @@ Tek bir `ACTIVE` session başlatır veya devam ettirir; 82 egzersiz kütüphanes
 ## Zorunlu testler
 
 - Geçen: eşzamanlı start/resume → tek ID; add/delete/finish yalnızca ACTIVE; finish sonrası salt-okunur; legacy v3→v6; Home completed/active ayrımı.
-- Geçen: Compose aktif/geçmiş ayrımı, salt-okunur mutation yokluğu, light/dark ve %200 font; API 34 activity recreation/route ID.
-- Bekleyen: gerçek OS process death, cancel/abandon UX, set edit/undo, golden screenshot diff.
+- Geçen: Compose aktif/geçmiş ayrımı, salt-okunur mutation yokluğu, light/dark ve %200 font; 840 dp+ liste–özet seçimi ve kararlı-ID açık eylemi; API 34 activity recreation/route ID.
+- Geçen: Turkish/dark/%130 1000×700 workout liste–özet pixel-golden karşılaştırması.
+- Bekleyen: gerçek OS process death, cancel/abandon UX ve set edit/undo.
 
 Tasarım: [[SCREEN_BLUEPRINT_GRAPH#Aktif workout]]. Yol haritası: [[GELISTIRME_MASTER_PLANI#Faz 4 — Workout deneyimi (8–12 gün)]].

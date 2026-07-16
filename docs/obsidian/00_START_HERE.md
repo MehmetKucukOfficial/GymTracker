@@ -3,7 +3,7 @@ aliases: [GymTracker Graph Start, Başlangıç]
 type: moc
 status: current
 implementation_status: mixed
-verified_commit: a2586d1
+verified_commit: a573ab9
 updated: 2026-07-16
 tags: [gymtracker/moc, gymtracker/graph]
 ---
@@ -21,7 +21,8 @@ tags: [gymtracker/moc, gymtracker/graph]
 - Local-first; backend ve gerçek ödeme yok
 - 5 ana navigation hedefi, 3 İlerleme alt hedefi, ID tabanlı workout/program detayları
 - 82 benzersiz egzersiz, 108 hazır program egzersiz referansı
-- `ciQuality` debug + minified release APK/AAB üretir; 28 JVM + 54 cihaz testi geçiyor; lint 0 hata
+- `ciQuality` debug + minified release APK/AAB üretir; 30 JVM + 58 cihaz testi geçiyor; lint 0 hata
+- Workout ve Programs compact’ta ID rotası, 840 dp+ genişlikte ortak liste–özet kullanır; dört kalıcı golden baseline vardır
 - Destructive migration, yeni fotoğraf URI kaybı, seed race ve temel navigation/state riskleri kapatıldı veya azaltıldı
 
 ## Ana haritalar
@@ -67,8 +68,8 @@ tags: [gymtracker/moc, gymtracker/graph]
 
 ## Grafın güncellik durumu
 
-- Kod baseline: `a2586d1` (`codex/release-performance`, PR15 üstüne stacked draft PR #9)
-- Kod değişikliği: secret-backed signed release kapısı, APK/AAB imza + embedded profile doğrulaması ve startup/Home/Workout Baseline Profile + macrobenchmark altyapısı yerelde doğrulandı
-- Dokümanlar: PR16 release/performance/ADR/test/risk/roadmap sözleşmeleriyle senkron
+- Kod baseline: `a573ab9` (`codex/list-detail-goldens`, PR16’yı hedefleyen stacked draft PR #10)
+- Kod değişikliği: 840 dp ortak list-detail; Workout/Programs selection preview + mevcut ID detail eylemi; iki yeni kalıcı golden yerelde doğrulandı
+- Dokümanlar: PR17 navigation/design/feature/test/risk/roadmap sözleşmeleriyle senkron
 - Son tam doğrulama: 2026-07-16
-- Aktif önerilen iş: PR16 hosted CI’ını izle; eşzamanlı olarak PR17 list-detail + golden kapsamına geç
+- Aktif önerilen iş: PR17 hosted run `29474876318` sonucunu doğrula; sonra kullanıcı komutunu bekle

@@ -2,7 +2,7 @@
 type: atlas
 status: current
 implementation_status: active
-verified_commit: a2586d1
+verified_commit: a573ab9
 updated: 2026-07-16
 tags: [gymtracker/workflow, gymtracker/source-map]
 ---
@@ -68,7 +68,7 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | `ui/components/MuscleBodyMap.kt` | bitmap overlay/hit test | [[FEATURE_MUSCLE_LOAD]] |
 | `ui/theme/Theme.kt` | light/dark Material renk şeması + fatigue color | [[DESIGN_SYSTEM_GRAPH]] |
 | `ui/theme/DesignTokens.kt` | type/spacing/shape/size tokenları | [[DESIGN_SYSTEM_GRAPH]] |
-| `ui/components/GymTrackerComponents.kt` | metric/action/section/loading/empty/error ortak UI | [[DESIGN_SYSTEM_GRAPH]] |
+| `ui/components/GymTrackerComponents.kt` | metric/action/state ortak UI + 840 dp liste-only/list-detail iskeleti | [[DESIGN_SYSTEM_GRAPH]] |
 
 ## Home
 
@@ -83,7 +83,7 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | Dosya | Rol |
 |---|---|
 | `ui/screens/workout/WorkoutViewModel.kt` | active/completed list, SavedStateHandle detail ve mutation error state |
-| `ui/screens/workout/WorkoutScreen.kt` | adaptive aktif/geçmiş listesi + salt-okunur veya editable ID detail |
+| `ui/screens/workout/WorkoutScreen.kt` | compact ID-route + 840 dp liste–özet; salt-okunur veya editable ID detail |
 
 ## Kritik test dosyaları
 
@@ -91,7 +91,7 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 |---|---|
 | `data/database/DatabaseMigrationTest.kt` | v3→latest satır/status koruması |
 | `data/workout/WorkoutRepositoryTest.kt` | eşzamanlı tek aktif + finish sonrası read-only |
-| `ui/screens/workout/WorkoutScreenTest.kt` | aktif/geçmiş, read-only, light/dark ve %200 font |
+| `ui/screens/workout/WorkoutScreenTest.kt` | aktif/geçmiş, expanded selection/ID action, read-only, light/dark ve %200 font |
 
 ## Nutrition
 
@@ -123,7 +123,7 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | Dosya | Rol |
 |---|---|
 | `ui/screens/programs/ProgramsViewModel.kt` | SavedStateHandle ID + list/detail/start UiState ve typed mesaj |
-| `ui/screens/programs/ProgramsScreen.kt` | adaptive list/detail/demo erişim/ilişkisel plan/start UI |
+| `ui/screens/programs/ProgramsScreen.kt` | compact ID-route + 840 dp list-detail/state restore; demo erişim/ilişkisel plan/start UI |
 
 ## Muscle load
 
@@ -137,7 +137,7 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 - `res/drawable-nodpi/body_*.png`: 2 × 470×836 body image
 - `res/drawable-nodpi/mask_*.png`: 38 kullanılan maske
 - `res/values/strings.xml`, `res/values-en/strings.xml`: uygulama geneli eş anahtarlı Türkçe/English string ve plural katalogları
-- `androidTest/assets/goldens/`, `ui/golden/*`: API 34 kalıcı pixel-golden baseline ve karşılaştırıcı
+- `androidTest/assets/goldens/`, `ui/golden/*`: API 34 Progress Hub + Programs/Workout kalıcı pixel-golden baseline ve karşılaştırıcı
 - `res/values/themes.xml`, `res/values-night/themes.xml`: light/dark launch/platform theme
 - `res/xml/backup_rules.xml`, `data_extraction_rules.xml`: progress fotoğraflarını backup/transfer dışında tutar
 
