@@ -74,6 +74,18 @@ class ProcessDeathNavigationTest {
         device.pressHome()
         device.waitForIdle()
 
+        // Android protects the immediately previous app at a stronger OOM adjustment. Opening a
+        // second system task moves the target from "previous" to a cached/background process, so
+        // `am kill` has deterministic platform semantics on both local and hosted emulators.
+        val settingsOutput = device.executeShellCommand(
+            "am start -W -a android.settings.SETTINGS"
+        )
+        assertTrue(
+            "System Settings could not be opened to background the target task: $settingsOutput",
+            settingsOutput.contains("Status: ok")
+        )
+        device.waitForIdle()
+
         device.executeShellCommand("am kill $PACKAGE_NAME")
         assertTrue(
             "Target process $originalPid was not killed while its task was backgrounded",
