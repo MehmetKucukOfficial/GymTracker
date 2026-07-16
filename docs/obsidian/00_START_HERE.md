@@ -3,7 +3,7 @@ aliases: [GymTracker Graph Start, Başlangıç]
 type: moc
 status: current
 implementation_status: mixed
-verified_commit: 41c2ceb
+verified_commit: abd3fbe
 updated: 2026-07-16
 tags: [gymtracker/moc, gymtracker/graph]
 ---
@@ -21,7 +21,7 @@ tags: [gymtracker/moc, gymtracker/graph]
 - Local-first; backend ve gerçek ödeme yok
 - 5 ana navigation hedefi, 3 İlerleme alt hedefi, ID tabanlı workout/program detayları
 - 82 benzersiz egzersiz, 108 hazır program egzersiz referansı
-- Debug build başarılı; 28 JVM + 54 cihaz testi geçiyor; lint 0 hata
+- `ciQuality` debug + minified release APK/AAB üretir; 28 JVM + 54 cihaz testi geçiyor; lint 0 hata
 - Destructive migration, yeni fotoğraf URI kaybı, seed race ve temel navigation/state riskleri kapatıldı veya azaltıldı
 
 ## Ana haritalar
@@ -67,8 +67,8 @@ tags: [gymtracker/moc, gymtracker/graph]
 
 ## Grafın güncellik durumu
 
-- Kod baseline: `41c2ceb` (`codex/adaptive-locale-goldens`, PR13 üstüne stacked draft PR #7)
-- Kod değişikliği: uygulama geneli TR/EN kaynak eşitliği, locale-aware gösterim, compact bottom bar + 600 dp+ rail, erişilebilir Progress Hub ve kalıcı golden baseline doğrulandı
-- Dokümanlar: PR14 navigation/design/locale/test/risk/roadmap sözleşmeleriyle senkron
+- Kod baseline: `abd3fbe` (`codex/ci-release-hardening`, PR14 üstüne stacked draft PR #8)
+- Kod değişikliği: tek yerel/CI kalite kapısı, KVM hızlandırmalı GitHub Actions quality + API 34 device job’ları ve R8/resource-shrunk release APK/AAB/mapping üretimi yerel ve hosted koşuda doğrulandı
+- Dokümanlar: PR15 build/CI/release/test/risk/roadmap sözleşmeleriyle senkron
 - Son tam doğrulama: 2026-07-16
-- Aktif önerilen iş: kullanıcı komutunu bekle; PR15’e otomatik geçme
+- Aktif önerilen iş: PR15 tamamlandı; PR16 kapsamını başlatmadan kullanıcı komutunu bekle

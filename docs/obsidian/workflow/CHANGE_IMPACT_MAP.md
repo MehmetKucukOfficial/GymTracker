@@ -2,7 +2,7 @@
 type: workflow
 status: current
 implementation_status: active
-verified_commit: 41c2ceb
+verified_commit: abd3fbe
 updated: 2026-07-16
 tags: [gymtracker/workflow, gymtracker/impact]
 ---
@@ -77,8 +77,8 @@ Graf: [[FEATURE_NUTRITION]], [[FEATURE_MEASUREMENTS]], [[ADR_008_SNAPSHOT_SAFE_E
 
 ## Gradle/dependency/SDK
 
-Oku: root/app build, version catalog, wrapper props, manifest.
-Test: clean compile, unit, lint, debug/release; major güncellemeyi ayrı PR.
+Oku: root/app build, version catalog, wrapper props/scripts, ProGuard, manifest ve `.github/workflows/android-ci.yml`.
+Test: `ciQuality`, API 34 device/golden, R8 mapping, APK/AAB output ve release manifest; signing değişikliği varsa secret erişimi olmadan fail-fast ve ayrı dağıtım smoke’u. Major güncellemeyi ayrı PR yap.
 Graf: [[ARCH_BUILD_DI]], [[ROADMAP_EXECUTION_GRAPH]].
 
 ## String/locale/birim

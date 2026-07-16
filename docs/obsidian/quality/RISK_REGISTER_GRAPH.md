@@ -2,7 +2,7 @@
 type: risk-register
 status: current
 implementation_status: current
-verified_commit: 41c2ceb
+verified_commit: abd3fbe
 updated: 2026-07-16
 tags: [gymtracker/risk, gymtracker/quality]
 ---
@@ -13,7 +13,7 @@ tags: [gymtracker/risk, gymtracker/quality]
 |---|---|---|---|---|---|
 | R1 | P0 | resolved (v3+) | Destructive migration veri siler | [[ARCH_DATABASE]] | [[ADR_003_EXPLICIT_ROOM_MIGRATIONS]] |
 | R2 | P0 | mitigated-core | Yeni fotoğraf URI’si, bounded decode/EXIF/thumbnail, iki dosyalı rollback, backup tutarlılığı ve orphan/missing reconciliation çözüldü; legacy v0 yeniden seçim ve düşük alan/reboot kabulü açık | [[FEATURE_PROGRESS_PHOTOS]] | [[ADR_004_PERSISTENT_PHOTO_STORAGE]] |
-| R3 | P0/P1 | partial | Wrapper/test/lint düzeldi; CI açık | [[ARCH_BUILD_DI]] | PR 1–2 |
+| R3 | P0/P1 | resolved-core | Linux wrapper, tek `ciQuality`, minified release ve KVM hızlandırmalı API 34 device/golden GitHub Actions akışı hosted koşu `29459249716` ile yeşil; repository branch-protection zorunluluğu yönetim takibi | [[ARCH_BUILD_DI]] | PR 15 |
 | R4 | P1 | resolved | Program seed duplicate/yarım | [[FEATURE_PROGRAMS]] | unique + transaction test |
 | R5 | P1 | mitigated+ | Home reaktif, rollover ve loading/error uygulandı; Clock/zone-change testi açık | [[FEATURE_HOME]] | Flow combine + period tick + UiState |
 | R6 | P1 | resolved | Program purchase detail ve stale local selection | [[FEATURE_PROGRAMS]] | ID route/reactive detail |
@@ -26,5 +26,6 @@ tags: [gymtracker/risk, gymtracker/quality]
 | R13 | P2 | resolved-core | 5 hedefli compact bottom bar ve 600 dp+ adaptive rail aynı seçim/save-restore sözleşmesini kullanıyor; feature list-detail iyileştirmesi açık | [[ARCH_NAVIGATION]] | [[ADR_002_FIVE_TARGET_NAVIGATION]] |
 | R14 | P2 | mitigated+ | Permission azaltıldı; hassas progress fotoğrafları cloud backup/device transfer dışında | [[ARCH_BUILD_DI]] | permission + extraction rules |
 | R15 | P2 | mitigated+ | Uygulama geneli 350/350 TR/EN kaynak, locale-aware kas/para biçimi, adaptive shell, semantics ve ilk kalıcı golden baseline aktif; bütün ekranlara golden ve list-detail yayılımı açık | [[DESIGN_SYSTEM_GRAPH]] | design DoD |
+| R16 | P1 | partial | Release APK/AAB ve mapping üretiliyor fakat production keystore/secret-backed signing ve mağaza dağıtım kapısı tanımlı değil | [[ARCH_BUILD_DI]] | signing + release smoke |
 
 Aktif risk durumu [[SESSION_HANDOFF]] içinde tutulur; çözülen risk silinmez, `resolved` ve commit ile işaretlenir.
