@@ -2,7 +2,7 @@
 type: architecture
 status: current
 implementation_status: current
-verified_commit: a2586d1
+verified_commit: 0fa2383
 updated: 2026-07-16
 source_files:
   - .github/workflows/android-ci.yml
@@ -40,8 +40,8 @@ tags: [gymtracker/architecture, gymtracker/build, gymtracker/quality]
 
 ## Build doğrulaması
 
-- `ciQuality`: 28 JVM testi + lint + debug APK + R8/resource-shrunk release APK/AAB başarılı
-- `connectedDebugAndroidTest`: 54/54 başarılı, Pixel 6 Pro API 34; golden karşılaştırmaları dahil
+- `ciQuality`: 30 JVM testi + lint + debug APK + R8/resource-shrunk release APK/AAB başarılı
+- `connectedDebugAndroidTest`: 58/58 başarılı, Pixel 6 Pro API 34; dört golden karşılaştırması dahil
 - unsigned release APK: 2,556,733 bayt; debug APK: 19,981,034 bayt
 - release AAB: 4,809,602 bayt; R8 `mapping.txt` üretilir
 - `verifyReleaseProfiles`: APK `assets/dexopt/baseline.prof` ve AAB `BUNDLE-METADATA/com.android.tools.build.profiles/baseline.prof` girdilerini doğrular
@@ -49,7 +49,7 @@ tags: [gymtracker/architecture, gymtracker/build, gymtracker/quality]
 
 ## CI ve release sözleşmesi
 
-- Pull request ve `main` push’larında `actions/checkout@v7`, `actions/setup-java@v5`, `gradle/actions/setup-gradle@v6` kullanılır.
+- Pull request ve varsayılan `master` push’larında `actions/checkout@v7`, `actions/setup-java@v5`, `gradle/actions/setup-gradle@v6` kullanılır.
 - `quality` job’u tek kaynaklı `ciQuality` görevini çalıştırır ve lint, unsigned minified APK/AAB ile mapping artifact’lerini 14 gün tutar.
 - `device-tests` job’u quality sonrasında API 34 Pixel 6 Pro emülatöründe bütün instrumentation/golden takımını çalıştırır ve raporları saklar.
 - Release `minifyEnabled` + `shrinkResources` kullanır; geniş keep kuralı yoktur, AndroidX/Room/Hilt/Coil consumer rule’larına dayanır.
@@ -70,6 +70,6 @@ tags: [gymtracker/architecture, gymtracker/build, gymtracker/quality]
 3. Branch protection içinde quality + API 34 job’larını required check yapma
 4. Kontrollü dependency güncellemeleri
 
-Hosted kabul: PR #8 koşusu `29459249716` üzerinde quality işi 8 dk 51 sn, API 34 cihaz/golden işi 13 dk 13 sn sürdü; 28 JVM ve 54 instrumentation testi sıfır hatayla geçti. Linux runner KVM erişimi workflow içinde açıkça hazırlanır.
+Hosted kabul: PR #10 koşusu `29474876318` üzerinde quality işi 11 dk 08 sn, API 34 cihaz/golden işi 14 dk 06 sn sürdü; 30 JVM ve 58 instrumentation testi sıfır hatayla geçti. Linux runner KVM erişimi workflow içinde açıkça hazırlanır. PR #1–#10 merge commit ile `master`a alındı; push trigger’ındaki eski `main` adı `master` olarak düzeltildi.
 
 Yol haritası: [[ROADMAP_EXECUTION_GRAPH#PR 1 — Build hygiene]].

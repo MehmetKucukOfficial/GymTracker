@@ -3,7 +3,7 @@ aliases: [GymTracker Graph Start, Başlangıç]
 type: moc
 status: current
 implementation_status: mixed
-verified_commit: a573ab9
+verified_commit: 0fa2383
 updated: 2026-07-16
 tags: [gymtracker/moc, gymtracker/graph]
 ---
@@ -68,8 +68,8 @@ tags: [gymtracker/moc, gymtracker/graph]
 
 ## Grafın güncellik durumu
 
-- Kod baseline: `a573ab9` (`codex/list-detail-goldens`, PR16’yı hedefleyen stacked draft PR #10)
-- Kod değişikliği: 840 dp ortak list-detail; Workout/Programs selection preview + mevcut ID detail eylemi; iki yeni kalıcı golden yerelde doğrulandı
-- Dokümanlar: PR17 navigation/design/feature/test/risk/roadmap sözleşmeleriyle senkron
+- Master baseline: `be2d8c5`; GitHub PR #1–#10 merge commit ile sırayla birleştirildi, açık stacked PR kalmadı
+- Aktif bakım baseline: `0fa2383` (`codex/post-merge-baseline`); CI push hedefi varsayılan `master` dalıyla eşlendi
+- Dokümanlar: post-merge build/test/risk/roadmap/handoff durumuyla senkron
 - Son tam doğrulama: 2026-07-16
-- Aktif önerilen iş: PR17 hosted run `29474876318` tamamen yeşil; kullanıcı komutunu bekle
+- Aktif önerilen iş: post-merge bakım PR’ını yayınla, final `master` hosted run’ını doğrula, sonra kullanıcı komutunu bekle

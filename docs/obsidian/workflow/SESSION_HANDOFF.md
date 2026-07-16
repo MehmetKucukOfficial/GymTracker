@@ -2,10 +2,10 @@
 type: handoff
 status: ready
 implementation_status: active
-code_baseline: a573ab9
+code_baseline: 0fa2383
 updated: 2026-07-16
-active_phase: "Phase 6 - PR17 published and hosted green"
-next_pr: "Wait for user direction"
+active_phase: "Phase 6 - PR1-PR10 merged; post-merge validation"
+next_pr: "Publish post-merge CI trigger/handoff fix, validate master, then wait"
 primary_nodes:
   - ARCH_NAVIGATION
   - DESIGN_SYSTEM_GRAPH
@@ -21,6 +21,8 @@ tags: [gymtracker/workflow, gymtracker/session]
 
 ## Şu anki durum
 
+- GitHub PR #1–#10, 2026-07-16 tarihinde merge commit stratejisiyle sırayla `master`a alındı; son merge baseline `be2d8c5`, açık PR kalmadı ve first-parent geçmişinde on merge commit korunuyor.
+- Post-merge incelemede workflow push filtresinin `main`, varsayılan dalın `master` olduğu bulundu. `0fa2383` filtresi `master` olarak düzeltiyor; manuel birleşik-master run `29497428633` başlatıldı.
 - Uygulama baseline: `f9d6d75`; PR8 `codex/workout-lifecycle` dalında draft PR #1 olarak yayınlandı.
 - PR9 baseline: `341bf79`; `codex/nutrition-measurements` dalı PR8’i hedefleyen stacked draft PR #2 olarak yayınlandı.
 - PR10 baseline: `2ad7ad8`; `codex/progress-load` dalı PR9’u hedefleyen stacked draft PR #3 olarak yayınlandı.
@@ -48,7 +50,7 @@ tags: [gymtracker/workflow, gymtracker/session]
 
 ## Sıradaki önerilen iş
 
-PR17 yerel/hosted kabulü ve draft PR yayını tamamlandı. Yeni geliştirme başlatmadan kullanıcı komutunu bekle.
+Post-merge bakım dalını PR olarak yayınla; manuel birleşik-master run ve düzeltme PR kontrollerini doğrula. Düzeltmeyi merge commit ile aldıktan sonra otomatik `master` push run’ını yeşil gör ve kullanıcı komutunu bekle.
 
 ## Açık P0/P1
 
@@ -78,6 +80,28 @@ Graph notes updated:
 Next concrete action:
 Blockers:
 ```
+
+## 2026-07-16 - PR #1–#10 merge consolidation
+
+Completed:
+- Marked each stacked draft ready, merged it with GitHub merge-commit strategy, then retargeted the child PR to `master` before continuing.
+- Verified every retargeted child retained only its own commits and returned `CLEAN/MERGEABLE`; no source branch was deleted during the chain.
+- Preserved merge ancestry in `master`: #1 `e2741b2`, #2 `fb01c19`, #3 `6e9a310`, #4 `b8a6966`, #5 `ad112a2`, #6 `565b515`, #7 `483d36a`, #8 `601206b`, #9 `a92a83c`, #10 `be2d8c5`.
+- Found and fixed the hosted push-filter mismatch from non-existent `main` to default `master` in code commit `0fa2383`.
+
+Tests run/results:
+- Pre-merge cumulative PR #10 run `29474876318`: quality 11m08s; API 34 device/golden 14m06s; artifact XML 58/58.
+- Post-merge combined `master` workflow dispatch `29497428633` started against `be2d8c5`; final result pending at this handoff edit.
+
+Risks changed:
+- Deep stacked-PR integration risk is closed; all ten PRs are now represented by merge commits on `master`.
+- R3 improves to resolved-core+ after matching the automatic push trigger to the actual default branch; branch-protection required checks remain repository administration work.
+
+Next concrete action:
+- Publish/merge the post-merge maintenance PR, verify its PR checks and the resulting automatic `master` push run, then wait for the user.
+
+Blockers:
+- No code blocker.
 
 ## 2026-07-16 - PR 17 adaptive list-detail + golden expansion
 
