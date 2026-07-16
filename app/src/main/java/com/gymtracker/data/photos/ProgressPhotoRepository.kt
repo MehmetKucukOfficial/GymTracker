@@ -77,6 +77,51 @@ class ProgressPhotoRepository @Inject constructor(
         }
     }
 
+    /**
+     * Replaces a legacy photo source without changing the record identity or user metadata.
+     * New managed files are published before the row is updated; they are rolled back when
+     * the database update fails. Old managed files are deleted only after the row points at
+     * the new v2 media, so an interrupted upgrade never leaves the record without a source.
+     */
+    suspend fun upgradePhoto(
+        photo: ProgressPhoto,
+        sourceUri: Uri
+    ): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+            require(photo.storageVersion < CURRENT_STORAGE_VERSION) {
+                "Fotoğraf zaten güncel depolama biçimini kullanıyor."
+            }
+            val source = sourceReader.open(sourceUri)
+            val stored = source.inputStream.use { fileStorage.store(it, source.mimeType) }
+            try {
+                val updatedRows = dao.update(
+                    photo.copy(
+                        photoUri = stored.uri,
+                        mimeType = stored.mimeType,
+                        sizeBytes = stored.sizeBytes,
+                        storageVersion = CURRENT_STORAGE_VERSION,
+                        thumbnailUri = stored.thumbnailUri,
+                        widthPx = stored.widthPx,
+                        heightPx = stored.heightPx
+                    )
+                )
+                check(updatedRows == 1) { "Fotoğraf kaydı artık mevcut değil." }
+            } catch (error: Throwable) {
+                fileStorage.deleteManaged(stored.uri)
+                fileStorage.deleteManaged(stored.thumbnailUri)
+                throw error
+            }
+
+            // Cleanup is best effort after the durable row swap. Reconciliation removes any
+            // old managed orphan on the next screen start if the filesystem rejects deletion.
+            fileStorage.deleteManaged(photo.photoUri)
+            fileStorage.deleteManaged(photo.thumbnailUri)
+            Result.success(Unit)
+        } catch (error: Throwable) {
+            Result.failure(error)
+        }
+    }
+
     suspend fun deletePhoto(photo: ProgressPhoto): Result<Unit> = withContext(Dispatchers.IO) {
         try {
             dao.delete(photo)

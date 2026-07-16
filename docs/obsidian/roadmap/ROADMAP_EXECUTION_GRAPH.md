@@ -2,7 +2,7 @@
 type: roadmap
 status: current
 implementation_status: active
-verified_commit: 3f2f8cf
+verified_commit: e28a22d
 updated: 2026-07-16
 tags: [gymtracker/roadmap, gymtracker/workflow]
 ---
@@ -30,6 +30,7 @@ flowchart TD
     AL --> B[PR 15 CI + Release hardening]
     B --> RP[PR 16 Signing + Performance]
     RP --> LG[PR 17 List-detail + Golden]
+    LG --> LR[PR 18 Legacy photo recovery]
 ```
 
 ## Birleştirme durumu
@@ -150,6 +151,13 @@ Node: [[ARCH_NAVIGATION]], [[DESIGN_SYSTEM_GRAPH]], [[FEATURE_WORKOUT]], [[FEATU
 Durum: `a573ab9` kod commit’i `codex/list-detail-goldens` dalında PR16’yı hedefleyen stacked draft PR #10 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/10
 Çıktı: ortak 840 dp `GtListDetailScaffold`; compact ID-route davranışını koruyan Workout/Programs expanded seçim + özet panelleri; saved selection; selected semantics; English/light Programs ve Turkish/dark/%130 Workout kalıcı golden’ları.
 Kabul: 30 JVM + 58 API 34 instrumentation testi; `ciQuality`, lint, debug ve minified release/profile kapısı başarılı; 356/356 TR/EN kaynak eşitliği. Hosted run `29474876318` iki job ile tamamen yeşil, artifact XML 58/58.
+
+## PR 18 — Legacy photo recovery + optimization
+
+Node: [[FEATURE_PROGRESS_PHOTOS]], [[ADR_004_PERSISTENT_PHOTO_STORAGE]], [[TEST_MATRIX]].
+Durum: `e28a22d` kod commit’i `codex/legacy-photo-recovery` dalında hazır GitHub PR #12 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/12
+Çıktı: v0 dış sağlayıcı kayıtları için yeniden seçim; v1 app-owned kayıtlar için doğrudan v2 optimizasyon; aynı Room kimliği ve kullanıcı metadata’sı; update başarısızlığında iki yeni dosyanın rollback’i; başarılı swap sonrasında eski yönetilen dosya temizliği; ayrı erişilebilir kart/viewer eylemleri.
+Kabul: 30 JVM + 62 API 34 instrumentation testi; hedefli photo paketi 13/13; `ciQuality`, lint, debug ve minified release/profile kapısı; light normal ve dark %200 yükseltme UI doğrulaması. Hosted run `29503247012`: quality 7m23s, API 34 device/golden 9m41s, artifact XML 62/62.
 
 ## Sonraki dikey dilim
 

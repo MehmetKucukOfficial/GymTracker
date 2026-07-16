@@ -23,7 +23,7 @@ interface ProgressPhotoDao {
     suspend fun insert(photo: ProgressPhoto): Long
 
     @Update
-    suspend fun update(photo: ProgressPhoto)
+    suspend fun update(photo: ProgressPhoto): Int
 
     @Delete
     suspend fun delete(photo: ProgressPhoto)

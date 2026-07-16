@@ -163,6 +163,85 @@ class ProgressPhotoRepositoryTest {
     }
 
     @Test
+    fun upgradePhoto_fromLegacyProvider_preservesIdentityAndUserMetadata() =
+        kotlinx.coroutines.runBlocking {
+            val original = ProgressPhoto(
+                date = 123_456L,
+                photoUri = "content://legacy/unavailable",
+                weightKg = 81.5f,
+                notes = "first check-in",
+                angle = PhotoAngle.SIDE_LEFT,
+                storageVersion = 0
+            )
+            val id = database.progressPhotoDao().insert(original)
+            reader.bytes = createJpeg(width = 900, height = 450)
+
+            val result = repository.upgradePhoto(
+                original.copy(id = id),
+                Uri.parse("content://test/reselected-photo")
+            )
+
+            assertTrue(result.isSuccess)
+            val upgraded = database.progressPhotoDao().getAllSync().single()
+            assertEquals(id, upgraded.id)
+            assertEquals(original.date, upgraded.date)
+            assertEquals(original.weightKg, upgraded.weightKg)
+            assertEquals(original.notes, upgraded.notes)
+            assertEquals(original.angle, upgraded.angle)
+            assertEquals(2, upgraded.storageVersion)
+            assertEquals(900, upgraded.widthPx)
+            assertEquals(450, upgraded.heightPx)
+            assertTrue(File(requireNotNull(Uri.parse(upgraded.photoUri).path)).isFile)
+            assertTrue(File(requireNotNull(Uri.parse(upgraded.thumbnailUri).path)).isFile)
+            assertTrue(repository.deletePhoto(upgraded).isSuccess)
+        }
+
+    @Test
+    fun upgradePhoto_fromV1_deletesOldManagedFileAfterDurableSwap() =
+        kotlinx.coroutines.runBlocking {
+            val directory = File(context.filesDir, "progress_photos").apply { mkdirs() }
+            val oldFile = File(directory, "legacy-v1.jpg").apply {
+                writeBytes(createJpeg(width = 640, height = 320))
+            }
+            val original = ProgressPhoto(
+                photoUri = Uri.fromFile(oldFile).toString(),
+                mimeType = "image/jpeg",
+                sizeBytes = oldFile.length(),
+                storageVersion = 1
+            )
+            val id = database.progressPhotoDao().insert(original)
+            reader.bytes = oldFile.readBytes()
+
+            val result = repository.upgradePhoto(original.copy(id = id), Uri.fromFile(oldFile))
+
+            assertTrue(result.isSuccess)
+            val upgraded = database.progressPhotoDao().getAllSync().single()
+            assertEquals(id, upgraded.id)
+            assertEquals(2, upgraded.storageVersion)
+            assertFalse(oldFile.exists())
+            assertTrue(File(requireNotNull(Uri.parse(upgraded.photoUri).path)).isFile)
+            assertTrue(File(requireNotNull(Uri.parse(upgraded.thumbnailUri).path)).isFile)
+            assertTrue(repository.deletePhoto(upgraded).isSuccess)
+        }
+
+    @Test
+    fun upgradePhoto_whenDatabaseRowIsMissing_removesNewManagedFiles() =
+        kotlinx.coroutines.runBlocking {
+            reader.bytes = createJpeg(width = 64, height = 64)
+            val directory = File(context.filesDir, "progress_photos")
+            val filesBefore = directory.listFiles()?.map(File::getName)?.sorted().orEmpty()
+            val failingRepository = ProgressPhotoRepository(FailingUpdateDao(), reader, storage)
+
+            val result = failingRepository.upgradePhoto(
+                ProgressPhoto(id = 99, photoUri = "content://legacy/photo", storageVersion = 0),
+                Uri.parse("content://test/reselected-photo")
+            )
+
+            assertTrue(result.isFailure)
+            assertEquals(filesBefore, directory.listFiles()?.map(File::getName)?.sorted().orEmpty())
+        }
+
+    @Test
     fun store_whenSourceExceedsLimit_removesTemporaryFile() {
         val directory = File(context.filesDir, "progress_photos")
         val filesBefore = directory.listFiles()?.map(File::getName)?.sorted().orEmpty()
@@ -289,7 +368,23 @@ class ProgressPhotoRepositoryTest {
 
         override suspend fun insert(photo: ProgressPhoto): Long = throw IOException("database full")
 
-        override suspend fun update(photo: ProgressPhoto) = Unit
+        override suspend fun update(photo: ProgressPhoto): Int = 0
+
+        override suspend fun delete(photo: ProgressPhoto) = Unit
+    }
+
+    private class FailingUpdateDao : ProgressPhotoDao {
+        override fun getAll(): Flow<List<ProgressPhoto>> = flowOf(emptyList())
+
+        override fun getByAngle(angle: PhotoAngle): Flow<List<ProgressPhoto>> = flowOf(emptyList())
+
+        override fun getSince(since: Long): Flow<List<ProgressPhoto>> = flowOf(emptyList())
+
+        override suspend fun getAllSync(): List<ProgressPhoto> = emptyList()
+
+        override suspend fun insert(photo: ProgressPhoto): Long = 0
+
+        override suspend fun update(photo: ProgressPhoto): Int = 0
 
         override suspend fun delete(photo: ProgressPhoto) = Unit
     }

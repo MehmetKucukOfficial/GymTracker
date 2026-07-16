@@ -2,7 +2,7 @@
 type: feature
 status: current
 implementation_status: current
-verified_commit: 5c3ce35
+verified_commit: e28a22d
 updated: 2026-07-16
 source_files:
   - app/src/main/java/com/gymtracker/ui/screens/progress/ProgressScreen.kt
@@ -27,24 +27,25 @@ tags: [gymtracker/feature, gymtracker/feature/photos, gymtracker/risk/p0]
 
 ViewModel açılışta DB ile yönetilen klasörü uzlaştırır: kaydı olmayan orphan/temp dosyaları siler; `storageVersion>=1` olup ana dosyası bulunmayan metadata satırlarını ve ilişkili thumbnail’i kaldırır. Yalnız thumbnail kayıpsa satırı korur ve thumbnail referansını temizleyerek ana görsele geri düşer. Legacy `storageVersion=0` satırlara dokunmaz ve UI risk rozeti gösterir.
 
+PR18, aynı kayıt kimliğini ve kullanıcının tarih/açı/kilo/not metadata’sını koruyan yükseltme akışını ekler. v0 kayıt kullanıcıya sistem seçicisinden doğru fotoğrafı yeniden seçtirir; v1 kayıt mevcut app-owned dosyayı doğrudan v2 EXIF/resize/thumbnail hattından geçirir. Yeni dosyalar DB güncellemesinden önce hazırlanır, update başarısızsa birlikte geri alınır; eski yönetilen dosyalar yalnız kalıcı satır değişiminden sonra temizlenir.
+
 ## P0 risk durumu
 
-Yeni importlar için geçici URI ve kontrolsüz büyük decode riski kapatıldı: PR13 kayıtları `storageVersion=2`, normalize app-owned ana/thumbnail `file://` URI’ları ve dimension metadata kullanır. v5/v8 kayıtları veri kaybetmeden v0/v1 olarak korunur; bu kayıtlar mevcut ana URI üzerinden çalışmaya devam eder. Legacy `content://` satırları sağlayıcı izni kaybolmuşsa hâlâ açılamayabilir ve kullanıcıdan yeniden seçim gerekir. Cihaz içi fotoğraflar privacy/quota gerekçesiyle cloud backup ve device transfer dışında bırakılmıştır.
+Yeni importlar için geçici URI ve kontrolsüz büyük decode riski kapatıldı: PR13 kayıtları `storageVersion=2`, normalize app-owned ana/thumbnail `file://` URI’ları ve dimension metadata kullanır. v5/v8 kayıtları veri kaybetmeden v0/v1 olarak korunur. PR18 ile kırık v0 sağlayıcı kaydı yeniden seçimle, v1 app-owned kayıt ise tek eylemle v2’ye yükseltilebilir. Cihaz içi fotoğraflar privacy/quota gerekçesiyle cloud backup ve device transfer dışında bırakılmıştır.
 
 ## Diğer sorunlar
 
 - Kamera ve medya izinleri kaldırıldı; sistem seçici akışı ek izin istemiyor.
-- Legacy yeniden seçim/iyileştirme akışı yok; yalnız açık risk etiketi vardır.
 - Import dialog URI’si gerçek OS process death sırasında korunmaz.
-- Kalıcı screenshot-golden, gerçek düşük alan/reboot kabulü ve eski v1 görseller için isteğe bağlı yeniden optimizasyon bekler.
+- Kalıcı screenshot-golden, gerçek düşük alan/reboot ve backup/restore cihaz kabulü bekler.
 
 ## Uygulanan karar
 
-[[ADR_004_PERSISTENT_PHOTO_STORAGE]] kabul edildi. Room v9 `thumbnailUri/widthPx/heightPx`, storage v2 EXIF/resize/compress/thumbnail hattı, iki dosyalı rollback ve reconciliation sözleşmesi uygulanmıştır.
+[[ADR_004_PERSISTENT_PHOTO_STORAGE]] kabul edildi. Room v9 `thumbnailUri/widthPx/heightPx`, storage v2 EXIF/resize/compress/thumbnail hattı, iki dosyalı rollback/reconciliation ve kimlik koruyan v0/v1 yükseltme sözleşmesi uygulanmıştır.
 
 ## Zorunlu testler
 
-- Geçen: başarılı import/EXIF dönüşümü/2048 ana görsel/512 thumbnail/dimension metadata, storage yeniden oluşturma, iki dosyalı delete ve DB rollback, 25 MB ve bozuk decode temizliği, orphan/missing-main/missing-thumbnail reconciliation, v3→v9 ve v8→v9 satır koruma, legacy badge ve dark/%200 font empty state.
+- Geçen: başarılı import/EXIF dönüşümü/2048 ana görsel/512 thumbnail/dimension metadata, storage yeniden oluşturma, iki dosyalı delete ve DB rollback, 25 MB ve bozuk decode temizliği, orphan/missing-main/missing-thumbnail reconciliation, v3→v9 ve v8→v9 satır koruma, v0 yeniden seçim, v1 yeniden optimizasyon, update rollback, kimlik/metadata koruma ve light/dark/%200 font yükseltme eylemleri.
 - Bekleyen: gerçek process kill/restart, reboot, düşük alan, backup/restore cihaz kabulü ve geniş veri setinde thumbnail grid performans profili.
 
 Bağlar: [[ARCH_DATABASE]], [[RISK_REGISTER_GRAPH#R2 — Fotoğraf URI kaybı]], [[SCREEN_BLUEPRINT_GRAPH#Fotoğraflar]].
