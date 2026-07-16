@@ -2,15 +2,13 @@
 type: handoff
 status: ready
 implementation_status: active
-code_baseline: 3f2f8cf
+code_baseline: e28a22d
 updated: 2026-07-16
-active_phase: "Phase 6 - PR1-PR11 merged; master accepted"
-next_pr: "Wait for user direction"
+active_phase: "Phase 7 - PR18 legacy photo recovery validation"
+next_pr: "Publish PR18 and verify hosted quality/device checks"
 primary_nodes:
-  - ARCH_NAVIGATION
-  - DESIGN_SYSTEM_GRAPH
-  - FEATURE_PROGRAMS
-  - FEATURE_WORKOUT
+  - FEATURE_PROGRESS_PHOTOS
+  - ADR_004_PERSISTENT_PHOTO_STORAGE
   - TEST_MATRIX
   - RISK_REGISTER_GRAPH
   - ROADMAP_EXECUTION_GRAPH
@@ -23,6 +21,7 @@ tags: [gymtracker/workflow, gymtracker/session]
 
 - GitHub PR #1–#11, 2026-07-16 tarihinde merge commit stratejisiyle sırayla `master`a alındı; son code baseline `3f2f8cf`, açık PR kalmadı ve first-parent geçmişinde on bir merge commit korunuyor.
 - PR #11, workflow push filtresini `main` yerine varsayılan `master` dalıyla eşledi. Otomatik `master` koşusu `29499237460` tamamen yeşil; artifact XML 58/58 cihaz testi gösteriyor.
+- PR18 code baseline `e28a22d`, `codex/legacy-photo-recovery` dalında: v0 yeniden seçim, v1 doğrudan yeniden optimizasyon, kimlik/metadata koruma ve update rollback akışları yerel kabulden geçti.
 - Uygulama baseline: `f9d6d75`; PR8 `codex/workout-lifecycle` dalında draft PR #1 olarak yayınlandı.
 - PR9 baseline: `341bf79`; `codex/nutrition-measurements` dalı PR8’i hedefleyen stacked draft PR #2 olarak yayınlandı.
 - PR10 baseline: `2ad7ad8`; `codex/progress-load` dalı PR9’u hedefleyen stacked draft PR #3 olarak yayınlandı.
@@ -39,22 +38,21 @@ tags: [gymtracker/workflow, gymtracker/session]
 - Workout tek aktif seans, status-korumalı mutation, COMPLETED salt-okunur geçmiş ve adaptive modern UI kullanıyor.
 - Nutrition DST-safe tarih aralığı, SavedStateHandle tarih seçimi, snapshot-safe amount/meal edit, delete undo, locale sayı/tarih ve TR/EN adaptive UI kullanıyor.
 - Measurements repository + indexed 7/30/90/tümü query, gerçek kilo chart, özel tarih, edit/delete undo, latest/history/trend ve TR/EN adaptive UI kullanıyor.
-- Progress fotoğrafları cihaz-yerel backup politikası, bounded decode, EXIF normalize, 2048 ana/512 thumbnail, iki dosyalı rollback/reconciliation, viewer ve adaptive grid kullanıyor.
+- Progress fotoğrafları cihaz-yerel backup politikası, bounded decode, EXIF normalize, 2048 ana/512 thumbnail, iki dosyalı rollback/reconciliation, v0/v1 yükseltme, viewer ve adaptive grid kullanıyor.
 - Muscle Load completed-set Flow’unu latest-valid measurement Flow’uyla birleştirir; recency/personal-bodyweight/fallback/unknown sözleşmesi, kalibrasyon kaynağı, metodoloji ve erişilebilir liste aktiftir.
 - Programs locked/ownership/target kurallarını repository’de doğrular; program günü atomik ACTIVE workout’a planlanan set olarak kopyalanır, tamamlanmayan set Muscle Load’a girmez ve finish’i kilitler.
 - Light/dark tasarım sistemi token temeli ve ortak Home bileşenleri aktif; Home loading/content/error, retry, midnight period tick ve adaptive kolon kullanıyor.
 - Uygulama geneli Türkçe/English kaynak kataloğu 356/356 eşit; muscle adları ve program para biçimi locale-aware.
-- Test temeli aktif: 30 JVM + 58 API 34 instrumentation testi geçiyor; Progress Hub, Programs ve Workout için dört kalıcı golden baseline var.
+- Test temeli aktif: 30 JVM + 62 API 34 instrumentation testi geçiyor; Progress Hub, Programs ve Workout için dört kalıcı golden baseline var.
 - Debug build başarılı; lint 0 error; assemble başarılı.
 - `ciQuality` JVM/lint/debug ile R8/resource-shrunk unsigned APK, AAB ve mapping üretir; GitHub Actions quality + API 34 device/golden workflow’u kaynakta.
 
 ## Sıradaki önerilen iş
 
-Birleştirme ve nihai `master` kabulü tamamlandı. Yeni geliştirme başlatmadan kullanıcı komutunu bekle.
+PR18 graf commit’ini tamamla, `ciQuality` çalıştır, dalı yayınla ve hosted quality/API 34 kontrollerini doğrula.
 
 ## Açık P0/P1
 
-- Legacy `storageVersion=0` fotoğraflar için yeniden seçim ve v1 re-optimize UX’i
 - GitHub branch protection içinde quality + API 34 check’lerini zorunlu yapma
 - Golden baseline’ı kalan kritik ekran/state’lere genişletme
 - Harici deep link ve gerçek OS process-death
@@ -63,10 +61,10 @@ Birleştirme ve nihai `master` kabulü tamamlandı. Yeni geliştirme başlatmada
 ## Son doğrulama
 
 - `testDebugUnitTest`: success, 30/30.
-- `connectedDebugAndroidTest`: success, 58/58, Pixel 6 Pro API 34 (6m21s).
+- `connectedDebugAndroidTest`: success, 62/62, Pixel 6 Pro API 34 (1m22s, warm local AVD).
 - `lintDebug`: success, 0 error.
 - `assembleDebug`: success.
-- `ciQuality`: success; minified APK 2,556,733 bayt, AAB 4,809,602 bayt ve R8 mapping üretildi.
+- `ciQuality`: success; minified APK 2,661,123 bayt, AAB 4,928,049 bayt ve R8 mapping üretildi.
 - Kalıcı görsel kapı: iki Progress Hub baseline’ına ek olarak `programs_list_detail_light_en.png` ve `workout_list_detail_dark_tr_font130.png`, API 34 üzerinde pixel tolerance ile geçti.
 
 ## Handoff güncelleme şablonu
@@ -80,6 +78,34 @@ Graph notes updated:
 Next concrete action:
 Blockers:
 ```
+
+## 2026-07-16 - PR18 legacy photo recovery + optimization
+
+Completed:
+- Added v0 reselect and v1 direct re-optimization actions to the grid and viewer with separate TalkBack semantics, Turkish/English copy, light theme and dark/%200 font coverage.
+- Added identity-preserving repository swap: create v2 main/thumbnail first, update the same Room row, rollback both new files on zero-row/error, and delete old managed files only after the durable swap.
+- Preserved date, angle, weight and notes; no entity/schema version or migration change was required.
+
+Files changed:
+- Progress photo DAO/repository/ViewModel/Screen and TR/EN resources.
+- Progress photo repository and Compose instrumentation tests.
+- Feature/ADR/test/risk/roadmap/start/handoff graph nodes.
+
+Tests run/results:
+- Kotlin main + androidTest compilation: success with JDK 17.
+- `testDebugUnitTest`: 30/30; `lintDebug`: 0 errors.
+- Targeted photo repository/UI package: 13/13.
+- Full Pixel 6 Pro API 34 `connectedDebugAndroidTest`: 62/62, 0 failure/error/skipped.
+- `ciQuality`: success; debug APK, 2,661,123-byte minified APK, 4,928,049-byte AAB, R8 mapping and embedded Baseline Profile verified.
+
+Risks changed:
+- R2 improves from mitigated-core to mitigated++; legacy v0/v1 recovery is implemented. Real low-storage/reboot/backup-restore device acceptance remains.
+
+Next concrete action:
+- Publish PR18, verify hosted quality + API 34 device jobs, then update this handoff with the run URL/result.
+
+Blockers:
+- No code blocker. Local Gradle must be invoked with JDK 17 because the machine default remains Java 11.
 
 ## 2026-07-16 - PR #1–#11 merge consolidation and master acceptance
 

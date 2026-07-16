@@ -2,7 +2,7 @@
 type: atlas
 status: current
 implementation_status: active
-verified_commit: 3f2f8cf
+verified_commit: e28a22d
 updated: 2026-07-16
 tags: [gymtracker/workflow, gymtracker/source-map]
 ---
@@ -37,7 +37,7 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | `data/dao/WorkoutDao.kt` | active/completed session, planned-set/status mutation ve completed-set load Flow | Home, Workout, Programs, Load |
 | `data/dao/MeasurementDao.kt` | all/latest/indexed period + latest valid weight Flow + mutation queries | Home, Measurements, Load |
 | `data/dao/NutritionDao.kt` | food/entry/goal + update/delete/restore queries | Home, Nutrition |
-| `data/dao/ProgressPhotoDao.kt` | photo queries | Photos |
+| `data/dao/ProgressPhotoDao.kt` | photo queries + kimlik koruyan update satır sayısı | Photos |
 | `data/dao/ProgramDao.kt` | program + ilişkisel day/exercise queries | Programs |
 | `di/DatabaseModule.kt` | Room singleton + DAO providers | bütün ViewModel’ler |
 | `di/TimeModule.kt` | dinamik sistem ZoneId kullanan injectable Clock | Nutrition/zaman kuralları |
@@ -46,7 +46,7 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | `data/programs/ProgramRepository.kt` | list/detail/demo erişim + atomic program→workout sınırı | Programs |
 | `data/programs/ProgramWorkoutPlan.kt` | Room relation modeli ve sıralı egzersiz görünümü | Programs |
 | `data/measurements/MeasurementRepository.kt` | all/period Flow ve measurement mutation sınırı | Measurements |
-| `data/photos/ProgressPhotoRepository.kt` | storage v2 medya import/delete/reconciliation sınırı | Photos |
+| `data/photos/ProgressPhotoRepository.kt` | storage v2 medya import/delete/reconciliation + v0/v1 atomik yükseltme sınırı | Photos |
 
 ## Domain
 
@@ -116,7 +116,7 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | `ui/screens/progress/ProgressViewModel.kt` | Fotoğraf doğrulama, kayıt/silme, typed mesajlar ve storage reconciliation |
 | `data/photos/ProgressPhotoRules.kt` | opsiyonel kilo/not validation |
 | `data/photos/PhotoFileStorage.kt` | bounded decode + EXIF + 2048 ana/512 thumbnail + atomik publish/reconciliation |
-| `ui/screens/progress/ProgressScreen.kt` | picker/adaptive thumbnail grid/ana viewer/legacy UI |
+| `ui/screens/progress/ProgressScreen.kt` | picker/adaptive thumbnail grid/ana viewer/v0 reselect + v1 optimize UI |
 
 ## Programs
 

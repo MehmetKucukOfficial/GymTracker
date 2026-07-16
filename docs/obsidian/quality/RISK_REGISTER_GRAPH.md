@@ -2,7 +2,7 @@
 type: risk-register
 status: current
 implementation_status: current
-verified_commit: 3f2f8cf
+verified_commit: e28a22d
 updated: 2026-07-16
 tags: [gymtracker/risk, gymtracker/quality]
 ---
@@ -12,7 +12,7 @@ tags: [gymtracker/risk, gymtracker/quality]
 | ID | Seviye | Durum | Risk | Etkilenen düğüm | Çözüm kapısı |
 |---|---|---|---|---|---|
 | R1 | P0 | resolved (v3+) | Destructive migration veri siler | [[ARCH_DATABASE]] | [[ADR_003_EXPLICIT_ROOM_MIGRATIONS]] |
-| R2 | P0 | mitigated-core | Yeni fotoğraf URI’si, bounded decode/EXIF/thumbnail, iki dosyalı rollback, backup tutarlılığı ve orphan/missing reconciliation çözüldü; legacy v0 yeniden seçim ve düşük alan/reboot kabulü açık | [[FEATURE_PROGRESS_PHOTOS]] | [[ADR_004_PERSISTENT_PHOTO_STORAGE]] |
+| R2 | P0 | mitigated++ | Yeni fotoğraf URI’si, bounded decode/EXIF/thumbnail, iki dosyalı rollback, backup tutarlılığı, orphan/missing reconciliation ve kimlik koruyan legacy v0/v1 yükseltme çözüldü; gerçek düşük alan/reboot/restore cihaz kabulü açık | [[FEATURE_PROGRESS_PHOTOS]] | [[ADR_004_PERSISTENT_PHOTO_STORAGE]] |
 | R3 | P0/P1 | resolved-core+ | Linux wrapper, tek `ciQuality`, minified release ve KVM hızlandırmalı API 34 device/golden akışı otomatik `master` koşusu `29499237460` üzerinde yeşil; varsayılan dal push trigger’ı doğrulandı. Branch-protection zorunluluğu yönetim takibi | [[ARCH_BUILD_DI]] | PR 15 + post-merge fix |
 | R4 | P1 | resolved | Program seed duplicate/yarım | [[FEATURE_PROGRAMS]] | unique + transaction test |
 | R5 | P1 | mitigated+ | Home reaktif, rollover ve loading/error uygulandı; Clock/zone-change testi açık | [[FEATURE_HOME]] | Flow combine + period tick + UiState |
