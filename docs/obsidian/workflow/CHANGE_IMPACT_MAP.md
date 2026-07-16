@@ -2,7 +2,7 @@
 type: workflow
 status: current
 implementation_status: active
-verified_commit: a573ab9
+verified_commit: a3bdbe6
 updated: 2026-07-16
 tags: [gymtracker/workflow, gymtracker/impact]
 ---
@@ -23,7 +23,7 @@ Graf: [[MOC_DATA]], ilgili feature.
 
 ## Navigation route değişikliği
 
-Oku: `MainActivity.kt`, `NavGraph.kt`, `BottomNavigationBar.kt`, `ProgressHubScreen.kt`, route ID alan ilgili ViewModel/repository ve çağıran hızlı erişim/kartlar.
+Oku: `MainActivity.kt`, `NavGraph.kt`, `DeepLinkContract.kt`, manifest, `BottomNavigationBar.kt`, `ProgressHubScreen.kt`, route ID alan ilgili ViewModel/repository ve çağıran hızlı erişim/kartlar.
 Test: `NavigationContractTest`, `AdaptiveNavigationTest`, `NavigationSmokeTest`; 599/600 dp, bottom bar/rail, back, detail ana navigasyonu, positive ID, selected tab, Activity/process recreation ve deep link.
 Graf: [[ARCH_NAVIGATION]], [[ADR_002_FIVE_TARGET_NAVIGATION]].
 

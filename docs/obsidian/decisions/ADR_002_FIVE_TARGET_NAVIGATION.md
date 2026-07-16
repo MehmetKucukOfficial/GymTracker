@@ -2,9 +2,9 @@
 type: adr
 adr: 2
 status: accepted
-implementation_status: implemented-core
+implementation_status: implemented
 date: 2026-07-14
-verified_commit: 41c2ceb
+verified_commit: a3bdbe6
 updated: 2026-07-16
 tags: [gymtracker/decision, gymtracker/navigation, gymtracker/design]
 ---
@@ -19,6 +19,8 @@ Mevcut bottom bar 7 öğelidir; dar ekranda sıkışır ve ölçüm/fotoğraf/ka
 
 Telefon: Özet, Antrenman, Programlar, Beslenme, İlerleme. Ölçüm/fotoğraf/kas yükü İlerleme altındadır. Aktif workout tam ekran. Medium/expanded: navigation rail + gerektiğinde list-detail.
 
+Dış giriş: `gymtracker://app` custom scheme/host sözleşmesi bütün ürün hedeflerini açar. Detail URI’leri yalnız pozitif Room ID kabul eder; URI üretme/parçalama ve NavType doğrulaması tek `DeepLinkContract` sınırındadır.
+
 ## Alternatifler
 
 - 7 hedefi koruma: düşük migration maliyeti, zayıf hiyerarşi.
@@ -31,7 +33,7 @@ Telefon: Özet, Antrenman, Programlar, Beslenme, İlerleme. Ölçüm/fotoğraf/k
 - [x] Ölçüm, fotoğraf ve kas yükü İlerleme altında route olarak kalır.
 - [x] Workout/program detail yalnız pozitif DB ID taşır ve `SavedStateHandle` ile yeniden çözülür.
 - [x] Back, seçili sekme ve Activity recreation Compose testleri geçer.
-- [ ] Harici deep link sözleşmeleri.
+- [x] Harici deep link sözleşmeleri; manifest çözümü, cold start, detail ID, safe fallback ve recreation testli.
 - [x] 600 dp ve üzerinde aynı beş hedefi kullanan navigation rail.
 - [ ] Feature bazlı medium/expanded list-detail düzenleri.
 

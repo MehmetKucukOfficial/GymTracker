@@ -12,17 +12,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import com.gymtracker.ui.components.BottomNavigationBar
 import com.gymtracker.ui.components.GtNavigationRail
 import com.gymtracker.ui.components.navigationTypeForWidth
 import com.gymtracker.ui.components.GtNavigationType
 import com.gymtracker.ui.navigation.NavigationPolicy
+import com.gymtracker.ui.navigation.DeepLinkContract
+import com.gymtracker.ui.navigation.PositiveLongNavType
 import com.gymtracker.ui.navigation.Screen
 import com.gymtracker.ui.screens.fatigue.FatigueScreen
 import com.gymtracker.ui.screens.home.HomeScreen
@@ -82,10 +84,16 @@ private fun AppNavHost(navController: NavHostController, modifier: Modifier = Mo
         startDestination = Screen.Home.route,
         modifier = modifier
     ) {
-        composable(Screen.Home.route) {
+        composable(
+            route = Screen.Home.route,
+            deepLinks = listOf(navDeepLink { uriPattern = DeepLinkContract.patternFor(Screen.Home) })
+        ) {
             HomeScreen(onNavigate = { route -> navController.navigate(route) })
         }
-        composable(Screen.Workout.route) {
+        composable(
+            route = Screen.Workout.route,
+            deepLinks = listOf(navDeepLink { uriPattern = DeepLinkContract.patternFor(Screen.Workout) })
+        ) {
             WorkoutScreen(
                 onOpenSession = { sessionId ->
                     navController.navigate(Screen.WorkoutDetail.createRoute(sessionId))
@@ -95,7 +103,10 @@ private fun AppNavHost(navController: NavHostController, modifier: Modifier = Mo
         composable(
             Screen.WorkoutDetail.route,
             arguments = listOf(
-                navArgument(Screen.WorkoutDetail.ARG_SESSION_ID) { type = NavType.LongType }
+                navArgument(Screen.WorkoutDetail.ARG_SESSION_ID) { type = PositiveLongNavType }
+            ),
+            deepLinks = listOf(
+                navDeepLink { uriPattern = DeepLinkContract.patternFor(Screen.WorkoutDetail) }
             )
         ) {
             WorkoutDetailScreen(
@@ -107,13 +118,22 @@ private fun AppNavHost(navController: NavHostController, modifier: Modifier = Mo
                 }
             )
         }
-        composable(Screen.Nutrition.route) {
+        composable(
+            route = Screen.Nutrition.route,
+            deepLinks = listOf(navDeepLink { uriPattern = DeepLinkContract.patternFor(Screen.Nutrition) })
+        ) {
             NutritionScreen()
         }
-        composable(Screen.Progress.route) {
+        composable(
+            route = Screen.Progress.route,
+            deepLinks = listOf(navDeepLink { uriPattern = DeepLinkContract.patternFor(Screen.Progress) })
+        ) {
             ProgressHubScreen(onNavigate = { route -> navController.navigate(route) })
         }
-        composable(Screen.Programs.route) {
+        composable(
+            route = Screen.Programs.route,
+            deepLinks = listOf(navDeepLink { uriPattern = DeepLinkContract.patternFor(Screen.Programs) })
+        ) {
             ProgramsScreen(
                 onProgramSelected = { programId ->
                     navController.navigate(Screen.ProgramDetail.createRoute(programId))
@@ -123,7 +143,10 @@ private fun AppNavHost(navController: NavHostController, modifier: Modifier = Mo
         composable(
             Screen.ProgramDetail.route,
             arguments = listOf(
-                navArgument(Screen.ProgramDetail.ARG_PROGRAM_ID) { type = NavType.LongType }
+                navArgument(Screen.ProgramDetail.ARG_PROGRAM_ID) { type = PositiveLongNavType }
+            ),
+            deepLinks = listOf(
+                navDeepLink { uriPattern = DeepLinkContract.patternFor(Screen.ProgramDetail) }
             )
         ) {
             ProgramDetailScreen(
@@ -133,13 +156,22 @@ private fun AppNavHost(navController: NavHostController, modifier: Modifier = Mo
                 }
             )
         }
-        composable(Screen.Measurements.route) {
+        composable(
+            route = Screen.Measurements.route,
+            deepLinks = listOf(navDeepLink { uriPattern = DeepLinkContract.patternFor(Screen.Measurements) })
+        ) {
             MeasurementsScreen()
         }
-        composable(Screen.ProgressPhotos.route) {
+        composable(
+            route = Screen.ProgressPhotos.route,
+            deepLinks = listOf(navDeepLink { uriPattern = DeepLinkContract.patternFor(Screen.ProgressPhotos) })
+        ) {
             ProgressScreen()
         }
-        composable(Screen.Fatigue.route) {
+        composable(
+            route = Screen.Fatigue.route,
+            deepLinks = listOf(navDeepLink { uriPattern = DeepLinkContract.patternFor(Screen.Fatigue) })
+        ) {
             FatigueScreen()
         }
     }

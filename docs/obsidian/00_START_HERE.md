@@ -3,7 +3,7 @@ aliases: [GymTracker Graph Start, Başlangıç]
 type: moc
 status: current
 implementation_status: mixed
-verified_commit: e28a22d
+verified_commit: a3bdbe6
 updated: 2026-07-16
 tags: [gymtracker/moc, gymtracker/graph]
 ---
@@ -21,7 +21,7 @@ tags: [gymtracker/moc, gymtracker/graph]
 - Local-first; backend ve gerçek ödeme yok
 - 5 ana navigation hedefi, 3 İlerleme alt hedefi, ID tabanlı workout/program detayları
 - 82 benzersiz egzersiz, 108 hazır program egzersiz referansı
-- `ciQuality` debug + minified release APK/AAB üretir; 30 JVM + 62 cihaz testi geçiyor; lint 0 hata
+- `ciQuality` debug + minified release APK/AAB üretir; 34 JVM + 66 cihaz testi geçiyor; lint 0 hata
 - Workout ve Programs compact’ta ID rotası, 840 dp+ genişlikte ortak liste–özet kullanır; dört kalıcı golden baseline vardır
 - Destructive migration, yeni fotoğraf URI kaybı, seed race ve temel navigation/state riskleri kapatıldı veya azaltıldı
 
@@ -68,9 +68,9 @@ tags: [gymtracker/moc, gymtracker/graph]
 
 ## Grafın güncellik durumu
 
-- Master code baseline: `3f2f8cf`; GitHub PR #1–#11 merge commit ile sırayla birleştirildi, açık PR kalmadı ve kaynak dallar korundu
+- Master code baseline: `52da93a`; GitHub PR #1–#12 merge commit ile sırayla birleştirildi ve kaynak dallar korundu
 - PR #11, CI push hedefini varsayılan `master` dalıyla eşledi; otomatik master koşusu `29499237460` tamamen yeşil
-- Aktif PR18 code baseline: `e28a22d` (`codex/legacy-photo-recovery`), GitHub PR #12; yerel ve hosted kabul tamamlandı
-- Dokümanlar: PR18 feature/ADR/test/risk/roadmap/handoff durumuyla senkron
+- Aktif PR19 code baseline: `a3bdbe6` (`codex/external-deep-links`); yerel kabul tamamlandı
+- Dokümanlar: PR19 navigation/ADR/test/risk/roadmap/handoff durumuyla senkron
 - Son tam doğrulama: 2026-07-16
-- Aktif önerilen iş: hazır PR #12 için kullanıcının merge/sonraki geliştirme yönünü bekle
+- Aktif önerilen iş: PR19’u yayınla ve hosted quality/API 34 kabulünü doğrula

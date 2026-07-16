@@ -2,13 +2,13 @@
 type: handoff
 status: ready
 implementation_status: active
-code_baseline: e28a22d
+code_baseline: a3bdbe6
 updated: 2026-07-16
-active_phase: "Phase 7 - PR18 ready for review"
-next_pr: "GitHub PR #12 is ready; wait for merge or next development direction"
+active_phase: "Phase 7 - PR19 external deep-link validation"
+next_pr: "Publish PR19 and verify hosted quality/device checks"
 primary_nodes:
-  - FEATURE_PROGRESS_PHOTOS
-  - ADR_004_PERSISTENT_PHOTO_STORAGE
+  - ARCH_NAVIGATION
+  - ADR_002_FIVE_TARGET_NAVIGATION
   - TEST_MATRIX
   - RISK_REGISTER_GRAPH
   - ROADMAP_EXECUTION_GRAPH
@@ -19,9 +19,10 @@ tags: [gymtracker/workflow, gymtracker/session]
 
 ## Şu anki durum
 
-- GitHub PR #1–#11, 2026-07-16 tarihinde merge commit stratejisiyle sırayla `master`a alındı; son code baseline `3f2f8cf`, açık PR kalmadı ve first-parent geçmişinde on bir merge commit korunuyor.
+- GitHub PR #1–#12, 2026-07-16 tarihinde merge commit stratejisiyle sırayla `master`a alındı; son code baseline `52da93a` ve first-parent geçmişinde on iki merge commit korunuyor.
 - PR #11, workflow push filtresini `main` yerine varsayılan `master` dalıyla eşledi. Otomatik `master` koşusu `29499237460` tamamen yeşil; artifact XML 58/58 cihaz testi gösteriyor.
-- PR18 code baseline `e28a22d`, `codex/legacy-photo-recovery` dalında hazır GitHub PR #12 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/12 — v0 yeniden seçim, v1 doğrudan yeniden optimizasyon, kimlik/metadata koruma ve update rollback akışları yerel/hosted kabulden geçti.
+- PR18/GitHub PR #12 merge commit `52da93a` ile `master`a alındı. Master run `29504722658` tamamen yeşil ve artifact XML 62/62.
+- PR19 code baseline `a3bdbe6`, `codex/external-deep-links` dalında: trusted scheme/host, on destination, positive detail ID, cold start, safe fallback ve recreation yerel kabulden geçti.
 - Uygulama baseline: `f9d6d75`; PR8 `codex/workout-lifecycle` dalında draft PR #1 olarak yayınlandı.
 - PR9 baseline: `341bf79`; `codex/nutrition-measurements` dalı PR8’i hedefleyen stacked draft PR #2 olarak yayınlandı.
 - PR10 baseline: `2ad7ad8`; `codex/progress-load` dalı PR9’u hedefleyen stacked draft PR #3 olarak yayınlandı.
@@ -33,7 +34,7 @@ tags: [gymtracker/workflow, gymtracker/session]
 - PR16 code baseline: `a2586d1`; `codex/release-performance` dalı PR15’i hedefleyen stacked draft PR #9 olarak yayınlandı ve hosted run `29473550009` iki işiyle yeşil: https://github.com/MehmetKucukOfficial/GymTracker/pull/9
 - PR17 code baseline: `a573ab9`; `codex/list-detail-goldens` dalı PR16’yı hedefleyen stacked draft PR #10 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/10
 - Room v9; explicit 8→9 photo thumbnail/dimension metadata migration aktif, destructive fallback yok; v0/v1 fotoğraf satırları kayıpsız korunur.
-- Compact navigation shell’i 5 ana hedefli bottom bar, 600 dp+ shell aynı hedeflerle rail kullanıyor; Workout/Programs 840 dp+ ortak liste–özet düzenine geçiyor; full detail hâlâ ID + SavedStateHandle + repository Flow kullanıyor.
+- Compact navigation shell’i 5 ana hedefli bottom bar, 600 dp+ shell aynı hedeflerle rail kullanıyor; Workout/Programs 840 dp+ ortak liste–özet düzenine geçiyor; `gymtracker://app` dış URI’leri aynı route/pozitif-ID + SavedStateHandle sözleşmesini kullanıyor.
 - Home completed/active workout, measurement ve nutrition kaynaklarına reaktif; aktif workout varsa CTA doğrudan session ID’ye devam ediyor.
 - Workout tek aktif seans, status-korumalı mutation, COMPLETED salt-okunur geçmiş ve adaptive modern UI kullanıyor.
 - Nutrition DST-safe tarih aralığı, SavedStateHandle tarih seçimi, snapshot-safe amount/meal edit, delete undo, locale sayı/tarih ve TR/EN adaptive UI kullanıyor.
@@ -43,25 +44,25 @@ tags: [gymtracker/workflow, gymtracker/session]
 - Programs locked/ownership/target kurallarını repository’de doğrular; program günü atomik ACTIVE workout’a planlanan set olarak kopyalanır, tamamlanmayan set Muscle Load’a girmez ve finish’i kilitler.
 - Light/dark tasarım sistemi token temeli ve ortak Home bileşenleri aktif; Home loading/content/error, retry, midnight period tick ve adaptive kolon kullanıyor.
 - Uygulama geneli Türkçe/English kaynak kataloğu 356/356 eşit; muscle adları ve program para biçimi locale-aware.
-- Test temeli aktif: 30 JVM + 62 API 34 instrumentation testi geçiyor; Progress Hub, Programs ve Workout için dört kalıcı golden baseline var.
+- Test temeli aktif: 34 JVM + 66 API 34 instrumentation testi geçiyor; Progress Hub, Programs ve Workout için dört kalıcı golden baseline var.
 - Debug build başarılı; lint 0 error; assemble başarılı.
 - `ciQuality` JVM/lint/debug ile R8/resource-shrunk unsigned APK, AAB ve mapping üretir; GitHub Actions quality + API 34 device/golden workflow’u kaynakta.
 
 ## Sıradaki önerilen iş
 
-PR18/GitHub PR #12 mergeable ve bütün kontrolleri yeşil. Kullanıcının merge veya sonraki geliştirme yönünü bekle.
+PR19 graf commit’ini tamamla, dalı yayınla ve hosted quality/API 34 kontrollerini doğrula; ardından sonraki geliştirme dilimine otomatik geç.
 
 ## Açık P0/P1
 
 - GitHub branch protection içinde quality + API 34 check’lerini zorunlu yapma
 - Golden baseline’ı kalan kritik ekran/state’lere genişletme
-- Harici deep link ve gerçek OS process-death
+- Gerçek OS process-death
 - Gerçek production secret/Play internal-track smoke ve fiziksel cihaz benchmark kabulü
 
 ## Son doğrulama
 
-- `testDebugUnitTest`: success, 30/30.
-- `connectedDebugAndroidTest`: success, 62/62, Pixel 6 Pro API 34 (1m22s, warm local AVD).
+- `testDebugUnitTest`: success, 34/34.
+- `connectedDebugAndroidTest`: success, 66/66, Pixel 6 Pro API 34 (1m15s, warm local AVD).
 - `lintDebug`: success, 0 error.
 - `assembleDebug`: success.
 - `ciQuality`: success; minified APK 2,661,123 bayt, AAB 4,928,049 bayt ve R8 mapping üretildi.
@@ -78,6 +79,33 @@ Graph notes updated:
 Next concrete action:
 Blockers:
 ```
+
+## 2026-07-16 - PR19 validated external deep links
+
+Completed:
+- Added centralized `gymtracker://app` URI patterns for all ten navigation destinations and a manifest `VIEW/DEFAULT/BROWSABLE` filter restricted to the trusted scheme/host.
+- Added `PositiveLongNavType` for workout/program detail IDs and safe Home fallback for zero, negative, nonnumeric, unknown or untrusted external URIs.
+- Added cold-start manifest resolution, Progress Photos child ownership, positive Program detail and Activity recreation Compose coverage.
+
+Files changed:
+- `DeepLinkContract.kt`, `MainActivity.kt`, `AndroidManifest.xml`.
+- `DeepLinkContractTest.kt`, `DeepLinkNavigationTest.kt`.
+- Navigation/ADR/test/risk/roadmap/atlas/impact/start/handoff graph nodes.
+
+Tests run/results:
+- `testDebugUnitTest`: 34/34.
+- Targeted deep-link device package: 4/4.
+- Full Pixel 6 Pro API 34 `connectedDebugAndroidTest`: 66/66, 0 failure/error/skipped.
+- `ciQuality`: success; lint, debug, minified release APK/AAB, R8 mapping and embedded Baseline Profile verified.
+
+Risks changed:
+- ADR-002 external deep-link acceptance is complete; R13 improves to resolved++. True OS process-death remains a separate acceptance package.
+
+Next concrete action:
+- Publish PR19, verify hosted quality + API 34 device jobs, then continue automatically to the process-death/golden roadmap work.
+
+Blockers:
+- No code blocker. Local Gradle still requires explicit JDK 17 because the machine default is Java 11.
 
 ## 2026-07-16 - PR18 legacy photo recovery + optimization
 
