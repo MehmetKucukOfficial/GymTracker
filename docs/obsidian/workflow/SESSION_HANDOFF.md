@@ -106,13 +106,14 @@ Tests run/results:
 - `testDebugUnitTest` + `assembleDebug`: success; three new settings JVM tests.
 - Targeted Settings/Navigation/Localization device package: 11/11.
 - Updated full Navigation smoke class: 9/9, including explicit theme persistence across Activity recreation.
+- Real Preferences DataStore repository write/read round-trip: 1/1.
 
 Risks changed:
 - Settings no longer has an unowned persistence path; visible preferences must have real consumers.
 - Export/restore and destructive data management remain separate high-risk transaction work.
 
 Next concrete action:
-- Complete PR23 hosted artifact audit and merge, merge the new master into PR24, then run full `ciQuality` + 79-app-test acceptance before publication.
+- Complete PR23 hosted artifact audit and merge, merge the new master into PR24, then run full `ciQuality` + 80-app-test acceptance before publication.
 
 Blockers:
 - No code blocker. Production secrets/Play, branch protection and physical-device acceptance remain external.

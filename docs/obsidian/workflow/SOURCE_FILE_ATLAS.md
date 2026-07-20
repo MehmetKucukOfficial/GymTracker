@@ -99,7 +99,7 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | `ui/components/GtFeedbackComponentsTest.kt` | `%200` top bar başlık/geri semantics + ortak Snackbar mesaj/undo |
 | `ui/golden/CriticalStateGoldenTest.kt` | Nutrition over-goal ve Measurements chart/top bar kalıcı golden baselineları |
 | `ui/navigation/NavigationSmokeTest.kt` | ortak top bar back + sistem back + route/detail/recreation |
-| `ui/screens/settings/SettingsScreenTest.kt`, `data/settings/AppSettingsTest.kt` | tema çözümü/fallback, tek seçim, büyük-font erişimi ve recreation kalıcılığı |
+| `ui/screens/settings/SettingsScreenTest.kt`, `data/settings/AppSettingsTest.kt`, `data/settings/SettingsRepositoryTest.kt` | tema çözümü/fallback, gerçek DataStore round-trip, tek seçim, büyük-font erişimi ve recreation kalıcılığı |
 | `baselineprofile/ProcessDeathNavigationTest.kt` | farklı PID’de route/task + Nutrition tarihi + Measurements checked-period restorasyonu |
 | `data/photos/PhotoRebootAcceptanceTest.kt` | 120 managed main/thumbnail + boot-count seed/verify fazları ve reboot sonrası reconciliation |
 | `baselineprofile/PhotoGridBenchmark.kt` | reboot fixture’ı üzerinde beş iterasyon thumbnail grid FrameTiming + Perfetto |

@@ -14,6 +14,7 @@ source_files:
   - app/src/main/java/com/gymtracker/ui/screens/home/HomeScreen.kt
   - app/src/test/java/com/gymtracker/data/settings/AppSettingsTest.kt
   - app/src/androidTest/java/com/gymtracker/ui/screens/settings/SettingsScreenTest.kt
+  - app/src/androidTest/java/com/gymtracker/data/settings/SettingsRepositoryTest.kt
   - app/src/androidTest/java/com/gymtracker/ui/navigation/NavigationSmokeTest.kt
 tags: [gymtracker/feature, gymtracker/settings, gymtracker/data]
 ---
@@ -38,7 +39,7 @@ tags: [gymtracker/feature, gymtracker/settings, gymtracker/data]
 
 ## Kabul
 
-- Geçen: 3 settings JVM testi; hedefli 11 cihaz testi; 9-test Navigation smoke paketi.
+- Geçen: 3 settings JVM testi; gerçek Preferences DataStore round-trip cihaz testi; hedefli 11 cihaz testi; 9-test Navigation smoke paketi.
 - Geçen: explicit açık tema seçimi Activity recreation sonrasında seçili kalır.
 - Geçen: Settings rotasında ana navigation gizlenir; top-bar geri Home’a döner.
 - Bekleyen: tam `ciQuality` ve hosted API 34 kabulü, export/restore, tüm veriyi silme ve davranışa bağlı diğer tercihler.
