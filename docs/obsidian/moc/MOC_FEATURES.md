@@ -18,6 +18,7 @@ tags: [gymtracker/moc, gymtracker/feature]
 | Fotoğraflar | ProgressPhoto DAO + content URI | URI kalıcı değil | [[FEATURE_PROGRESS_PHOTOS]] |
 | Programlar | Program DAO + JSON serializer | Seed race ve detail bug | [[FEATURE_PROGRAMS]] |
 | Kas yükü | Workout DAO + FatigueCalculator | Yaklaşık metrik/stale | [[FEATURE_MUSCLE_LOAD]] |
+| Ayarlar ve veri | Preferences DataStore + veri yönetimi repository’leri | Etkisiz tercih/export kaybı | [[FEATURE_SETTINGS_DATA]] |
 
 ## Feature bağımlılıkları
 
@@ -31,6 +32,8 @@ flowchart TD
     MEASUREMENTS --> PROGRESS[Progress Hub]
     PHOTOS[Photos] --> PROGRESS
     LOAD --> PROGRESS
+    SETTINGS[Ayarlar] --> THEME[Tema]
+    SETTINGS --> DATA[Veri yönetimi]
 ```
 
 Modern hedefte ölçüm, fotoğraf ve kas yükü tek “İlerleme” üst hedefinde gruplanır; ayrıntı [[ARCH_NAVIGATION]] içindedir.

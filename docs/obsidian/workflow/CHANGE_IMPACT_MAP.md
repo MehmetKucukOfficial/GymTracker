@@ -110,3 +110,9 @@ Graf: [[PERFORMANCE_BASELINE]], [[TEST_MATRIX]], ilgili feature.
 Oku: tüm hardcoded kullanıcı metinleri, formatter, validation, setting DataStore.
 Test: `ResourceCoverageTest`, `LocalizationResourcesTest`, locale bağımsız UI testleri ve ilgili golden; Türkçe + English anahtar eşitliği, plural, decimal, para ve kg/lb.
 Graf: [[DESIGN_SYSTEM_GRAPH]], ilgili feature.
+
+## Settings veya Preferences DataStore
+
+Oku: `data/settings/AppSettings.kt`, `di/SettingsModule.kt`, Settings Screen/ViewModel, `MainActivity.kt`, `Theme.kt`, etkilenen gerçek feature tüketicileri ve TR/EN kaynakları.
+Test: settings fallback/round-trip, gerçek davranış tüketimi, Activity recreation, navigation back, light/dark, `%200` font ve `ResourceCoverageTest`. Henüz davranışa bağlanmayan tercih UI’a eklenmez.
+Graf: [[FEATURE_SETTINGS_DATA]], [[ARCH_STATE_DATA_FLOW]], [[ARCH_NAVIGATION]], [[DESIGN_SYSTEM_GRAPH]].

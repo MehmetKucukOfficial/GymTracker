@@ -65,6 +65,7 @@ tags: [gymtracker/moc, gymtracker/graph]
 | Program | [[FEATURE_PROGRAMS]] |
 | Kas haritası | [[FEATURE_MUSCLE_LOAD]] |
 | Tasarım sistemi | [[DESIGN_SYSTEM_GRAPH]] |
+| Ayarlar/veri yönetimi | [[FEATURE_SETTINGS_DATA]] |
 
 ## Grafın güncellik durumu
 

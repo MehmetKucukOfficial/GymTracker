@@ -18,6 +18,8 @@ source_files:
   - app/src/main/java/com/gymtracker/domain/MuscleLoadCalculator.kt
   - app/src/main/java/com/gymtracker/data/workout/WorkoutRepository.kt
   - app/src/main/java/com/gymtracker/data/programs/ProgramRepository.kt
+  - app/src/main/java/com/gymtracker/data/settings/AppSettings.kt
+  - app/src/main/java/com/gymtracker/ui/screens/settings/SettingsViewModel.kt
 tags: [gymtracker/architecture, gymtracker/state]
 ---
 
@@ -32,6 +34,7 @@ tags: [gymtracker/architecture, gymtracker/state]
 - Nutrition: seçili `LocalDate` ISO biçiminde `SavedStateHandle` içinde korunur; parse edilemeyen restore değeri injectable `Clock` gününe düşer. `Clock`/dinamik sistem `ZoneId` ile takvim günü aralığı hesaplanır ve `flatMapLatest` yeni Room Flow’una geçer. Edit snapshot-safe update’tir; delete aynı-ID Snackbar undo state’i üretir.
 - Measurements: `MeasurementRepository` all + indexed period Flow’larını ayırır. `SavedStateHandle` içindeki chart period `flatMapLatest` ile 7/30/90/tümü query’sini seçer; `MeasurementsUiState(latest, history, weightTrend, chartMeasurements)` üretir. Nutrition selected date ve Measurements checked period gerçek OS process death sonrasında ayrı instrumentation sürecinde doğrulanır.
 - Muscle Load: Home ile aynı takvim period Flow’u `flatMapLatest` ile completed-set Room Flow’una geçer; bu Flow `MeasurementDao.observeLatestWithWeight()` ile birleşir. Saf calculator sıfır kilolu setleri en güncel kişisel ölçümle, ölçüm yoksa açık 20 kg fallback ile hesaplayıp kaynak bilgisini loading/content/error state’e taşır.
+- Settings: singleton Preferences DataStore → typed `SettingsRepository` Flow → Activity ve Settings ViewModel state’i. `SYSTEM/LIGHT/DARK` tercihi uygulama temasına anında bağlanır ve recreation sonrasında korunur; davranışa bağlanmayan ayarlar kullanıcıya sunulmaz.
 - Bütün ana Compose ekranları `collectAsStateWithLifecycle()` kullanır.
 - Programdan gelen `WorkoutSet.isCompleted=false` satırları gerçek reps/kg mutation’ıyla tamamlanır; çözülmemiş planlı set varken finish reddedilir ve Muscle Load yalnız session + set tamamlandığında etkilenir.
 - Gün sınırı sabit 86.400.000 ms yerine `ZoneId` + takvim günü ile hesaplanır; tarihsel Istanbul DST unit testi vardır.
@@ -75,5 +78,6 @@ flowchart TD
 4. [[FEATURE_HOME]] — Clock injection; aktif-seans CTA entegrasyonu tamamlandı.
 5. [[FEATURE_MEASUREMENTS]] — validation/latest/history/trend, repository sınırı, SavedState period ve gerçek chart Flow’u tamamlandı.
 6. [[FEATURE_PROGRAMS]] — ilişkisel plan Flow’u, locked repository guard ve atomic program→planned-workout entegrasyonu tamamlandı.
+7. [[FEATURE_SETTINGS_DATA]] — typed DataStore theme tercihi, lifecycle state ve gerçek tema tüketimi tamamlandı; veri yönetimi genişlemesi aktif.
 
 Test eşleşmesi: [[TEST_MATRIX#ViewModel ve state]].

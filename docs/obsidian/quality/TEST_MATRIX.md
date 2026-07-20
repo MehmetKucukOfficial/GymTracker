@@ -55,6 +55,7 @@ tags: [gymtracker/quality, gymtracker/testing]
 - PR20 merge-commit `625489a` otomatik master kabul koşusu `29762392465`: quality ve API 34 device/process-death işleri yeşil; indirilen artifact XML 66 app + 2 ayrı process-death testi, 0 failure/error/skipped gösterir.
 - PR21/GitHub PR #15 hosted koşusu `29764819516`: quality 7m10s, API 34 device 15m12s; artifact XML 71 app + 2 process-death testi, 0 failure/error/skipped. Merge commit: `39927a7`.
 - `releaseDistribution` dummy upload keystore ile APK v2/v3, AAB JAR imzası ve embedded profile girdilerini doğruladı; secretsiz çağrı dört eksik environment değerini fail-fast raporladı.
+- `AppSettingsTest`, Settings Compose testleri ve Navigation smoke; bozuk/eksik tema fallback’i, system/explicit çözüm, tek-seçim semantics’i, `%200` font erişimi, Settings back politikası ve explicit tercihin Activity recreation sonrasında korunmasını doğrular.
 
 ## Feature matrisi
 
@@ -67,6 +68,7 @@ tags: [gymtracker/quality, gymtracker/testing]
 | Photos | input/limit/media bounds/48 MB reserve/backup policy | v3→v9 + v8→v9/import/EXIF/thumbnail/delete/reconcile/metadata-only restore/legacy-upgrade rollback | thumbnail grid/500-row lazy access/v0 reselect/v1 optimize/viewer/ortak top bar+Snackbar/dark/%200 | alt rota gerçek process-death + gerçek host reboot; backup transport/fiziksel perf bekliyor |
 | Programs | stable ID/content + 839/840 layout | idempotent 5/23/108 seed, v6→v7 JSON migration, atomic plan copy | list/detail/locked/start, ortak top bar+Snackbar, expanded selection/restoration, golden, dark/%200 | positive-ID detail Activity recreation + gerçek process-death |
 | Muscle load | activation/decay/personal bodyweight/fallback/unknown + midnight/zone | completed-only set + latest-valid-weight Flow | map/list/calibration/methodology/dark/%200 | TalkBack bekliyor |
+| Settings/data | tema çözümü + Preferences fallback | DataStore round-trip genişlemesi bekliyor | tek seçim, local-first bilgi, dark/%200/English | Home child route + Activity recreation |
 
 ## Room ve migration
 

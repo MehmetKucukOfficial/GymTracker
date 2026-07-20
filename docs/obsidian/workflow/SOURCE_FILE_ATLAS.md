@@ -26,7 +26,7 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | `app/proguard-rules.pro` | yalnız kanıtla eklenecek proje R8 istisnaları | [[ARCH_BUILD_DI]] |
 | `AndroidManifest.xml` | permission/app/activity/backup + trusted external deep-link intent filter | [[ARCH_BUILD_DI]], [[ARCH_NAVIGATION]] |
 | `GymTrackerApp.kt` | Hilt application | [[ARCH_CURRENT_SYSTEM]] |
-| `MainActivity.kt` | theme + compact bottom-bar / 600 dp+ rail adaptive scaffold + deep-link-aware NavHost + child route back callbacks | [[ARCH_NAVIGATION]] |
+| `MainActivity.kt` | DataStore-backed theme + compact bottom-bar / 600 dp+ rail adaptive scaffold + deep-link-aware NavHost + child route back callbacks | [[ARCH_NAVIGATION]], [[FEATURE_SETTINGS_DATA]] |
 
 ## Veri
 
@@ -48,6 +48,7 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | `data/programs/ProgramWorkoutPlan.kt` | Room relation modeli ve sıralı egzersiz görünümü | Programs |
 | `data/measurements/MeasurementRepository.kt` | all/period Flow ve measurement mutation sınırı | Measurements |
 | `data/photos/ProgressPhotoRepository.kt` | storage v2 medya import/delete/reconciliation + v0/v1 atomik yükseltme sınırı | Photos |
+| `data/settings/AppSettings.kt`, `di/SettingsModule.kt` | typed theme preference + singleton Preferences DataStore | [[FEATURE_SETTINGS_DATA]] |
 
 ## Domain
 
@@ -71,6 +72,7 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | `ui/theme/Theme.kt` | light/dark Material renk şeması + fatigue color | [[DESIGN_SYSTEM_GRAPH]] |
 | `ui/theme/DesignTokens.kt` | type/spacing/shape/size tokenları | [[DESIGN_SYSTEM_GRAPH]] |
 | `ui/components/GymTrackerComponents.kt` | metric/action/state ortak UI + 840 dp liste-only/list-detail iskeleti + büyük-font uyumlu top bar + ortak Snackbar host | [[DESIGN_SYSTEM_GRAPH]], [[ARCH_NAVIGATION]] |
+| `ui/screens/settings/SettingsScreen.kt`, `SettingsViewModel.kt` | gerçek tema tüketen Settings route/content + lifecycle state | [[FEATURE_SETTINGS_DATA]] |
 
 ## Home
 
@@ -97,6 +99,7 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | `ui/components/GtFeedbackComponentsTest.kt` | `%200` top bar başlık/geri semantics + ortak Snackbar mesaj/undo |
 | `ui/golden/CriticalStateGoldenTest.kt` | Nutrition over-goal ve Measurements chart/top bar kalıcı golden baselineları |
 | `ui/navigation/NavigationSmokeTest.kt` | ortak top bar back + sistem back + route/detail/recreation |
+| `ui/screens/settings/SettingsScreenTest.kt`, `data/settings/AppSettingsTest.kt` | tema çözümü/fallback, tek seçim, büyük-font erişimi ve recreation kalıcılığı |
 | `baselineprofile/ProcessDeathNavigationTest.kt` | farklı PID’de route/task + Nutrition tarihi + Measurements checked-period restorasyonu |
 | `data/photos/PhotoRebootAcceptanceTest.kt` | 120 managed main/thumbnail + boot-count seed/verify fazları ve reboot sonrası reconciliation |
 | `baselineprofile/PhotoGridBenchmark.kt` | reboot fixture’ı üzerinde beş iterasyon thumbnail grid FrameTiming + Perfetto |

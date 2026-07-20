@@ -4,8 +4,8 @@ status: ready
 implementation_status: active
 code_baseline: 26696b9
 updated: 2026-07-20
-active_phase: "Phase 8 - PR23 photo device resilience hosted acceptance"
-next_pr: "Publish PR23 reboot/benchmark gate and merge after artifact audit"
+active_phase: "Phase 8 - PR23 hosted acceptance + PR24 settings foundation"
+next_pr: "Merge PR23 after artifact audit; publish PR24 settings foundation"
 primary_nodes:
   - FEATURE_PROGRESS_PHOTOS
   - ADR_004_PERSISTENT_PHOTO_STORAGE
@@ -13,6 +13,7 @@ primary_nodes:
   - TEST_MATRIX
   - RISK_REGISTER_GRAPH
   - ROADMAP_EXECUTION_GRAPH
+  - FEATURE_SETTINGS_DATA
 tags: [gymtracker/workflow, gymtracker/session]
 ---
 
@@ -24,6 +25,8 @@ tags: [gymtracker/workflow, gymtracker/session]
 - PR21/GitHub PR #15 hosted koşusu `29764819516` tamamen yeşil; indirilen artifact XML 71/71 app ve 2/2 gerçek process-death testi gösteriyor.
 - PR22 code baseline `43b523a`, graph baseline `e8f8ca5`, kararlılık head’i `a4f7bd9`: hosted retry `29769324578` 71/71 app + 4/4 process-death ile yeşil ve GitHub PR #16 merge commit `79a80f4` ile `master`a alındı.
 - PR23 code baseline `26696b9`, integration head `5456d1b`, `codex/photo-device-resilience` dalında: 48 MB free-space preflight, typed low-storage mesajı, backup XML/metadata-only restore testleri, gerçek `adb reboot` + `BOOT_COUNT` kanıtlı 120-row fixture, 500-row lazy-grid testi ve 120-thumbnail FrameTiming/Perfetto macrobenchmark hazır.
+- PR23 GitHub PR #17 olarak yayınlandı; hosted run `29771389567` quality işini 7m21s ile geçti, geniş API 34 reboot/benchmark/process-death işi sürüyor.
+- PR24 code baseline `cc2f4fa`, `codex/settings-foundation` yerel dalında: singleton Preferences DataStore, typed tema repository/state, gerçek system/light/dark tüketimi, Home→Settings child rotası, ortak back ve local-first bilgi yüzeyi hazır.
 - Uygulama baseline: `f9d6d75`; PR8 `codex/workout-lifecycle` dalında draft PR #1 olarak yayınlandı.
 - PR9 baseline: `341bf79`; `codex/nutrition-measurements` dalı PR8’i hedefleyen stacked draft PR #2 olarak yayınlandı.
 - PR10 baseline: `2ad7ad8`; `codex/progress-load` dalı PR9’u hedefleyen stacked draft PR #3 olarak yayınlandı.
@@ -51,7 +54,7 @@ tags: [gymtracker/workflow, gymtracker/session]
 
 ## Sıradaki önerilen iş
 
-PR23 dalını pushla, PR’ı aç ve hosted 75 app + 2 reboot fazı + 1 macrobenchmark + 4 process-death artifact’lerini doğrula; ardından merge commit ile birleştir.
+PR23 hosted 75 app + 2 reboot fazı + 1 macrobenchmark + 4 process-death artifact’lerini doğrula ve merge commit ile birleştir. Sonra PR24’ü yeni master soy ağacına merge et, tam kalite kapısından geçir ve yayınla.
 
 ## Açık P0/P1
 
@@ -85,6 +88,34 @@ Graph notes updated:
 Next concrete action:
 Blockers:
 ```
+
+## 2026-07-20 - PR24 Settings and architecture foundation
+
+Completed:
+- Added singleton Preferences DataStore, a typed Settings repository/state, and immediate system/light/dark theme consumption at the Activity boundary.
+- Added a Home settings action, full-screen child route with hidden primary navigation, shared top-bar back behavior, and lifecycle-aware Settings UI.
+- Added local-first photo backup/privacy disclosure, package-derived version display, exact TR/EN resources, single-selection semantics, and `%200` font reachability.
+- Deliberately kept units, week start, rest duration, and haptics out of the UI until their real feature behavior is implemented.
+
+Files changed:
+- Settings data/DI/ViewModel/Screen, `MainActivity`, navigation policy, Home header, TR/EN resources.
+- Settings JVM/Compose tests, navigation smoke and localization coverage.
+- Settings feature, architecture/state/navigation/design/test/roadmap/atlas/impact/start/handoff graph nodes.
+
+Tests run/results:
+- `testDebugUnitTest` + `assembleDebug`: success; three new settings JVM tests.
+- Targeted Settings/Navigation/Localization device package: 11/11.
+- Updated full Navigation smoke class: 9/9, including explicit theme persistence across Activity recreation.
+
+Risks changed:
+- Settings no longer has an unowned persistence path; visible preferences must have real consumers.
+- Export/restore and destructive data management remain separate high-risk transaction work.
+
+Next concrete action:
+- Complete PR23 hosted artifact audit and merge, merge the new master into PR24, then run full `ciQuality` + 79-app-test acceptance before publication.
+
+Blockers:
+- No code blocker. Production secrets/Play, branch protection and physical-device acceptance remain external.
 
 ## 2026-07-20 - PR23 Progress Photos device resilience
 

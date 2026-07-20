@@ -16,6 +16,7 @@ source_files:
   - app/src/main/java/com/gymtracker/ui/screens/measurements/MeasurementsScreen.kt
   - app/src/main/java/com/gymtracker/ui/screens/progress/ProgressScreen.kt
   - app/src/main/java/com/gymtracker/ui/screens/fatigue/FatigueScreen.kt
+  - app/src/main/java/com/gymtracker/ui/screens/settings/SettingsScreen.kt
   - baselineprofile/src/main/java/com/gymtracker/baselineprofile/ProcessDeathNavigationTest.kt
   - .github/workflows/android-ci.yml
 tags: [gymtracker/architecture, gymtracker/navigation]
@@ -30,6 +31,8 @@ Compact genişlikte alt bar; 600 dp ve üzerinde navigation rail kullanılır. H
 Ölçüm (`progress/measurements`), fotoğraf (`progress/photos`) ve kas yükü (`progress/load`) İlerleme hub’ından açılır ve alt barda İlerleme seçili kalır. Bu üç child rota ortak `GtTopAppBar` geri eylemini gösterir; top bar geri eylemi ve sistem back aynı hub back stack sonucunu üretir. `workouts/{sessionId}` ve `programs/{programId}` detail ekranları alt barı gizler, loading/not-found/content durumlarının tamamında aynı görünür geri sözleşmesini korur; Hilt ViewModel route ID’sini `SavedStateHandle` üzerinden alır ve repository Flow’dan veriyi yeniden çözer.
 
 Workout ve Programs ana rotaları 840 dp+ genişlikte ortak liste–detay iskeletini kullanır. Kart seçimi aynı ana rotada `rememberSaveable` kimliği günceller; önizlemenin açık eylemi mevcut pozitif-ID detay rotasına gider. Böylece compact back davranışı, full-screen detay shell’i, route sahipliği ve repository veri çözümü tek sözleşme olarak kalır.
+
+Settings, Home başlığındaki erişilebilir eylemden açılan `settings` child rotasıdır. Ana bottom bar/rail gizlenir; ortak top-bar geri eylemi ve sistem back Home’a aynı sonucu üretir. Settings dış deep-link yüzeyi değildir.
 
 PR19 dış giriş sözleşmesi `gymtracker://app/<route>` tabanını kullanır. Manifest yalnız `gymtracker` scheme + `app` host eşleşmesini `VIEW/DEFAULT/BROWSABLE` olarak dışa açar; her NavHost destination merkezi `DeepLinkContract` pattern’ine bağlanır. Workout/program detail argümanları `PositiveLongNavType` ile sıfır, negatif ve sayısal olmayan ID’leri route eşleşmesinden çıkarır. Geçersiz veya bilinmeyen URI güvenli `home` başlangıcında kalır.
 
@@ -63,6 +66,7 @@ Telefon ana hedefleri:
 | `progress/measurements` | yok | Measurement Flow |
 | `progress/photos` | yok | Photo repository Flow |
 | `progress/load` | yok | Fatigue ViewModel |
+| `settings` | yok | Preferences DataStore → Settings repository |
 
 ## Harici URI sözleşmesi
 
