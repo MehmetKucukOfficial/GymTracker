@@ -2,7 +2,7 @@
 type: adr-index
 status: current
 implementation_status: mixed
-updated: 2026-07-16
+updated: 2026-07-20
 tags: [gymtracker/decision, gymtracker/moc]
 ---
 
@@ -19,5 +19,6 @@ tags: [gymtracker/decision, gymtracker/moc]
 | [[ADR_007_RELATIONAL_PROGRAM_PLANS]] | accepted | current | Programs + Workout + Room v7 |
 | [[ADR_008_SNAPSHOT_SAFE_EDIT_UNDO]] | accepted | current | Nutrition + Measurements edit/undo |
 | [[ADR_009_SECRET_BACKED_RELEASES]] | accepted | current-config | production signing + distribution |
+| [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]] | accepted | export-current | Room + Settings + progress photo export; staged restore contract |
 
 Yeni karar [[TEMPLATE_ADR]] ile eklenir. Karar değişirse eski ADR silinmez; superseded işaretlenip yeni ADR’ye bağlanır.

@@ -3,7 +3,7 @@ aliases: [GymTracker Graph Start, Başlangıç]
 type: moc
 status: current
 implementation_status: mixed
-verified_commit: 4906402
+verified_commit: 81cb7fe
 updated: 2026-07-20
 tags: [gymtracker/moc, gymtracker/graph]
 ---
@@ -21,7 +21,8 @@ tags: [gymtracker/moc, gymtracker/graph]
 - Local-first; backend ve gerçek ödeme yok
 - 5 ana navigation hedefi, 3 İlerleme alt hedefi, ID tabanlı workout/program detayları
 - 82 benzersiz egzersiz, 108 hazır program egzersiz referansı
-- `ciQuality` debug + minified release APK/AAB üretir; PR24 dalında 40 JVM + 80 app cihaz testi, PR23 hosted kapısında 75 app + 2 gerçek reboot fazı + 4 gerçek process-death + 1 grid macrobenchmark geçiyor; lint 0 hata
+- `ciQuality` debug + minified release APK/AAB üretir; PR25 dalında 42 JVM, hedefli 19 export cihaz testi; PR24 hosted kapısında 80 app + 2 gerçek reboot fazı + 4 gerçek process-death + 1 grid macrobenchmark geçiyor; lint 0 hata
+- Format v1 manuel ZIP export on bir Room tablosunu, tema tercihini ve yönetilen fotoğrafları taşır; staged restore ve tüm veriyi silme sıradadır
 - Workout ve Programs compact’ta ID rotası, 840 dp+ genişlikte ortak liste–özet kullanır; altı kalıcı golden baseline vardır
 - Destructive migration, yeni fotoğraf URI kaybı, seed race ve temel navigation/state riskleri kapatıldı veya azaltıldı
 
@@ -69,11 +70,12 @@ tags: [gymtracker/moc, gymtracker/graph]
 
 ## Grafın güncellik durumu
 
-- Master code baseline: `ce20615`; GitHub PR #1–#17 merge commit ile sırayla birleştirildi ve kaynak dallar korundu
+- Master code baseline: `80c79b5`; GitHub PR #1–#18 merge commit ile sırayla birleştirildi ve kaynak dallar korundu
 - PR21 hosted koşusu `29764819516` tamamen yeşil; artifact XML 71 app + 2 process-death testi gösteriyor
 - PR22 hosted retry `29769324578` tamamen yeşil; artifact XML 71 app + 4 process-death testi gösteriyor ve GitHub PR #16 merge commit `79a80f4` ile birleştirildi
 - PR23 hosted koşusu `29771389567` tamamen yeşil; artifact XML 75 app + 5 benchmark/process testi, reboot seed/verify 1/1 + 1/1, beş benchmark tekrarı ve beş Perfetto trace gösteriyor; merge commit `ce20615`
-- Aktif PR24 integration head `4906402` (`codex/settings-foundation`); kalıcı tema ayarı/veri temeli hazır, tam yerel `ciQuality` ve 80/80 app cihaz kabulü geçti
-- Dokümanlar: PR23 master, PR24 ayarlar temeli ve process-death test sağlamlaştırmasıyla senkron
+- PR24 hosted koşusu `29775858318` tamamen yeşil; artifact XML 80 app + 5 benchmark/process, reboot 1+1 ve beş trace; merge commit `80c79b5`
+- Aktif PR25 integration head `81cb7fe` (`codex/data-export`); format v1 manuel export, tam `ciQuality`, 42 JVM, hedefli 19/19 ve tam 85/85 API 34 testi geçti
+- Dokümanlar: PR24 master ve PR25 manuel veri dışa aktarma sözleşmesiyle senkron
 - Son tam doğrulama: 2026-07-20
-- Aktif önerilen iş: PR24 graph/test kanıtlarını tamamla, dalı yayınla ve hosted tam kabul sonrası merge commit ile birleştir
+- Aktif önerilen iş: PR25 tam 85-test cihaz kabulünü çalıştır, hosted artifact kabulünden sonra merge commit ile birleştir; ardından staged restore dilimine geç

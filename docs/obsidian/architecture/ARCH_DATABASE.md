@@ -2,8 +2,8 @@
 type: architecture
 status: current
 implementation_status: current
-verified_commit: 5c3ce35
-updated: 2026-07-16
+verified_commit: 81cb7fe
+updated: 2026-07-20
 source_files:
   - app/src/main/java/com/gymtracker/data/entities/Entities.kt
   - app/src/main/java/com/gymtracker/data/database/AppDatabase.kt
@@ -13,6 +13,8 @@ source_files:
   - app/src/main/java/com/gymtracker/data/dao/NutritionDao.kt
   - app/src/main/java/com/gymtracker/data/dao/ProgressPhotoDao.kt
   - app/src/main/java/com/gymtracker/data/dao/ProgramDao.kt
+  - app/src/main/java/com/gymtracker/data/portability/DataPortabilityDao.kt
+  - app/src/main/java/com/gymtracker/data/portability/PortableArchive.kt
 tags: [gymtracker/architecture, gymtracker/data]
 ---
 
@@ -96,6 +98,7 @@ erDiagram
 | NutritionDao | food items/entries/goals | [[FEATURE_NUTRITION]], [[FEATURE_HOME]] |
 | ProgressPhotoDao | photos | [[FEATURE_PROGRESS_PHOTOS]] |
 | ProgramDao | programs/workouts | [[FEATURE_PROGRAMS]] |
+| DataPortabilityDao | 11 tablo, salt-okunur ve kararlı ID sıralı snapshot | [[FEATURE_SETTINGS_DATA]], [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]] |
 
 ## Kritik mevcut gerçekler
 
@@ -108,6 +111,7 @@ erDiagram
 - `WorkoutDao.getSetsSince()` içindeki `date(sessionId)` semantik olarak yanlış ve kullanılmıyor.
 - Program seed tek Room transaction’ı ve `seed_metadata` claim’i ile idempotenttir.
 - Fotoğraf byte’ları Room içinde BLOB değildir; app internal storage’da optimize ana JPEG + thumbnail, DB’de URI/dimension/storage metadata tutulur.
+- Manuel export yeni schema/entity yaratmaz. `DataPortabilityDao` on bir tabloyu tek `withTransaction` içinde salt-okunur; arşiv format sürümü Room schema sürümünden ayrı tutulur.
 
 ## Hedef değişiklikler
 
@@ -118,5 +122,6 @@ erDiagram
 - Legacy photo re-import/re-optimize UX
 - Tarih ve compound index’ler
 - Para minor unit/currency
+- Format v1 staged restore için ilişki doğrulama, mevcut verinin atomik replace politikası ve desteklenen archive migrator zinciri
 
 Her değişiklikte [[CHANGE_IMPACT_MAP#Room entity veya kolon değişikliği]] uygulanır.

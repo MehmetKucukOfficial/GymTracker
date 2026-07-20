@@ -2,7 +2,7 @@
 type: quality
 status: current
 implementation_status: mixed
-verified_commit: 4906402
+verified_commit: 81cb7fe
 updated: 2026-07-20
 tags: [gymtracker/quality, gymtracker/testing]
 ---
@@ -58,6 +58,11 @@ tags: [gymtracker/quality, gymtracker/testing]
 - PR23/GitHub PR #17 hosted koşusu `29771389567`: quality ve geniş API 34 cihaz işi yeşil; indirilen artifact XML 75 app + 5 benchmark/process testi, 0 failure/error/skipped; reboot seed/verify 1/1 + 1/1; `PhotoGridBenchmark` beş tekrar ve beş Perfetto trace. Merge commit: `ce20615`.
 - `releaseDistribution` dummy upload keystore ile APK v2/v3, AAB JAR imzası ve embedded profile girdilerini doğruladı; secretsiz çağrı dört eksik environment değerini fail-fast raporladı.
 - `AppSettingsTest`, Settings Compose testleri ve Navigation smoke; bozuk/eksik tema fallback’i, system/explicit çözüm, tek-seçim semantics’i, `%200` font erişimi, Settings back politikası ve explicit tercihin Activity recreation sonrasında korunmasını doğrular.
+- `PortableArchiveWriterTest`, format v1/schema v9 header'ını, typed on bir tablo dönüşümünü, tema değerini, yönetilen ana/thumbnail byte'larını, legacy metadata-only işaretini, cihaz yolu sızıntısı olmamasını ve eksik yönetilen medyada fail-closed davranışı doğrular.
+- `DataPortabilityDaoTest`, on bir tabloyu gerçek in-memory Room üzerinde tek transaction ve kararlı ID sırasıyla okur. `DataExportRepositoryTest`, gerçek seçili dosyaya okunabilir ZIP kopyasını, tema/veri içeriğini, temp cleanup'ı ve düşük alanda hedef içeriğini korumayı doğrular.
+- PR24/GitHub PR #18 hosted koşusu `29775858318`: quality + API 34 tamamen yeşil; indirilen artifact XML 80 app + 5 benchmark/process, 0 failure/error/skipped; reboot seed/verify 1/1 + 1/1; dört gerçek process-death; beş benchmark tekrarı ve beş Perfetto trace. Merge commit `80c79b5`.
+- PR25 yerel export dilimi: 42/42 JVM, hedefli 19/19 API 34 cihaz testi ve tam `ciQuality` başarılı; 385/385 TR/EN string eşitliği.
+- PR25 tam yerel API 34 paketi: ilk turda `ProgressHubGoldenTest` ekran yakalama hazır olma koşulu 2 saniyede zaman aşımına uğradı, piksel karşılaştırması başlamadı. Gerçek emulator reboot sonrası hedefli golden 2/2 ve tam tekrar 85/85, 0 failure/error/skipped ile geçti.
 
 ## Feature matrisi
 
@@ -70,7 +75,7 @@ tags: [gymtracker/quality, gymtracker/testing]
 | Photos | input/limit/media bounds/48 MB reserve/backup policy | v3→v9 + v8→v9/import/EXIF/thumbnail/delete/reconcile/metadata-only restore/legacy-upgrade rollback | thumbnail grid/500-row lazy access/v0 reselect/v1 optimize/viewer/ortak top bar+Snackbar/dark/%200 | alt rota gerçek process-death + gerçek host reboot; backup transport/fiziksel perf bekliyor |
 | Programs | stable ID/content + 839/840 layout | idempotent 5/23/108 seed, v6→v7 JSON migration, atomic plan copy | list/detail/locked/start, ortak top bar+Snackbar, expanded selection/restoration, golden, dark/%200 | positive-ID detail Activity recreation + gerçek process-death |
 | Muscle load | activation/decay/personal bodyweight/fallback/unknown + midnight/zone | completed-only set + latest-valid-weight Flow | map/list/calibration/methodology/dark/%200 | TalkBack bekliyor |
-| Settings/data | tema çözümü + Preferences fallback | gerçek DataStore write/read round-trip | tek seçim, local-first bilgi, dark/%200/English | Home child route + Activity recreation |
+| Settings/data | tema çözümü + Preferences fallback + format v1 archive mapping/writer | gerçek DataStore round-trip + 11 tablo snapshot + SAF dosya/low-space/temp cleanup | tek seçim, local-first/export bilgi, loading/success/error, dark/%200/English | Home child route + Activity recreation; restore/process-kill bekliyor |
 
 ## Room ve migration
 
@@ -94,6 +99,6 @@ Home ve Kas Yükü aynı canlı rollover akışında injectable Clock/ZoneId kul
 
 ## CI sırası
 
-`ciQuality`: unit → lintDebug → debug APK → minified/resource-shrunk release APK + AAB + mapping + embedded Baseline Profile doğrulaması. Pull request ve `master` push’unda quality job’u geçtikten sonra API 34 Pixel 6 Pro üzerinde 75 Room/Compose/navigation/golden cihaz testi çalışır; host 120 fotoğraflı fixture üretip emulatorü gerçekten reboot eder; reboot doğrulamasından sonra aynı veri setinde bir thumbnail-grid macrobenchmark ve ayrı süreçte 4 gerçek process-death testi çalışır. App XML, reboot faz çıktıları, benchmark/process-death XML’i, benchmark JSON’u ve Perfetto trace’leri artifact olarak saklanır. Production signing manuel protected-environment kapısıdır; fiziksel cihaz benchmark ve Play internal-track smoke’u ayrıca gerekir.
+`ciQuality`: unit → lintDebug → debug APK → minified/resource-shrunk release APK + AAB + mapping + embedded Baseline Profile doğrulaması. Pull request ve `master` push’unda quality job’u geçtikten sonra API 34 Pixel 6 Pro üzerinde tam Room/Compose/navigation/golden cihaz paketi çalışır; host 120 fotoğraflı fixture üretip emulatorü gerçekten reboot eder; reboot doğrulamasından sonra aynı veri setinde bir thumbnail-grid macrobenchmark ve ayrı süreçte 4 gerçek process-death testi çalışır. App XML, reboot faz çıktıları, benchmark/process-death XML’i, benchmark JSON’u ve Perfetto trace’leri artifact olarak saklanır. Production signing manuel protected-environment kapısıdır; fiziksel cihaz benchmark ve Play internal-track smoke’u ayrıca gerekir.
 
 Definition of Done ayrıntısı: [[GELISTIRME_MASTER_PLANI#Definition of Done]].
