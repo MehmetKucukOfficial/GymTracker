@@ -4,8 +4,8 @@ status: ready
 implementation_status: active
 code_baseline: 26696b9
 updated: 2026-07-20
-active_phase: "Phase 8 - PR22 hosted retry + PR23 photo device resilience"
-next_pr: "Merge PR22 after hosted artifact audit; publish PR23 reboot/benchmark gate"
+active_phase: "Phase 8 - PR23 photo device resilience hosted acceptance"
+next_pr: "Publish PR23 reboot/benchmark gate and merge after artifact audit"
 primary_nodes:
   - FEATURE_PROGRESS_PHOTOS
   - ADR_004_PERSISTENT_PHOTO_STORAGE
@@ -20,10 +20,10 @@ tags: [gymtracker/workflow, gymtracker/session]
 
 ## Şu anki durum
 
-- GitHub PR #1–#15 merge commit stratejisiyle sırayla `master`a alındı; son master code baseline `39927a7` ve first-parent soy ağacı korunuyor.
+- GitHub PR #1–#16 merge commit stratejisiyle sırayla `master`a alındı; son master code baseline `79a80f4` ve first-parent soy ağacı korunuyor.
 - PR21/GitHub PR #15 hosted koşusu `29764819516` tamamen yeşil; indirilen artifact XML 71/71 app ve 2/2 gerçek process-death testi gösteriyor.
-- PR22 code baseline `43b523a`, graph baseline `e8f8ca5`, kararlılık head’i `a4f7bd9`, GitHub PR #16’da: Nutrition tarihi ve Measurements period değeri gerçek process death sonrasında korunuyor; Home/Load ortak Clock/ZoneId akışı yerel midnight ve runtime zone değişimini kapsıyor. İlk hosted koşu 71/71 app + 3/4 process-death ile boş-DB IME yarışını yakaladı; koşullu klavye düzeltmesi yerelde temiz DB üzerinde 4/4 geçti ve retry `29769324578` sürüyor.
-- PR23 code baseline `26696b9`, `codex/photo-device-resilience` dalında: 48 MB free-space preflight, typed low-storage mesajı, backup XML/metadata-only restore testleri, gerçek `adb reboot` + `BOOT_COUNT` kanıtlı 120-row fixture, 500-row lazy-grid testi ve 120-thumbnail FrameTiming/Perfetto macrobenchmark hazır.
+- PR22 code baseline `43b523a`, graph baseline `e8f8ca5`, kararlılık head’i `a4f7bd9`: hosted retry `29769324578` 71/71 app + 4/4 process-death ile yeşil ve GitHub PR #16 merge commit `79a80f4` ile `master`a alındı.
+- PR23 code baseline `26696b9`, integration head `5456d1b`, `codex/photo-device-resilience` dalında: 48 MB free-space preflight, typed low-storage mesajı, backup XML/metadata-only restore testleri, gerçek `adb reboot` + `BOOT_COUNT` kanıtlı 120-row fixture, 500-row lazy-grid testi ve 120-thumbnail FrameTiming/Perfetto macrobenchmark hazır.
 - Uygulama baseline: `f9d6d75`; PR8 `codex/workout-lifecycle` dalında draft PR #1 olarak yayınlandı.
 - PR9 baseline: `341bf79`; `codex/nutrition-measurements` dalı PR8’i hedefleyen stacked draft PR #2 olarak yayınlandı.
 - PR10 baseline: `2ad7ad8`; `codex/progress-load` dalı PR9’u hedefleyen stacked draft PR #3 olarak yayınlandı.
@@ -51,7 +51,7 @@ tags: [gymtracker/workflow, gymtracker/session]
 
 ## Sıradaki önerilen iş
 
-PR22 hosted retry `29769324578` tamamlanınca 71 app + 4 process-death XML’ini indirip doğrula ve merge commit ile birleştir. Ardından PR23 graph commit’ini pushla, PR’ı aç ve hosted 75 app + 2 reboot fazı + 1 macrobenchmark + 4 process-death artifact’lerini doğrula.
+PR23 dalını pushla, PR’ı aç ve hosted 75 app + 2 reboot fazı + 1 macrobenchmark + 4 process-death artifact’lerini doğrula; ardından merge commit ile birleştir.
 
 ## Açık P0/P1
 
@@ -71,7 +71,7 @@ PR22 hosted retry `29769324578` tamamlanınca 71 app + 4 process-death XML’ini
 - `assembleDebug`: success.
 - `ciQuality`: success; JVM/lint/debug, minified APK/AAB, R8 mapping ve embedded profile kapıları geçti.
 - PR21 hosted run `29764819516`: quality 7m10s + API 34 device 15m12s; artifact XML 71+2, 0 failure/error/skipped; merge commit `39927a7`.
-- PR22 ilk hosted run `29767217196`: quality geçti, app XML 71/71; boş-DB Measurements IME yarışı nedeniyle process-death 3/4. Düzeltme head’i `a4f7bd9`; retry `29769324578` quality işi geçti, device işi sürüyor.
+- PR22 ilk hosted run `29767217196`: quality geçti, app XML 71/71; boş-DB Measurements IME yarışı nedeniyle process-death 3/4. Düzeltme head’i `a4f7bd9`; retry `29769324578` artifact XML 71 app + 4 process-death ile tamamen yeşil; merge commit `79a80f4`.
 - Kalıcı görsel kapı: iki Progress Hub, Programs, Workout, `nutrition_over_goal_dark_tr_font200.png` ve `measurements_chart_topbar_light_en.png` olmak üzere altı baseline API 34 üzerinde pixel tolerance ile geçti.
 
 ## Handoff güncelleme şablonu
@@ -114,7 +114,7 @@ Risks changed:
 - R17 improves to partial+: 120-thumbnail CUJ, JSON and trace artifact contract are active; physical device acceptance remains.
 
 Next concrete action:
-- Audit PR22 retry `29769324578`, merge PR #16 with a merge commit, then publish PR23 and audit its expanded hosted device artifact.
+- Publish PR23 and audit its expanded hosted device artifact; merge with a merge commit after the 75 app + reboot + process-death + benchmark contract passes.
 
 Blockers:
 - No code blocker. Local Gradle requires explicit JDK 17 because the machine default remains Java 11. Branch protection and production distribution still require external account/secrets/hardware capabilities.
