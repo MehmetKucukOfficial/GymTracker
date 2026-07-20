@@ -3,6 +3,7 @@ package com.gymtracker.ui.screens.settings
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -13,6 +14,7 @@ import com.gymtracker.data.settings.AppSettings
 import com.gymtracker.data.settings.ThemeMode
 import com.gymtracker.ui.theme.GymTrackerTheme
 import java.util.concurrent.atomic.AtomicReference
+import java.util.concurrent.atomic.AtomicInteger
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -59,8 +61,52 @@ class SettingsScreenTest {
         composeRule.onNodeWithTag("settings-local-first")
             .performScrollTo()
             .assertIsDisplayed()
+        composeRule.onNodeWithTag("settings-data-export")
+            .performScrollTo()
+            .assertIsDisplayed()
         composeRule.onNodeWithTag("settings-version")
             .performScrollTo()
             .assertIsDisplayed()
+    }
+
+    @Test
+    fun dataExportAction_emitsChoice() {
+        val exports = AtomicInteger()
+        composeRule.setContent {
+            GymTrackerTheme {
+                SettingsContent(
+                    settings = AppSettings(),
+                    versionName = "1.0",
+                    onThemeModeSelected = {},
+                    onBack = {},
+                    dataExportState = DataExportState.Idle,
+                    onExportData = { exports.incrementAndGet() }
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag("settings-export-action")
+            .performScrollTo()
+            .performClick()
+        assertEquals(1, exports.get())
+    }
+
+    @Test
+    fun dataExportAction_isDisabledWhilePreparing() {
+        composeRule.setContent {
+            GymTrackerTheme {
+                SettingsContent(
+                    settings = AppSettings(),
+                    versionName = "1.0",
+                    onThemeModeSelected = {},
+                    onBack = {},
+                    dataExportState = DataExportState.Exporting,
+                    onExportData = {}
+                )
+            }
+        }
+        composeRule.onNodeWithTag("settings-export-action")
+            .performScrollTo()
+            .assertIsNotEnabled()
     }
 }

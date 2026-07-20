@@ -8,6 +8,7 @@ import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import com.gymtracker.data.dao.*
 import com.gymtracker.data.entities.*
+import com.gymtracker.data.portability.DataPortabilityDao
 
 class Converters {
     @TypeConverter
@@ -59,4 +60,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun nutritionDao(): NutritionDao
     abstract fun progressPhotoDao(): ProgressPhotoDao
     abstract fun programDao(): ProgramDao
+    abstract fun dataPortabilityDao(): DataPortabilityDao
 }

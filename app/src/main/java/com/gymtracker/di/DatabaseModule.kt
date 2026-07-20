@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.gymtracker.data.dao.*
 import com.gymtracker.data.database.AppDatabase
 import com.gymtracker.data.database.DatabaseMigrations
+import com.gymtracker.data.portability.DataPortabilityDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,4 +29,7 @@ object DatabaseModule {
     @Provides fun provideNutritionDao(db: AppDatabase): NutritionDao = db.nutritionDao()
     @Provides fun provideProgressPhotoDao(db: AppDatabase): ProgressPhotoDao = db.progressPhotoDao()
     @Provides fun provideProgramDao(db: AppDatabase): ProgramDao = db.programDao()
+    @Provides
+    fun provideDataPortabilityDao(db: AppDatabase): DataPortabilityDao =
+        db.dataPortabilityDao()
 }

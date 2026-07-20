@@ -393,6 +393,17 @@
     <string name="settings_data_supporting">No account or automatic cloud sync is used; your data stays on this device.</string>
     <string name="settings_local_first_title">Your data stays on this device</string>
     <string name="settings_local_first_body">Workout, nutrition, measurement, and progress data are stored locally. Progress photos are excluded from cloud backup and device transfer.</string>
+    <string name="settings_export_title">Manual data backup</string>
+    <string name="settings_export_body">Saves all app data and managed progress photos to a versioned ZIP archive at a location you choose. The archive may contain sensitive health data; store it securely.</string>
+    <string name="settings_export_action">Create backup</string>
+    <string name="settings_export_in_progress">Preparing backup</string>
+    <string name="settings_export_do_not_close">Data is being read from a consistent snapshot. Keep the app open until the operation finishes.</string>
+    <string name="settings_export_success">Exported %1$d records and %2$d photos · %3$s</string>
+    <string name="settings_export_legacy_warning">%1$d legacy photo source could not be accessed safely; only its metadata was added to the archive.</string>
+    <string name="settings_export_error_storage">There is not enough free space on the device to prepare the backup safely.</string>
+    <string name="settings_export_error_missing_photo">A managed photo file is missing. Open Progress Photos to reconcile storage, then try again.</string>
+    <string name="settings_export_error_generic">The backup could not be created. Check the destination and available storage, then try again.</string>
+    <string name="settings_export_filename" translatable="false">GymTracker-backup.zip</string>
     <string name="settings_about_title">About the app</string>
     <string name="settings_version">Version %1$s · Local preview</string>
 
