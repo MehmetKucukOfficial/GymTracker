@@ -42,6 +42,7 @@ tags: [gymtracker/feature, gymtracker/settings, gymtracker/data]
 - Geçen: 3 settings JVM testi; gerçek Preferences DataStore round-trip cihaz testi; hedefli 11 cihaz testi; 9-test Navigation smoke paketi.
 - Geçen: explicit açık tema seçimi Activity recreation sonrasında seçili kalır.
 - Geçen: Settings rotasında ana navigation gizlenir; top-bar geri Home’a döner.
-- Bekleyen: tam `ciQuality` ve hosted API 34 kabulü, export/restore, tüm veriyi silme ve davranışa bağlı diğer tercihler.
+- Geçen: tam `ciQuality`; 40/40 JVM, lint, debug, minified APK/AAB, R8 mapping ve embedded profile.
+- Bekleyen: hosted API 34 kabulü, export/restore, tüm veriyi silme ve davranışa bağlı diğer tercihler.
 
 Bağlar: [[ARCH_STATE_DATA_FLOW]], [[ARCH_NAVIGATION]], [[DESIGN_SYSTEM_GRAPH]], [[ROADMAP_EXECUTION_GRAPH]].

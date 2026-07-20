@@ -104,6 +104,7 @@ Files changed:
 
 Tests run/results:
 - `testDebugUnitTest` + `assembleDebug`: success; three new settings JVM tests.
+- Full `ciQuality`: success in 1m54s; 40/40 JVM, lint, debug, minified APK/AAB, R8 mapping and embedded profile.
 - Targeted Settings/Navigation/Localization device package: 11/11.
 - Updated full Navigation smoke class: 9/9, including explicit theme persistence across Activity recreation.
 - Real Preferences DataStore repository write/read round-trip: 1/1.

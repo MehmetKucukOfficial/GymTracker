@@ -211,6 +211,6 @@ Kabul: 37 JVM + 75 API 34 normal app instrumentation + 2 gerçek reboot fazı + 
 Node: [[FEATURE_SETTINGS_DATA]], [[ARCH_STATE_DATA_FLOW]], [[ARCH_NAVIGATION]], [[DESIGN_SYSTEM_GRAPH]].
 Durum: code baseline `cc2f4fa`, `codex/settings-foundation` yerel dalında; PR23 hosted kabulüyle paralel geliştiriliyor.
 Çıktı: singleton Preferences DataStore, typed Settings repository/state, gerçek `SYSTEM/LIGHT/DARK` tema tüketimi, Home→Settings child rotası, ortak top-bar/back, local-first gizlilik ve sürüm bilgisi, TR/EN ve büyük-font erişilebilir UI.
-Kabul: 3 settings JVM testi; hedefli 11 API 34 cihaz testi; 9-test Navigation smoke paketi. Tam `ciQuality` ve hosted kabul PR23 merge sonrasında.
+Kabul: 40/40 JVM ve tam `ciQuality`; gerçek DataStore round-trip; hedefli 11 API 34 cihaz testi; 9-test Navigation smoke paketi. Hosted kabul PR23 merge sonrasında.
 
 Detaylı süre: [[GELISTIRME_MASTER_PLANI#18. Fazlar ve süre tahmini]]. Aktif durum: [[SESSION_HANDOFF]].
