@@ -2,10 +2,10 @@
 type: handoff
 status: ready
 implementation_status: active
-code_baseline: 81cb7fe
+code_baseline: 4590168
 updated: 2026-07-20
-active_phase: "Phase 8 - PR25 versioned manual data export"
-next_pr: "Complete PR25 full/hosted acceptance and merge"
+active_phase: "Phase 8 - PR25 hosted acceptance + PR26 staged restore/delete"
+next_pr: "Merge PR25, complete PR26 full/hosted acceptance, then PR27 design expansion"
 primary_nodes:
   - FEATURE_PROGRESS_PHOTOS
   - ADR_004_PERSISTENT_PHOTO_STORAGE
@@ -28,7 +28,8 @@ tags: [gymtracker/workflow, gymtracker/session]
 - PR23 code baseline `26696b9`, final head `5411372`: GitHub PR #17 hosted run `29771389567` tamamen yeşil; artifact XML 75 app + 5 benchmark/process testi, reboot seed/verify 1/1 + 1/1, beş benchmark tekrarı ve beş Perfetto trace doğrulandı. Merge commit `ce20615`; kaynak dal korundu.
 - PR24 code baseline `cc2f4fa`, quality head `4653a79`, process-death hardening `c32476e`, integration head `4906402`, `codex/settings-foundation` yerel dalında: singleton Preferences DataStore, typed tema repository/state, gerçek system/light/dark tüketimi, Home→Settings child rotası, ortak back ve local-first bilgi yüzeyi hazır.
 - PR24 final head `6168a9e`: GitHub PR #18 hosted run `29775858318` tamamen yeşil; artifact XML 80 app + 5 benchmark/process, reboot 1+1, dört process-death ve beş trace. Merge commit `80c79b5`; kaynak dal korundu.
-- PR25 code baseline `e6ae602`, PR24 merge-integration head `81cb7fe`, `codex/data-export`: format v1 manuel ZIP, on bir tablo tek-transaction snapshot, tema, yönetilen fotoğraflar, legacy metadata-only, alan/path/temp güvenliği ve Settings typed state/UI tamamlandı.
+- PR25 code baseline `e6ae602`, final head `59862eb`: GitHub PR #19 hosted run `29780305582` artifact denetiminden geçti ve merge commit `1c3e193` ile `master`a alındı; kaynak dal korundu.
+- PR26 `codex/data-restore`: exact v1/schema v9 strict reader/validator, giriş/byte/CRC kapıları, yeni yönetilen medya yayınlama, atomik Room replace + DB/tema/dosya rollback'i, ortak operation mutex'i/stale cache cleanup ve exact sözcüklü tüm-veri silme uygulandı. Hedefli restore/delete/DAO/Settings/localization paketi 16/16.
 - PR22 sonrası otomatik master koşusunda bir paket-kill OOM-adjustment yarışı görüldü; PR24 harness’i sistem Settings görevinin resumed olmasını doğrular, bounded retry/task-korumalı fallback uygular. Eski PID + aynı task + yeni PID kanıtı korunarak üç ardışık yerel tur/12 test geçti.
 - Uygulama baseline: `f9d6d75`; PR8 `codex/workout-lifecycle` dalında draft PR #1 olarak yayınlandı.
 - PR9 baseline: `341bf79`; `codex/nutrition-measurements` dalı PR8’i hedefleyen stacked draft PR #2 olarak yayınlandı.
@@ -57,7 +58,7 @@ tags: [gymtracker/workflow, gymtracker/session]
 
 ## Sıradaki önerilen iş
 
-PR25 tam 85-test API 34 paketini çalıştır; graph commit’ini yayınla, hosted JVM/app/reboot/benchmark/process-death artifact’ını denetle ve merge commit ile `master`a al. Ardından format v1 staged restore + rollback dilimine geç.
+PR25 hosted JVM/app/reboot/benchmark/process-death artifact’ını denetle ve merge commit ile `master`a al. PR26’yı bu merge tabanıyla birleştir; tam `ciQuality` + API 34 + hosted artifact kabulünden sonra merge commit ile al ve PR27 Photos/Load/Settings golden/accessibility yayılımına geç.
 
 ## Açık P0/P1
 
@@ -65,7 +66,7 @@ PR25 tam 85-test API 34 paketini çalıştır; graph commit’ini yayınla, host
 - Photos/Load ile disabled/loading golden baseline’larını genişletme
 - Progress Photos gerçek Android backup transport restore deneyi ve Photos/Load golden genişletmesi
 - Gerçek production secret/Play internal-track smoke, branch protection ve fiziksel cihaz benchmark kabulü
-- Format v1 staged restore + rollback ve güçlü onaylı tüm veriyi silme
+- Format v1 restore/delete gerçek süreç-kesilmesi zamanlama fixture'ı
 
 ## Son doğrulama
 
@@ -96,6 +97,42 @@ Next concrete action:
 Blockers:
 ```
 
+## 2026-07-20 - PR26 Staged restore and strong-confirm deletion
+
+Completed:
+- Added an exact format v1/schema v9 reader and validator for strict JSON, enums, finite values, positive/unique IDs, foreign keys, safe paths, entry counts, per-entry/total expanded bytes and media length/CRC.
+- Stages the complete archive before mutation, republishes managed photos under new unique app-owned paths, atomically replaces all eleven Room tables and applies the archived theme.
+- Added compensating DB/theme/file rollback, distinct rollback-failed state, old-media cleanup reporting, one application-wide export/restore/delete mutex and stale dedicated-cache cleanup after interrupted operations.
+- Added a separate all-data deletion path with localized exact-phrase confirmation. It clears user data, resets the bundled program catalog in the same Room transaction, resets the theme and reconciles all managed media.
+- Expanded TR/EN resources from 385 to 415 exact keys and added typed loading/success/error UI for restore and deletion.
+
+Files changed:
+- Portability DAO/operation lock, strict reader/validator, restore/deletion repositories and export stale-cache hardening.
+- Managed photo restore publishing/reconciliation accounting, Settings ViewModel/Screen and TR/EN resources.
+- Reader JVM tests; Room replace rollback, restore, deletion, Settings confirmation/mutual-exclusion and localization device tests.
+- Settings/data ADR, feature, database/state, test/risk/roadmap, atlas, impact and start graph nodes.
+
+Tests run/results:
+- `PortableArchiveReaderTest`: 6/6.
+- Targeted API 34 restore/delete/DAO/Settings/localization package: 16/16, 0 failure/error/skipped.
+- Full API 34 package: 95/95, 0 failure/error/skipped; XML time 733.6s and Gradle time 12m42s.
+- Final post-hardening `ciQuality`: success in 2m08s; 48/48 JVM, lint, debug, minified APK/AAB, R8 mapping and embedded profile.
+- Final `DataRestoreRepositoryTest`: 3/3 after thumbnail-size and single-active invariant hardening.
+- Manual Pixel 6 Pro API 34 visual QA: English light Settings data card, restore action, error-container delete card and disabled exact-phrase confirmation dialog are readable and reachable.
+
+Risks changed:
+- R18 improves from partial+ to mitigated-core. Restore/delete behavior is implemented and target-tested; full hosted artifact audit and a timed real process-kill fixture remain before final closure.
+- CRC/length checks detect accidental/tampered ZIP entry corruption but are not an authenticity signature; archives remain sensitive user-controlled files.
+- Process termination before/inside Room replacement leaves the transaction atomic. Cache artifacts are cleared on the next operation and unreferenced managed media is handled by storage reconciliation; a deterministic kill-at-stage fixture is still open evidence.
+
+Next concrete action:
+- Finish PR25 hosted artifact audit and merge.
+- Merge the new PR25 master baseline into PR26, rerun full local gates, publish PR26, audit hosted artifacts and merge with a merge commit.
+- Then start PR27 design/golden/accessibility expansion.
+
+Blockers:
+- No local code blocker. Production signing/Play, branch protection, real backup transport and physical-device performance remain external.
+
 ## 2026-07-20 - PR25 Versioned manual data export
 
 Completed:
@@ -117,7 +154,7 @@ Tests run/results:
 - Full `ciQuality`: success in 2m48s; lint, debug, minified APK/AAB, R8 mapping and embedded profile.
 - Resource contract: 385/385 string keys, no missing side.
 - Full API 34 suite: success, 85/85 after a clean emulator reboot; 0 failure/error/skipped. The pre-reboot run had one screenshot-capture readiness timeout before pixel comparison; targeted golden then passed 2/2.
-- Hosted acceptance is the next gate.
+- Hosted run `29780305582` quality + cihaz işleri yeşil; indirilen artifact 85 app + 5 benchmark/process, reboot seed/verify 1+1 ve beş Perfetto trace ile denetlendi.
 
 Risks changed:
 - R18 added partial+: manual export is implemented and test-backed; restore and all-data deletion are deliberately not claimed.
@@ -125,8 +162,8 @@ Risks changed:
 - Legacy provider media remains metadata-only because persisted provider access cannot be guaranteed.
 
 Next concrete action:
-- Run full API 34 device suite, commit graph evidence, push/open PR25, audit hosted artifacts and merge with a merge commit.
-- Then implement staged validation + atomic replace/rollback restore as PR26.
+- Completed: GitHub PR #19 merge commit `1c3e193` ile `master`a alındı; kaynak dal korundu.
+- Continue PR26 full/hosted acceptance and merge.
 
 Blockers:
 - No local code blocker. Production secrets/Play, branch protection, real backup transport and physical-device performance remain external.

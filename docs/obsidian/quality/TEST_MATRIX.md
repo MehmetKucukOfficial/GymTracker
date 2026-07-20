@@ -2,7 +2,7 @@
 type: quality
 status: current
 implementation_status: mixed
-verified_commit: 81cb7fe
+verified_commit: 4590168
 updated: 2026-07-20
 tags: [gymtracker/quality, gymtracker/testing]
 ---
@@ -59,10 +59,17 @@ tags: [gymtracker/quality, gymtracker/testing]
 - `releaseDistribution` dummy upload keystore ile APK v2/v3, AAB JAR imzası ve embedded profile girdilerini doğruladı; secretsiz çağrı dört eksik environment değerini fail-fast raporladı.
 - `AppSettingsTest`, Settings Compose testleri ve Navigation smoke; bozuk/eksik tema fallback’i, system/explicit çözüm, tek-seçim semantics’i, `%200` font erişimi, Settings back politikası ve explicit tercihin Activity recreation sonrasında korunmasını doğrular.
 - `PortableArchiveWriterTest`, format v1/schema v9 header'ını, typed on bir tablo dönüşümünü, tema değerini, yönetilen ana/thumbnail byte'larını, legacy metadata-only işaretini, cihaz yolu sızıntısı olmamasını ve eksik yönetilen medyada fail-closed davranışı doğrular.
-- `DataPortabilityDaoTest`, on bir tabloyu gerçek in-memory Room üzerinde tek transaction ve kararlı ID sırasıyla okur. `DataExportRepositoryTest`, gerçek seçili dosyaya okunabilir ZIP kopyasını, tema/veri içeriğini, temp cleanup'ı ve düşük alanda hedef içeriğini korumayı doğrular.
+- `DataPortabilityDaoTest`, on bir tabloyu gerçek in-memory Room üzerinde tek transaction ve kararlı ID sırasıyla okur; geçersiz incoming FK nedeniyle insert başarısız olduğunda önceki satırların transaction rollback ile korunduğunu kanıtlar.
+- `DataExportRepositoryTest`, gerçek seçili dosyaya okunabilir ZIP kopyasını, tema/veri içeriğini, süreç-artığı/temp cleanup'ı ve düşük alanda hedef içeriğini korumayı doğrular.
+- `PortableArchiveReaderTest` strict JSON/manifest, güvenli path, ilişki ve CRC/uzunluk doğrulamasını; `DataRestoreRepositoryTest` export→mutate→restore, bozuk arşivde değişiklik yapmama ve yönetilen medya yeniden yayın/cleanup sözleşmesini doğrular.
+- `DataDeletionRepositoryTest`, kullanıcı tabloları, tema ve yönetilen medyanın temizlenmesini; paket program kataloğunun aynı transaction'da varsayılana dönmesini doğrular. Settings Compose testleri export/restore/delete karşılıklı engelini ve exact yerelleştirilmiş onay sözcüğünü kapsar.
 - PR24/GitHub PR #18 hosted koşusu `29775858318`: quality + API 34 tamamen yeşil; indirilen artifact XML 80 app + 5 benchmark/process, 0 failure/error/skipped; reboot seed/verify 1/1 + 1/1; dört gerçek process-death; beş benchmark tekrarı ve beş Perfetto trace. Merge commit `80c79b5`.
 - PR25 yerel export dilimi: 42/42 JVM, hedefli 19/19 API 34 cihaz testi ve tam `ciQuality` başarılı; 385/385 TR/EN string eşitliği.
 - PR25 tam yerel API 34 paketi: ilk turda `ProgressHubGoldenTest` ekran yakalama hazır olma koşulu 2 saniyede zaman aşımına uğradı, piksel karşılaştırması başlamadı. Gerçek emulator reboot sonrası hedefli golden 2/2 ve tam tekrar 85/85, 0 failure/error/skipped ile geçti.
+- PR25 hosted run `29780305582`: quality + cihaz yeşil; indirilen artifact 85 app + 5 benchmark/process, reboot seed/verify 1+1, dört process-death ve 58.450.894 byte beş Perfetto trace içerir. Merge commit `1c3e193`.
+- PR26 hedefli restore/delete/DAO/Settings/localization paketi: 16/16, 0 failure/error/skipped. JVM okuyucu paketi strict staging/CRC/tek-aktif invariant dahil 6/6; PR26 tam ve hosted kapıları bekleniyor.
+- PR26 tam yerel API 34 paketi: 95/95, 0 failure/error/skipped, XML süresi 733,6 saniye; Room/Compose/navigation ve altı kalıcı golden birlikte geçti.
+- PR26 son sertleştirme kapısı: `ciQuality` 2m08s, 48/48 JVM; hedefli güncel restore 3/3. English/light Settings restore/delete ve disabled exact-phrase dialog'u emülatörde görsel kontrolden geçti.
 
 ## Feature matrisi
 
@@ -75,7 +82,7 @@ tags: [gymtracker/quality, gymtracker/testing]
 | Photos | input/limit/media bounds/48 MB reserve/backup policy | v3→v9 + v8→v9/import/EXIF/thumbnail/delete/reconcile/metadata-only restore/legacy-upgrade rollback | thumbnail grid/500-row lazy access/v0 reselect/v1 optimize/viewer/ortak top bar+Snackbar/dark/%200 | alt rota gerçek process-death + gerçek host reboot; backup transport/fiziksel perf bekliyor |
 | Programs | stable ID/content + 839/840 layout | idempotent 5/23/108 seed, v6→v7 JSON migration, atomic plan copy | list/detail/locked/start, ortak top bar+Snackbar, expanded selection/restoration, golden, dark/%200 | positive-ID detail Activity recreation + gerçek process-death |
 | Muscle load | activation/decay/personal bodyweight/fallback/unknown + midnight/zone | completed-only set + latest-valid-weight Flow | map/list/calibration/methodology/dark/%200 | TalkBack bekliyor |
-| Settings/data | tema çözümü + Preferences fallback + format v1 archive mapping/writer | gerçek DataStore round-trip + 11 tablo snapshot + SAF dosya/low-space/temp cleanup | tek seçim, local-first/export bilgi, loading/success/error, dark/%200/English | Home child route + Activity recreation; restore/process-kill bekliyor |
+| Settings/data | tema çözümü + Preferences fallback + format v1 mapping/writer/strict reader/validator | DataStore round-trip + 11 tablo snapshot/replace rollback + SAF/temp + restore/media + tüm-veri silme | tek seçim, export/restore/delete karşılıklı engel, exact silme onayı, loading/success/error, dark/%200/English | Home child route + Activity recreation; gerçek restore process-kill bekliyor |
 
 ## Room ve migration
 

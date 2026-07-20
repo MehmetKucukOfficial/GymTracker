@@ -2,7 +2,7 @@
 type: architecture
 status: current
 implementation_status: current
-verified_commit: 81cb7fe
+verified_commit: 4590168
 updated: 2026-07-20
 source_files:
   - app/src/main/java/com/gymtracker/data/entities/Entities.kt
@@ -98,7 +98,7 @@ erDiagram
 | NutritionDao | food items/entries/goals | [[FEATURE_NUTRITION]], [[FEATURE_HOME]] |
 | ProgressPhotoDao | photos | [[FEATURE_PROGRESS_PHOTOS]] |
 | ProgramDao | programs/workouts | [[FEATURE_PROGRAMS]] |
-| DataPortabilityDao | 11 tablo, salt-okunur ve kararlı ID sıralı snapshot | [[FEATURE_SETTINGS_DATA]], [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]] |
+| DataPortabilityDao | 11 tablo, kararlı ID sıralı snapshot + child-first delete/parent-first insert kullanan atomik replace | [[FEATURE_SETTINGS_DATA]], [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]] |
 
 ## Kritik mevcut gerçekler
 
@@ -111,7 +111,7 @@ erDiagram
 - `WorkoutDao.getSetsSince()` içindeki `date(sessionId)` semantik olarak yanlış ve kullanılmıyor.
 - Program seed tek Room transaction’ı ve `seed_metadata` claim’i ile idempotenttir.
 - Fotoğraf byte’ları Room içinde BLOB değildir; app internal storage’da optimize ana JPEG + thumbnail, DB’de URI/dimension/storage metadata tutulur.
-- Manuel export yeni schema/entity yaratmaz. `DataPortabilityDao` on bir tabloyu tek `withTransaction` içinde salt-okunur; arşiv format sürümü Room schema sürümünden ayrı tutulur.
+- Manuel portability yeni schema/entity yaratmaz. `DataPortabilityDao` on bir tabloyu tek `withTransaction` içinde okur; restore/silme child-first delete ve parent-first `ABORT` insert sırasını tek Room transaction'ında uygular. Geçersiz FK yazımı tüm silmeleri geri alır. Arşiv format sürümü Room schema sürümünden ayrı tutulur.
 
 ## Hedef değişiklikler
 
@@ -122,6 +122,6 @@ erDiagram
 - Legacy photo re-import/re-optimize UX
 - Tarih ve compound index’ler
 - Para minor unit/currency
-- Format v1 staged restore için ilişki doğrulama, mevcut verinin atomik replace politikası ve desteklenen archive migrator zinciri
+- Format/schema ileri uyumluluğu için desteklenen archive migrator zinciri; mevcut v1 yalnız exact schema v9 kabul eder
 
 Her değişiklikte [[CHANGE_IMPACT_MAP#Room entity veya kolon değişikliği]] uygulanır.

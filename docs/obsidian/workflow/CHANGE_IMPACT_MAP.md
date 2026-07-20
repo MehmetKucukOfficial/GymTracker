@@ -2,7 +2,7 @@
 type: workflow
 status: current
 implementation_status: active
-verified_commit: 81cb7fe
+verified_commit: 4590168
 updated: 2026-07-20
 tags: [gymtracker/workflow, gymtracker/impact]
 ---
@@ -119,7 +119,7 @@ Graf: [[FEATURE_SETTINGS_DATA]], [[ARCH_STATE_DATA_FLOW]], [[ARCH_NAVIGATION]], 
 
 ## Veri export/restore veya tüm veriyi silme
 
-Oku: `DataPortabilityDao`, `PortableArchive`, writer/repository, `AppDatabase`, bütün entity/enum/foreign-key ilişkileri, `PhotoFileStorage`, `SettingsRepository`, Settings Screen/ViewModel, backup kuralları ve [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]].
-Test: bütün tablolar ve kararlı sıra; tek transaction snapshot; format/schema sürüm reddi; enum/sonlu sayı/ilişki doğrulaması; yönetilen ana/thumbnail byte'ı; legacy metadata-only; `file://` sızıntısı/traversal; eksik medya; düşük alan; yarım hedef/temp cleanup; TR/EN, `%200` font ve çift eylem engeli. Restore eklenirse staging, hash/uzunluk, conflict/replace, Room rollback, dosya rollback, process kill ve mevcut veriyi kaybetmeme zorunludur.
+Oku: `DataPortabilityDao`, ortak operation lock, `PortableArchive`, writer/reader/validator/export/restore/delete repository'leri, `AppDatabase`, bütün entity/enum/foreign-key ilişkileri, `PhotoFileStorage`, `ProgramSeedInitializer`, `SettingsRepository`, Settings Screen/ViewModel, backup kuralları ve [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]].
+Test: bütün tablolar ve kararlı sıra; tek transaction snapshot; format/schema sürüm reddi; enum/sonlu sayı/ilişki doğrulaması; yönetilen ana/thumbnail byte'ı; legacy metadata-only; `file://` sızıntısı/traversal; eksik medya; düşük alan; yarım hedef/stale cache cleanup; TR/EN, `%200` font ve üçlü eylem engeli. Restore için staging, giriş/tekil/toplam byte sınırı, uzunluk + CRC, conflict/replace, Room rollback, dosya rollback, process kill ve mevcut veriyi kaybetmeme zorunludur. Silme için exact yerelleştirilmiş onay, varsayılan seed politikası, ayar reset'i ve artık medya kanıtlanır.
 Şema değişirse export DTO/migrator ve restore uyumluluğu aynı PR içinde güncellenir. Destructive migration veya canlı DB'ye parça parça restore kullanılmaz.
 Graf: [[FEATURE_SETTINGS_DATA]], [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]], [[ARCH_DATABASE]], [[ARCH_STATE_DATA_FLOW]], [[TEST_MATRIX]].

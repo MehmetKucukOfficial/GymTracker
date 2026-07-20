@@ -2,7 +2,7 @@
 type: design
 status: current
 implementation_status: current
-verified_commit: 81cb7fe
+verified_commit: 4590168
 updated: 2026-07-20
 source_files:
   - app/src/main/java/com/gymtracker/ui/theme/Theme.kt
@@ -35,12 +35,12 @@ tags: [gymtracker/design, gymtracker/architecture]
 - Progress Hub, Photos ve Muscle Load ortak tokenları; scroll/adaptive grid; açık empty/loading/error state’leri; renk bağımsız load listesi ve %200 font düzeni kullanır.
 - Programs adaptive kart grid’i, ilişkisel gün accordion’ları, demo erişim/locked/empty/error state’leri ve plan→workout CTA’ları ortak token/resource/semantics sözleşmesini kullanır.
 - Kullanıcıya görünen Home, Workout, Nutrition, Measurements, Progress Hub, Photos, Muscle Load, Programs ve alt navigasyon metinleri string resource’a taşındı.
-- Varsayılan Türkçe ve İngilizce katalogları 385/385 string anahtar eşitliğine sahiptir; kas adları ve para biçimi de aktif locale’e bağlıdır.
+- Varsayılan Türkçe ve İngilizce katalogları 415/415 string anahtar eşitliğine sahiptir; kas adları, portability durum/onayları ve para biçimi aktif locale’e bağlıdır.
 - Compact shell alt bar, 600 dp+ shell navigation rail kullanır; ikonlar yinelenen TalkBack açıklaması üretmez ve Progress Hub kartları birleşik button semantics sunar.
 - Workout ve Programs 840 dp+ list–detail yüzeylerinde seçili kartı renk, 2 dp primary border ve `selected` semantics ile birlikte ifade eder; özet panelleri kaydırılabilir ve 48 dp ana eylem kullanır.
 - Measurements, Progress Photos ve Muscle Load child rotaları ile Workout/Program detail rotaları ortak görünür geri eylemini kullanır; sistem geri hareketi aynı back stack sonucunu korur. Nutrition, Measurements, Photos ve Program detail geçici mesajları ortak Snackbar host sözleşmesine bağlıdır.
 - Settings ortak top bar, section header, kart/token ve tek-seçim semantics sözleşmesini kullanır; `%200` fontta bütün görünüm/veri/sürüm içeriği kaydırılarak erişilebilir ve tema seçimi anında gerçek uygulama temasını değiştirir.
-- Settings veri kartı; tam genişlik 48 dp ana eylem, işlem sırasında disabled/loading durumu, başarıda kayıt/fotoğraf/boyut özeti ve legacy metadata-only uyarısı, typed hata rengi/metni ve `%200` font erişilebilirliği kullanır.
+- Settings veri kartı; tam genişlik 48 dp eylemler, export/restore/delete karşılıklı disabled/loading durumu, başarıda kayıt/fotoğraf/boyut özeti, legacy/cleanup uyarıları ve typed hata metni kullanır. Geri yükleme ayrı geri-alınamaz dialog'u; hata renkli silme kartı ise exact yerelleştirilmiş sözcük girilmeden etkinleşmeyen ikinci onayı kullanır.
 
 ## Token ve tüketim grafı
 
