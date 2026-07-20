@@ -2,7 +2,7 @@
 type: risk-register
 status: current
 implementation_status: current
-verified_commit: 26696b9
+verified_commit: 4906402
 updated: 2026-07-20
 tags: [gymtracker/risk, gymtracker/quality]
 ---
@@ -13,7 +13,7 @@ tags: [gymtracker/risk, gymtracker/quality]
 |---|---|---|---|---|---|
 | R1 | P0 | resolved (v3+) | Destructive migration veri siler | [[ARCH_DATABASE]] | [[ADR_003_EXPLICIT_ROOM_MIGRATIONS]] |
 | R2 | P0 | mitigated+++ | Yeni fotoğraf URI’si, bounded decode/EXIF/thumbnail, iki dosyalı rollback, 48 MB low-space preflight, XML backup politikası, metadata-only restore reconciliation, gerçek 120-row host reboot ve kimlik koruyan legacy v0/v1 yükseltme çözüldü; gerçek Android backup transport restore deneyi açık | [[FEATURE_PROGRESS_PHOTOS]] | [[ADR_004_PERSISTENT_PHOTO_STORAGE]] |
-| R3 | P0/P1 | resolved-core+++ | Linux wrapper, tek `ciQuality`, minified release ve KVM hızlandırmalı API 34 app/golden + ayrı process-death akışı PR21 hosted koşusu `29764819516` üzerinde yeşil; artifact XML 71+2 sonucu doğrulandı. Branch-protection özel depo/hesap planı nedeniyle yönetim takibi | [[ARCH_BUILD_DI]] | hosted CI + yönetim takibi |
+| R3 | P0/P1 | resolved-core++++ | Linux wrapper, tek `ciQuality`, minified release ve KVM hızlandırmalı geniş API 34 app/reboot/benchmark/process-death akışı PR23 hosted koşusu `29771389567` üzerinde yeşil; artifact XML 75+5, reboot 1+1 ve beş Perfetto trace doğrulandı. Paket-kill OOM-adjustment yarışı resumed-task kontrolü/bounded retry/fallback ile sağlamlaştırıldı ve üç yerel tur/12 test geçti. Branch-protection özel depo/hesap planı nedeniyle yönetim takibi | [[ARCH_BUILD_DI]] | hosted CI + yönetim takibi |
 | R4 | P1 | resolved | Program seed duplicate/yarım | [[FEATURE_PROGRAMS]] | unique + transaction test |
 | R5 | P1 | resolved | Home reaktif loading/content/error akışı ile Kas Yükü ortak injectable Clock kullanır; yerel gece yarısı ve runtime zone-change yeniden hesaplaması deterministik testlidir | [[FEATURE_HOME]] | shared period Flow + Clock/ZoneId test |
 | R6 | P1 | resolved | Program purchase detail ve stale local selection | [[FEATURE_PROGRAMS]] | ID route/reactive detail |

@@ -2,7 +2,7 @@
 type: architecture
 status: current
 implementation_status: current
-verified_commit: 43b523a
+verified_commit: 4906402
 updated: 2026-07-20
 source_files:
   - app/src/main/java/com/gymtracker/MainActivity.kt
@@ -38,7 +38,7 @@ PR19 dış giriş sözleşmesi `gymtracker://app/<route>` tabanını kullanır. 
 
 Gerçek süreç-ölümü kabulü hedef uygulamadan ayrı `:baselineprofile` instrumentation sürecinde çalışır. Test dış URI ile hedef görevi kurar, görevi Home ile arka plana alır, `am kill` sonrasında hedef PID’nin kaybolduğunu kanıtlar ve aynı Android task kimliğini yeniden öne getirir. Yeni PID ile aynı destination metninin görünmesi NavHost/task restorasyonunu; Nutrition tarih metni ile Measurements 90-gün `checked` state’inin korunması da ViewModel `SavedStateHandle` restorasyonunu Activity recreation taklidinden bağımsız doğrular.
 
-PR21 hosted koşusu `29764819516` quality ve API 34 cihaz işlerinde yeşildir; artifact XML 71 app + 2 process-death testini sıfır failure/error/skipped ile doğrular. GitHub PR #15 merge commit `39927a7` ile `master`a alındı ve kaynak dal korundu. PR22 `43b523a`, process-death paketini Nutrition/Measurements state’iyle dört teste genişletir.
+PR21 hosted koşusu `29764819516` quality ve API 34 cihaz işlerinde yeşildir; artifact XML 71 app + 2 process-death testini sıfır failure/error/skipped ile doğrular. GitHub PR #15 merge commit `39927a7` ile `master`a alındı ve kaynak dal korundu. PR22 `43b523a`, process-death paketini Nutrition/Measurements state’iyle dört teste genişletir. PR24 test sağlamlaştırması `c32476e`, hedefi sistem Settings görevinin gerçekten `RESUMED` olduğunu doğruladıktan sonra paket-kapsamlı ActivityManager kill’i üç bounded denemeyle uygular; son çare `am kill-all` task’ı silmeden cached süreçleri öldürür. Eski PID’nin kaybolması, aynı task ID ve yeni PID şartları değişmemiştir; yerelde üç ardışık tur/12 test geçmiştir.
 
 ## Hedef
 

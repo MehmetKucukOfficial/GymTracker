@@ -2,7 +2,7 @@
 type: feature
 status: current
 implementation_status: active
-verified_commit: cc2f4fa
+verified_commit: 4906402
 updated: 2026-07-20
 source_files:
   - app/src/main/java/com/gymtracker/data/settings/AppSettings.kt
@@ -44,6 +44,7 @@ tags: [gymtracker/feature, gymtracker/settings, gymtracker/data]
 - Geçen: Settings rotasında ana navigation gizlenir; top-bar geri Home’a döner.
 - Geçen: tam `ciQuality`; 40/40 JVM, lint, debug, minified APK/AAB, R8 mapping ve embedded profile.
 - Geçen: gerçek API 34 light/büyük-font görsel QA; top bar, üç tema seçeneği, gizlilik ve sürüm kartları kırpılmadan erişiliyor.
-- Bekleyen: hosted API 34 kabulü, export/restore, tüm veriyi silme ve davranışa bağlı diğer tercihler.
+- Geçen: tam yerel `connectedDebugAndroidTest`, 80/80 app cihaz testi.
+- Bekleyen: PR24 hosted API 34 kabulü, export/restore, tüm veriyi silme ve davranışa bağlı diğer tercihler.
 
 Bağlar: [[ARCH_STATE_DATA_FLOW]], [[ARCH_NAVIGATION]], [[DESIGN_SYSTEM_GRAPH]], [[ROADMAP_EXECUTION_GRAPH]].

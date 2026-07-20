@@ -2,7 +2,7 @@
 type: quality
 status: current
 implementation_status: mixed
-verified_commit: 26696b9
+verified_commit: 4906402
 updated: 2026-07-20
 tags: [gymtracker/quality, gymtracker/testing]
 ---
@@ -23,7 +23,7 @@ tags: [gymtracker/quality, gymtracker/testing]
 - [[NavigationContractTest]] 5 hedef sırasını, nested route sahipliğini, detail görünürlük politikasını ve pozitif ID kuralını; `DeepLinkContractTest` on dış URI pattern’ini, trusted scheme/host ve bozuk ID reddini doğrular.
 - [[HomeDashboardPeriodTest]] Istanbul takvim/DST gün sınırını, injectable Clock ile yerel gece yarısını ve runtime UTC→Tokyo zone değişimini; [[HomeDashboardRepositoryTest]] completed/active workout, measurement ve nutrition Flow’larının reaktif birleşimini doğrular.
 - [[NavigationSmokeTest]] ortak top bar back, sistem back, selected tab, workout/program ID detail ve Activity recreation davranışını; `DeepLinkNavigationTest` manifest çözümü, cold-start progress child, pozitif program detail, invalid-ID safe fallback ve recreation davranışını gerçek Compose UI üzerinde doğrular.
-- `ProcessDeathNavigationTest`, hedef uygulamadan ayrı instrumentation sürecinde Progress Photos, pozitif-ID Program detail, Nutrition ve Measurements görevlerini arka plana alır; `am kill` ile eski PID’nin yok olduğunu, aynı task öne getirildiğinde yeni PID/doğru destination, seçili Nutrition tarihi ve Measurements 90-gün checked state’inin geri geldiğini doğrular.
+- `ProcessDeathNavigationTest`, hedef uygulamadan ayrı instrumentation sürecinde Progress Photos, pozitif-ID Program detail, Nutrition ve Measurements görevlerini arka plana alır. Sistem Settings görevinin gerçekten resumed olduğunu doğrular; paket-kapsamlı `am kill` için bounded retry ve task’ı silmeyen ActivityManager cached-process fallback uygular. Eski PID’nin yok olduğunu, aynı task öne getirildiğinde yeni PID/doğru destination, seçili Nutrition tarihi ve Measurements 90-gün checked state’inin geri geldiğini doğrular.
 - `HomeLayoutConfigTest` compact/expanded ve %200 font kolon politikasını JVM’de doğrular.
 - `HomeScreenTest` light/dark render, %200 font empty state, sahte sıfır yokluğu, birleşik metric semantics ve error retry davranışını doğrular.
 - `WorkoutRepositoryTest` eşzamanlı start/resume çağrılarının tek aktif ID üretmesini ve tamamlanan seansın mutation’lara kapanmasını doğrular.
@@ -40,7 +40,7 @@ tags: [gymtracker/quality, gymtracker/testing]
 - `ProgressPhotoRulesTest`, `ProgressPhotoRepositoryTest`, `PhotoBackupPolicyTest` ve `ProgressPhotoScreenTest` fotoğraf input aralığı, import/rollback/limit/low-space, orphan/missing/restore reconciliation, backup dışlamaları, v0 yeniden seçimde kimlik/metadata koruma, v1 eski dosya temizliği, update rollback, 500 satırlı lazy grid erişimi ve light/dark/%200 font yükseltme eylemlerini doğrular.
 - `MuscleLoadCalculatorTest`, `WorkoutDaoTest`, `MutationContractTest` ve `MuscleLoadScreenTest` recency/personal-bodyweight/fallback/invalid ölçüm/unknown/cap kurallarını, completed-only + latest-valid-weight reaktif query’lerini ve kalibrasyon kaynağı gösteren renk bağımsız adaptive UI’ı doğrular.
 - `ExerciseIdentityTest`, `ProgramSeedInitializerTest`, `ProgramRepositoryTest`, `WorkoutRepositoryTest` ve `ProgramsScreenTest`; unique/locale-independent ID, 5/23/108 seed, locked guard, atomic plan copy, incomplete-set finish engeli ve adaptive UI’yı doğrular.
-- Pixel 6 Pro API 34 emülatöründe 75 normal instrumentation testi ve 37 JVM testi, 0 failure ile geçer.
+- PR23 Pixel 6 Pro API 34 emülatöründe 75 normal instrumentation testi ve 37 JVM testi, 0 failure ile geçer. PR24 yerel dalında Settings kapsamıyla 80 app + 40 JVM testi geçer.
 - Ayrı iki fazlı reboot kabulü 2/2 geçer; normal 75-test paketine dahil edilmez.
 - Ayrı `:baselineprofile` benchmarkRelease kabul paketinde 4 gerçek süreç-ölümü testi, 0 failure ile geçer.
 - `PhotoGridBenchmark`, reboot fixture’ından kalan 120 thumbnail üzerinde beş iterasyon iki yönlü scroll ve Perfetto trace üretir; yerel API 34 emulator kabulü 1/1 geçer, sayısal sonuç yalnız ön-baseline’dır.
@@ -54,6 +54,8 @@ tags: [gymtracker/quality, gymtracker/testing]
 - PR18 merge-commit master kabul koşusu `29504722658`: quality 8m10s; API 34 device/golden 10m14s; artifact XML 62 test, 0 failure/error/skipped.
 - PR20 merge-commit `625489a` otomatik master kabul koşusu `29762392465`: quality ve API 34 device/process-death işleri yeşil; indirilen artifact XML 66 app + 2 ayrı process-death testi, 0 failure/error/skipped gösterir.
 - PR21/GitHub PR #15 hosted koşusu `29764819516`: quality 7m10s, API 34 device 15m12s; artifact XML 71 app + 2 process-death testi, 0 failure/error/skipped. Merge commit: `39927a7`.
+- PR22/GitHub PR #16 hosted retry `29769324578`: artifact XML 71 app + 4 process-death, 0 failure/error/skipped; merge commit `79a80f4`. Sonraki otomatik master koşusunda app 71/71 geçti ancak Program-detail paket kill’i OOM-adjustment güncellemesiyle yarıştı; PR24 harness sağlamlaştırması üç ardışık yerel turda 12/12 geçti.
+- PR23/GitHub PR #17 hosted koşusu `29771389567`: quality ve geniş API 34 cihaz işi yeşil; indirilen artifact XML 75 app + 5 benchmark/process testi, 0 failure/error/skipped; reboot seed/verify 1/1 + 1/1; `PhotoGridBenchmark` beş tekrar ve beş Perfetto trace. Merge commit: `ce20615`.
 - `releaseDistribution` dummy upload keystore ile APK v2/v3, AAB JAR imzası ve embedded profile girdilerini doğruladı; secretsiz çağrı dört eksik environment değerini fail-fast raporladı.
 - `AppSettingsTest`, Settings Compose testleri ve Navigation smoke; bozuk/eksik tema fallback’i, system/explicit çözüm, tek-seçim semantics’i, `%200` font erişimi, Settings back politikası ve explicit tercihin Activity recreation sonrasında korunmasını doğrular.
 

@@ -2,10 +2,10 @@
 type: handoff
 status: ready
 implementation_status: active
-code_baseline: 26696b9
+code_baseline: 4906402
 updated: 2026-07-20
-active_phase: "Phase 8 - PR23 hosted acceptance + PR24 settings foundation"
-next_pr: "Merge PR23 after artifact audit; publish PR24 settings foundation"
+active_phase: "Phase 8 - PR24 settings hosted acceptance"
+next_pr: "Publish and merge PR24 settings foundation"
 primary_nodes:
   - FEATURE_PROGRESS_PHOTOS
   - ADR_004_PERSISTENT_PHOTO_STORAGE
@@ -21,12 +21,12 @@ tags: [gymtracker/workflow, gymtracker/session]
 
 ## Şu anki durum
 
-- GitHub PR #1–#16 merge commit stratejisiyle sırayla `master`a alındı; son master code baseline `79a80f4` ve first-parent soy ağacı korunuyor.
+- GitHub PR #1–#17 merge commit stratejisiyle sırayla `master`a alındı; son master code baseline `ce20615` ve first-parent soy ağacı korunuyor.
 - PR21/GitHub PR #15 hosted koşusu `29764819516` tamamen yeşil; indirilen artifact XML 71/71 app ve 2/2 gerçek process-death testi gösteriyor.
 - PR22 code baseline `43b523a`, graph baseline `e8f8ca5`, kararlılık head’i `a4f7bd9`: hosted retry `29769324578` 71/71 app + 4/4 process-death ile yeşil ve GitHub PR #16 merge commit `79a80f4` ile `master`a alındı.
-- PR23 code baseline `26696b9`, integration head `5456d1b`, `codex/photo-device-resilience` dalında: 48 MB free-space preflight, typed low-storage mesajı, backup XML/metadata-only restore testleri, gerçek `adb reboot` + `BOOT_COUNT` kanıtlı 120-row fixture, 500-row lazy-grid testi ve 120-thumbnail FrameTiming/Perfetto macrobenchmark hazır.
-- PR23 GitHub PR #17 olarak yayınlandı; hosted run `29771389567` quality işini 7m21s ile geçti, geniş API 34 reboot/benchmark/process-death işi sürüyor.
-- PR24 code baseline `cc2f4fa`, `codex/settings-foundation` yerel dalında: singleton Preferences DataStore, typed tema repository/state, gerçek system/light/dark tüketimi, Home→Settings child rotası, ortak back ve local-first bilgi yüzeyi hazır.
+- PR23 code baseline `26696b9`, final head `5411372`: GitHub PR #17 hosted run `29771389567` tamamen yeşil; artifact XML 75 app + 5 benchmark/process testi, reboot seed/verify 1/1 + 1/1, beş benchmark tekrarı ve beş Perfetto trace doğrulandı. Merge commit `ce20615`; kaynak dal korundu.
+- PR24 code baseline `cc2f4fa`, quality head `4653a79`, process-death hardening `c32476e`, integration head `4906402`, `codex/settings-foundation` yerel dalında: singleton Preferences DataStore, typed tema repository/state, gerçek system/light/dark tüketimi, Home→Settings child rotası, ortak back ve local-first bilgi yüzeyi hazır.
+- PR22 sonrası otomatik master koşusunda bir paket-kill OOM-adjustment yarışı görüldü; PR24 harness’i sistem Settings görevinin resumed olmasını doğrular, bounded retry/task-korumalı fallback uygular. Eski PID + aynı task + yeni PID kanıtı korunarak üç ardışık yerel tur/12 test geçti.
 - Uygulama baseline: `f9d6d75`; PR8 `codex/workout-lifecycle` dalında draft PR #1 olarak yayınlandı.
 - PR9 baseline: `341bf79`; `codex/nutrition-measurements` dalı PR8’i hedefleyen stacked draft PR #2 olarak yayınlandı.
 - PR10 baseline: `2ad7ad8`; `codex/progress-load` dalı PR9’u hedefleyen stacked draft PR #3 olarak yayınlandı.
@@ -48,13 +48,13 @@ tags: [gymtracker/workflow, gymtracker/session]
 - Programs locked/ownership/target kurallarını repository’de doğrular; program günü atomik ACTIVE workout’a planlanan set olarak kopyalanır, tamamlanmayan set Muscle Load’a girmez ve finish’i kilitler.
 - Light/dark tasarım sistemi token temeli ve ortak Home bileşenleri aktif; Home loading/content/error, retry, midnight period tick ve adaptive kolon kullanıyor.
 - Uygulama geneli Türkçe/English kaynak kataloğu 357/357 eşit; muscle adları ve program para biçimi locale-aware.
-- Test temeli aktif: 37 JVM + 75 app API 34 instrumentation + 2 gerçek reboot fazı + 4 ayrı gerçek process-death + 1 büyük-grid macrobenchmark geçiyor; Progress Hub, Programs, Workout, Nutrition ve Measurements için altı kalıcı golden baseline var.
+- Test temeli aktif: PR24’te 40 JVM + 80 app API 34 instrumentation; PR23 hosted kapısında 2 gerçek reboot fazı + 4 ayrı gerçek process-death + 1 büyük-grid macrobenchmark geçiyor; Progress Hub, Programs, Workout, Nutrition ve Measurements için altı kalıcı golden baseline var.
 - Debug build başarılı; lint 0 error; assemble başarılı.
 - `ciQuality` JVM/lint/debug ile R8/resource-shrunk unsigned APK, AAB ve mapping üretir; GitHub Actions quality + API 34 device/golden workflow’u kaynakta.
 
 ## Sıradaki önerilen iş
 
-PR23 hosted 75 app + 2 reboot fazı + 1 macrobenchmark + 4 process-death artifact’lerini doğrula ve merge commit ile birleştir. Sonra PR24’ü yeni master soy ağacına merge et, tam kalite kapısından geçir ve yayınla.
+PR24 graph/test sonuçlarını commit et, dalı yayınla ve hosted 40 JVM + 80 app + reboot/benchmark/process-death artifact kabulünden geçir. Başarılı olursa merge commit ile `master`a al ve otomatik master koşusunu doğrula.
 
 ## Açık P0/P1
 
@@ -66,15 +66,16 @@ PR23 hosted 75 app + 2 reboot fazı + 1 macrobenchmark + 4 process-death artifac
 ## Son doğrulama
 
 - `testDebugUnitTest`: success, 37/37.
-- `connectedDebugAndroidTest`: success, 75/75, Pixel 6 Pro API 34; reboot fazları annotation ile normal paketten ayrıldı.
+- `connectedDebugAndroidTest`: PR23 success 75/75; PR24 success 80/80, Pixel 6 Pro API 34; reboot fazları annotation ile normal paketten ayrıldı.
 - `photo-reboot-acceptance.sh`: success, seed 1/1 + gerçek `adb reboot` + verify 1/1; 120 managed ana/thumbnail çifti, Room metadata ve boot counter doğrulandı.
-- `ProcessDeathNavigationTest`: success, 4/4, Pixel 6 Pro API 34; dört senaryoda eski PID yok oldu, aynı task yeni PID ile doğru destination/state’i geri yükledi.
+- `ProcessDeathNavigationTest`: sağlamlaştırılmış paket üç ardışık turda 12/12, Pixel 6 Pro API 34; dört senaryoda eski PID yok oldu, aynı task yeni PID ile doğru destination/state’i geri yükledi.
 - `PhotoGridBenchmark`: success, 1/1 × 5 iterasyon; P50 185,9 ms, P90 203,7 ms, beş Perfetto trace; emulator sonucu yalnız ön-baseline.
 - `lintDebug`: success, 0 error.
 - `assembleDebug`: success.
 - `ciQuality`: success; JVM/lint/debug, minified APK/AAB, R8 mapping ve embedded profile kapıları geçti.
 - PR21 hosted run `29764819516`: quality 7m10s + API 34 device 15m12s; artifact XML 71+2, 0 failure/error/skipped; merge commit `39927a7`.
 - PR22 ilk hosted run `29767217196`: quality geçti, app XML 71/71; boş-DB Measurements IME yarışı nedeniyle process-death 3/4. Düzeltme head’i `a4f7bd9`; retry `29769324578` artifact XML 71 app + 4 process-death ile tamamen yeşil; merge commit `79a80f4`.
+- PR23 hosted run `29771389567`: quality + geniş cihaz işi yeşil; artifact XML 75 app + 5 benchmark/process, reboot 1/1 + 1/1, beş tekrar/beş trace; merge commit `ce20615`.
 - Kalıcı görsel kapı: iki Progress Hub, Programs, Workout, `nutrition_over_goal_dark_tr_font200.png` ve `measurements_chart_topbar_light_en.png` olmak üzere altı baseline API 34 üzerinde pixel tolerance ile geçti.
 
 ## Handoff güncelleme şablonu
@@ -108,6 +109,8 @@ Tests run/results:
 - Targeted Settings/Navigation/Localization device package: 11/11.
 - Updated full Navigation smoke class: 9/9, including explicit theme persistence across Activity recreation.
 - Real Preferences DataStore repository write/read round-trip: 1/1.
+- Full `connectedDebugAndroidTest`: 80/80, 0 failure/error/skipped on Pixel 6 Pro API 34.
+- Hardened `ProcessDeathNavigationTest`: three consecutive 4/4 runs, 12/12 total, with resumed-system-task verification and preserved PID/task assertions.
 - Manual API 34 light/large-font visual QA: top bar, all theme choices, privacy and version cards remain readable/reachable; future-tense placeholder copy was replaced with current local-first behavior.
 
 Risks changed:
@@ -115,7 +118,7 @@ Risks changed:
 - Export/restore and destructive data management remain separate high-risk transaction work.
 
 Next concrete action:
-- Complete PR23 hosted artifact audit and merge, merge the new master into PR24, then run full `ciQuality` + 80-app-test acceptance before publication.
+- Commit the final graph evidence, publish PR24 and audit its hosted 40-JVM + 80-app + reboot/benchmark/process-death artifacts before merge.
 
 Blockers:
 - No code blocker. Production secrets/Play, branch protection and physical-device acceptance remain external.
@@ -148,7 +151,7 @@ Risks changed:
 - R17 improves to partial+: 120-thumbnail CUJ, JSON and trace artifact contract are active; physical device acceptance remains.
 
 Next concrete action:
-- Publish PR23 and audit its expanded hosted device artifact; merge with a merge commit after the 75 app + reboot + process-death + benchmark contract passes.
+- Completed: hosted run `29771389567` artifact audit passed and PR23 merged as `ce20615`; source branch retained. Continue with PR24 publication.
 
 Blockers:
 - No code blocker. Local Gradle requires explicit JDK 17 because the machine default remains Java 11. Branch protection and production distribution still require external account/secrets/hardware capabilities.
