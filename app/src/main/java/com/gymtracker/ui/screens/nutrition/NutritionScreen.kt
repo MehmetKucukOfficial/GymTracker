@@ -42,7 +42,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
@@ -76,6 +75,7 @@ import com.gymtracker.data.nutrition.nutritionProgress
 import com.gymtracker.domain.parseLocalizedDecimal
 import com.gymtracker.ui.components.GtEmptyState
 import com.gymtracker.ui.components.GtSectionHeader
+import com.gymtracker.ui.components.GtSnackbarHost
 import com.gymtracker.ui.theme.GtSize
 import com.gymtracker.ui.theme.GtSpacing
 import java.time.LocalDate
@@ -110,7 +110,7 @@ fun NutritionScreen(viewModel: NutritionViewModel = hiltViewModel()) {
             onDeleteEntry = viewModel::deleteEntry,
             onEditEntry = { editingEntry = it }
         )
-        SnackbarHost(snackbarHostState, Modifier.align(Alignment.BottomCenter))
+        GtSnackbarHost(snackbarHostState, Modifier.align(Alignment.BottomCenter))
     }
 
     val deletedMessage = stringResource(R.string.nutrition_entry_deleted)

@@ -24,7 +24,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ChevronRight
@@ -43,6 +42,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -77,6 +77,7 @@ import com.gymtracker.ui.components.GtEmptyState
 import com.gymtracker.ui.components.GtLoadingState
 import com.gymtracker.ui.components.GtListDetailScaffold
 import com.gymtracker.ui.components.GtSectionHeader
+import com.gymtracker.ui.components.GtTopAppBar
 import com.gymtracker.ui.theme.GtSize
 import com.gymtracker.ui.theme.GtSpacing
 import java.text.SimpleDateFormat
@@ -505,36 +506,54 @@ fun WorkoutDetailScreen(
     var showFinishDialog by remember { mutableStateOf(false) }
     var plannedSet by remember { mutableStateOf<WorkoutSet?>(null) }
 
-    when {
-        uiState.isLoading -> GtLoadingState(
-            title = stringResource(R.string.workout_loading),
-            modifier = Modifier.fillMaxSize()
-        )
-
-        uiState.activeSession == null -> Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(GtSpacing.md),
-            contentAlignment = Alignment.Center
-        ) {
-            GtEmptyState(
-                title = stringResource(R.string.workout_not_found),
-                body = stringResource(R.string.workout_not_found),
-                actionLabel = stringResource(R.string.action_back_long),
-                onAction = onBack
+    Scaffold(
+        topBar = {
+            GtTopAppBar(
+                title = uiState.activeSession?.name ?: stringResource(R.string.workout_title),
+                supportingText = uiState.activeSession?.let { session ->
+                    stringResource(
+                        if (session.status == WorkoutStatus.ACTIVE) R.string.workout_detail_active
+                        else R.string.workout_detail_summary
+                    )
+                },
+                onBack = onBack
             )
         }
+    ) { padding ->
+        when {
+            uiState.isLoading -> GtLoadingState(
+                title = stringResource(R.string.workout_loading),
+                modifier = Modifier.fillMaxSize().padding(padding)
+            )
 
-        else -> WorkoutDetailContent(
-            session = requireNotNull(uiState.activeSession),
-            sets = uiState.activeSets,
-            onBack = onBack,
-            onFinishRequest = { showFinishDialog = true },
-            onAddSetRequest = { showAddSetDialog = true },
-            onDeleteSet = viewModel::deleteSet,
-            onCompletePlannedSet = { plannedSet = it }
-        )
+            uiState.activeSession == null -> Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
+                    .padding(padding)
+                    .padding(GtSpacing.md),
+                contentAlignment = Alignment.Center
+            ) {
+                GtEmptyState(
+                    title = stringResource(R.string.workout_not_found),
+                    body = stringResource(R.string.workout_not_found),
+                    actionLabel = stringResource(R.string.action_back_long),
+                    onAction = onBack
+                )
+            }
+
+            else -> WorkoutDetailContent(
+                session = requireNotNull(uiState.activeSession),
+                sets = uiState.activeSets,
+                onBack = onBack,
+                onFinishRequest = { showFinishDialog = true },
+                onAddSetRequest = { showAddSetDialog = true },
+                onDeleteSet = viewModel::deleteSet,
+                onCompletePlannedSet = { plannedSet = it },
+                showHeader = false,
+                modifier = Modifier.padding(padding)
+            )
+        }
     }
 
     if (showAddSetDialog && uiState.activeSession?.status == WorkoutStatus.ACTIVE) {
@@ -593,10 +612,10 @@ fun WorkoutDetailContent(
     onAddSetRequest: () -> Unit,
     onDeleteSet: (WorkoutSet) -> Unit,
     modifier: Modifier = Modifier,
-    onCompletePlannedSet: (WorkoutSet) -> Unit = {}
+    onCompletePlannedSet: (WorkoutSet) -> Unit = {},
+    showHeader: Boolean = true
 ) {
     val isActive = session.status == WorkoutStatus.ACTIVE
-    val largeFont = LocalDensity.current.fontScale >= 1.6f
     val groupedSets = sets.groupBy { it.exerciseName }
     val hasIncompleteSets = sets.any { !it.isCompleted }
 
@@ -607,29 +626,21 @@ fun WorkoutDetailContent(
             .padding(horizontal = GtSpacing.md, vertical = GtSpacing.sm)
             .testTag(if (isActive) "workout-detail-active" else "workout-detail-read-only")
     ) {
-        if (largeFont) {
-            Column(verticalArrangement = Arrangement.spacedBy(GtSpacing.xs)) {
-                WorkoutDetailTitle(session = session, isActive = isActive, onBack = onBack)
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    WorkoutStatusBadge(isActive = isActive)
-                }
-            }
-        } else {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                WorkoutDetailTitle(
-                    session = session,
-                    isActive = isActive,
-                    onBack = onBack,
-                    modifier = Modifier.weight(1f)
-                )
-                WorkoutStatusBadge(isActive = isActive)
-            }
+        if (showHeader) {
+            GtTopAppBar(
+                title = session.name,
+                supportingText = stringResource(
+                    if (isActive) R.string.workout_detail_active
+                    else R.string.workout_detail_summary
+                ),
+                onBack = onBack
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
+            WorkoutStatusBadge(isActive = isActive)
         }
 
         if (isActive) {
@@ -707,37 +718,6 @@ fun WorkoutDetailContent(
                 Spacer(Modifier.width(GtSpacing.xs))
                 Text(stringResource(R.string.workout_add_set))
             }
-        }
-    }
-}
-
-@Composable
-private fun WorkoutDetailTitle(
-    session: WorkoutSession,
-    isActive: Boolean,
-    onBack: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        IconButton(onClick = onBack) {
-            Icon(
-                Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = stringResource(R.string.action_back)
-            )
-        }
-        Column(modifier = Modifier.weight(1f)) {
-            Text(text = session.name, style = MaterialTheme.typography.headlineSmall)
-            Text(
-                text = stringResource(
-                    if (isActive) R.string.workout_detail_active
-                    else R.string.workout_detail_summary
-                ),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
         }
     }
 }
