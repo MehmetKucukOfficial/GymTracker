@@ -28,12 +28,14 @@ import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.MonitorWeight
 import androidx.compose.material.icons.filled.Restaurant
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Straighten
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -121,7 +123,10 @@ fun HomeContent(
                     .fillMaxWidth()
                     .testTag(if (isExpanded) "home-layout-expanded" else "home-layout-compact")
             ) {
-                HomeHeader(greeting = greeting)
+                HomeHeader(
+                    greeting = greeting,
+                    onOpenSettings = { onNavigate(Screen.Settings.route) }
+                )
                 Spacer(Modifier.height(GtSpacing.lg))
                 val dashboard = (uiState as? HomeUiState.Content)?.dashboard
                 StartWorkoutCard(
@@ -164,8 +169,14 @@ fun HomeContent(
 }
 
 @Composable
-private fun HomeHeader(greeting: String) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+private fun HomeHeader(
+    greeting: String,
+    onOpenSettings: () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Box(
             modifier = Modifier
                 .size(GtSize.minimumTouchTarget)
@@ -180,7 +191,7 @@ private fun HomeHeader(greeting: String) {
             )
         }
         Spacer(Modifier.width(GtSpacing.sm))
-        Column {
+        Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = stringResource(R.string.home_eyebrow),
                 style = MaterialTheme.typography.labelMedium,
@@ -192,6 +203,17 @@ private fun HomeHeader(greeting: String) {
                 text = stringResource(R.string.home_welcome),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        IconButton(
+            onClick = onOpenSettings,
+            modifier = Modifier
+                .size(GtSize.minimumTouchTarget)
+                .testTag("home-open-settings")
+        ) {
+            Icon(
+                imageVector = Icons.Default.Settings,
+                contentDescription = stringResource(R.string.settings_open)
             )
         }
     }

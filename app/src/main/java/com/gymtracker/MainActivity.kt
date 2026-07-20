@@ -3,6 +3,7 @@ package com.gymtracker
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -18,6 +20,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gymtracker.ui.components.BottomNavigationBar
 import com.gymtracker.ui.components.GtNavigationRail
 import com.gymtracker.ui.components.navigationTypeForWidth
@@ -34,6 +37,8 @@ import com.gymtracker.ui.screens.progress.ProgressScreen
 import com.gymtracker.ui.screens.progress.ProgressHubScreen
 import com.gymtracker.ui.screens.programs.ProgramDetailScreen
 import com.gymtracker.ui.screens.programs.ProgramsScreen
+import com.gymtracker.ui.screens.settings.SettingsScreen
+import com.gymtracker.ui.screens.settings.SettingsViewModel
 import com.gymtracker.ui.screens.workout.WorkoutDetailScreen
 import com.gymtracker.ui.screens.workout.WorkoutScreen
 import com.gymtracker.ui.theme.GymTrackerTheme
@@ -41,10 +46,15 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private val settingsViewModel: SettingsViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            GymTrackerTheme {
+            val settings by settingsViewModel.settings.collectAsStateWithLifecycle()
+            GymTrackerTheme(
+                darkTheme = settings.themeMode.useDarkTheme(isSystemInDarkTheme())
+            ) {
                 MainNavigation()
             }
         }
@@ -89,6 +99,9 @@ private fun AppNavHost(navController: NavHostController, modifier: Modifier = Mo
             deepLinks = listOf(navDeepLink { uriPattern = DeepLinkContract.patternFor(Screen.Home) })
         ) {
             HomeScreen(onNavigate = { route -> navController.navigate(route) })
+        }
+        composable(route = Screen.Settings.route) {
+            SettingsScreen(onBack = { navController.popBackStack() })
         }
         composable(
             route = Screen.Workout.route,

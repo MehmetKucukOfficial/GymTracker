@@ -83,6 +83,37 @@ class NavigationSmokeTest {
     }
 
     @Test
+    fun settings_opensFromHomeHidesPrimaryNavigationAndBackReturnsHome() {
+        composeRule.onNodeWithTag("home-open-settings").performClick()
+
+        composeRule.onNodeWithText(text(R.string.settings_title)).assertIsDisplayed()
+        composeRule.onNodeWithTag("bottom-nav-home").assertDoesNotExist()
+        composeRule.onNodeWithTag("settings-theme-system").assertIsDisplayed()
+
+        composeRule.onNodeWithTag("gt-top-app-bar-back").performClick()
+
+        composeRule.onNodeWithTag("bottom-nav-home").assertIsDisplayed()
+        composeRule.onNodeWithTag("home-open-settings").assertIsDisplayed()
+    }
+
+    @Test
+    fun explicitThemePreference_survivesActivityRecreation() {
+        composeRule.onNodeWithTag("home-open-settings").performClick()
+        composeRule.onNodeWithTag("settings-theme-light").performClick()
+        composeRule.waitUntil(timeoutMillis = 10_000) {
+            runCatching {
+                composeRule.onNodeWithTag("settings-theme-light").assertIsSelected()
+            }.isSuccess
+        }
+        composeRule.onNodeWithTag("settings-theme-light").assertIsSelected()
+
+        composeRule.activityRule.scenario.recreate()
+
+        composeRule.onNodeWithTag("settings-theme-light").assertIsSelected()
+        composeRule.onNodeWithTag("bottom-nav-home").assertDoesNotExist()
+    }
+
+    @Test
     fun selectedTopLevelDestination_survivesActivityRecreation() {
         composeRule.onNodeWithTag("bottom-nav-programs").performClick()
         composeRule.onNodeWithTag("bottom-nav-programs").assertIsSelected()
