@@ -2,10 +2,10 @@
 type: handoff
 status: ready
 implementation_status: active
-code_baseline: 4906402
+code_baseline: 81cb7fe
 updated: 2026-07-20
-active_phase: "Phase 8 - PR24 settings hosted acceptance"
-next_pr: "Publish and merge PR24 settings foundation"
+active_phase: "Phase 8 - PR25 versioned manual data export"
+next_pr: "Complete PR25 full/hosted acceptance and merge"
 primary_nodes:
   - FEATURE_PROGRESS_PHOTOS
   - ADR_004_PERSISTENT_PHOTO_STORAGE
@@ -14,6 +14,7 @@ primary_nodes:
   - RISK_REGISTER_GRAPH
   - ROADMAP_EXECUTION_GRAPH
   - FEATURE_SETTINGS_DATA
+  - ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY
 tags: [gymtracker/workflow, gymtracker/session]
 ---
 
@@ -21,11 +22,13 @@ tags: [gymtracker/workflow, gymtracker/session]
 
 ## Şu anki durum
 
-- GitHub PR #1–#17 merge commit stratejisiyle sırayla `master`a alındı; son master code baseline `ce20615` ve first-parent soy ağacı korunuyor.
+- GitHub PR #1–#18 merge commit stratejisiyle sırayla `master`a alındı; son master code baseline `80c79b5` ve first-parent soy ağacı korunuyor.
 - PR21/GitHub PR #15 hosted koşusu `29764819516` tamamen yeşil; indirilen artifact XML 71/71 app ve 2/2 gerçek process-death testi gösteriyor.
 - PR22 code baseline `43b523a`, graph baseline `e8f8ca5`, kararlılık head’i `a4f7bd9`: hosted retry `29769324578` 71/71 app + 4/4 process-death ile yeşil ve GitHub PR #16 merge commit `79a80f4` ile `master`a alındı.
 - PR23 code baseline `26696b9`, final head `5411372`: GitHub PR #17 hosted run `29771389567` tamamen yeşil; artifact XML 75 app + 5 benchmark/process testi, reboot seed/verify 1/1 + 1/1, beş benchmark tekrarı ve beş Perfetto trace doğrulandı. Merge commit `ce20615`; kaynak dal korundu.
 - PR24 code baseline `cc2f4fa`, quality head `4653a79`, process-death hardening `c32476e`, integration head `4906402`, `codex/settings-foundation` yerel dalında: singleton Preferences DataStore, typed tema repository/state, gerçek system/light/dark tüketimi, Home→Settings child rotası, ortak back ve local-first bilgi yüzeyi hazır.
+- PR24 final head `6168a9e`: GitHub PR #18 hosted run `29775858318` tamamen yeşil; artifact XML 80 app + 5 benchmark/process, reboot 1+1, dört process-death ve beş trace. Merge commit `80c79b5`; kaynak dal korundu.
+- PR25 code baseline `e6ae602`, PR24 merge-integration head `81cb7fe`, `codex/data-export`: format v1 manuel ZIP, on bir tablo tek-transaction snapshot, tema, yönetilen fotoğraflar, legacy metadata-only, alan/path/temp güvenliği ve Settings typed state/UI tamamlandı.
 - PR22 sonrası otomatik master koşusunda bir paket-kill OOM-adjustment yarışı görüldü; PR24 harness’i sistem Settings görevinin resumed olmasını doğrular, bounded retry/task-korumalı fallback uygular. Eski PID + aynı task + yeni PID kanıtı korunarak üç ardışık yerel tur/12 test geçti.
 - Uygulama baseline: `f9d6d75`; PR8 `codex/workout-lifecycle` dalında draft PR #1 olarak yayınlandı.
 - PR9 baseline: `341bf79`; `codex/nutrition-measurements` dalı PR8’i hedefleyen stacked draft PR #2 olarak yayınlandı.
@@ -47,14 +50,14 @@ tags: [gymtracker/workflow, gymtracker/session]
 - Muscle Load completed-set Flow’unu latest-valid measurement Flow’uyla birleştirir; recency/personal-bodyweight/fallback/unknown sözleşmesi, kalibrasyon kaynağı, metodoloji ve erişilebilir liste aktiftir.
 - Programs locked/ownership/target kurallarını repository’de doğrular; program günü atomik ACTIVE workout’a planlanan set olarak kopyalanır, tamamlanmayan set Muscle Load’a girmez ve finish’i kilitler.
 - Light/dark tasarım sistemi token temeli ve ortak Home bileşenleri aktif; Home loading/content/error, retry, midnight period tick ve adaptive kolon kullanıyor.
-- Uygulama geneli Türkçe/English kaynak kataloğu 357/357 eşit; muscle adları ve program para biçimi locale-aware.
-- Test temeli aktif: PR24’te 40 JVM + 80 app API 34 instrumentation; PR23 hosted kapısında 2 gerçek reboot fazı + 4 ayrı gerçek process-death + 1 büyük-grid macrobenchmark geçiyor; Progress Hub, Programs, Workout, Nutrition ve Measurements için altı kalıcı golden baseline var.
+- Uygulama geneli Türkçe/English string kaynak kataloğu 385/385 eşit; muscle adları ve program para biçimi locale-aware.
+- Test temeli aktif: PR25’te 42 JVM + hedefli 19 export/storage/settings API 34 testi; PR24 hosted kapısında 80 app + 2 gerçek reboot fazı + 4 ayrı gerçek process-death + 1 büyük-grid macrobenchmark geçiyor; altı kalıcı golden baseline var.
 - Debug build başarılı; lint 0 error; assemble başarılı.
 - `ciQuality` JVM/lint/debug ile R8/resource-shrunk unsigned APK, AAB ve mapping üretir; GitHub Actions quality + API 34 device/golden workflow’u kaynakta.
 
 ## Sıradaki önerilen iş
 
-PR24 graph/test sonuçlarını commit et, dalı yayınla ve hosted 40 JVM + 80 app + reboot/benchmark/process-death artifact kabulünden geçir. Başarılı olursa merge commit ile `master`a al ve otomatik master koşusunu doğrula.
+PR25 tam 85-test API 34 paketini çalıştır; graph commit’ini yayınla, hosted JVM/app/reboot/benchmark/process-death artifact’ını denetle ve merge commit ile `master`a al. Ardından format v1 staged restore + rollback dilimine geç.
 
 ## Açık P0/P1
 
@@ -62,10 +65,12 @@ PR24 graph/test sonuçlarını commit et, dalı yayınla ve hosted 40 JVM + 80 a
 - Photos/Load ile disabled/loading golden baseline’larını genişletme
 - Progress Photos gerçek Android backup transport restore deneyi ve Photos/Load golden genişletmesi
 - Gerçek production secret/Play internal-track smoke, branch protection ve fiziksel cihaz benchmark kabulü
+- Format v1 staged restore + rollback ve güçlü onaylı tüm veriyi silme
 
 ## Son doğrulama
 
 - `testDebugUnitTest`: success, 37/37.
+- PR25 `testDebugUnitTest`: success, 42/42; hedefli API 34 export paketi 19/19; reboot sonrası golden 2/2; tam API 34 paketi 85/85; tam `ciQuality` success.
 - `connectedDebugAndroidTest`: PR23 success 75/75; PR24 success 80/80, Pixel 6 Pro API 34; reboot fazları annotation ile normal paketten ayrıldı.
 - `photo-reboot-acceptance.sh`: success, seed 1/1 + gerçek `adb reboot` + verify 1/1; 120 managed ana/thumbnail çifti, Room metadata ve boot counter doğrulandı.
 - `ProcessDeathNavigationTest`: sağlamlaştırılmış paket üç ardışık turda 12/12, Pixel 6 Pro API 34; dört senaryoda eski PID yok oldu, aynı task yeni PID ile doğru destination/state’i geri yükledi.
@@ -76,6 +81,7 @@ PR24 graph/test sonuçlarını commit et, dalı yayınla ve hosted 40 JVM + 80 a
 - PR21 hosted run `29764819516`: quality 7m10s + API 34 device 15m12s; artifact XML 71+2, 0 failure/error/skipped; merge commit `39927a7`.
 - PR22 ilk hosted run `29767217196`: quality geçti, app XML 71/71; boş-DB Measurements IME yarışı nedeniyle process-death 3/4. Düzeltme head’i `a4f7bd9`; retry `29769324578` artifact XML 71 app + 4 process-death ile tamamen yeşil; merge commit `79a80f4`.
 - PR23 hosted run `29771389567`: quality + geniş cihaz işi yeşil; artifact XML 75 app + 5 benchmark/process, reboot 1/1 + 1/1, beş tekrar/beş trace; merge commit `ce20615`.
+- PR24 hosted run `29775858318`: quality + geniş cihaz işi yeşil; artifact XML 80 app + 5 benchmark/process, reboot 1/1 + 1/1, dört process-death ve beş trace; merge commit `80c79b5`.
 - Kalıcı görsel kapı: iki Progress Hub, Programs, Workout, `nutrition_over_goal_dark_tr_font200.png` ve `measurements_chart_topbar_light_en.png` olmak üzere altı baseline API 34 üzerinde pixel tolerance ile geçti.
 
 ## Handoff güncelleme şablonu
@@ -89,6 +95,41 @@ Graph notes updated:
 Next concrete action:
 Blockers:
 ```
+
+## 2026-07-20 - PR25 Versioned manual data export
+
+Completed:
+- Added a versioned `gymtracker-export` v1 ZIP with schema v9 typed JSON for all eleven Room tables plus the persisted theme preference.
+- Reads all tables in stable order inside one Room transaction; no entity, schema or migration change.
+- Includes app-managed v1/v2 progress photo main/thumbnail bytes under safe archive paths; marks provider-backed v0 photos metadata-only and never serializes device `file://` paths.
+- Added canonical managed-root reads, per-media bounds, unsafe ZIP path rejection, cache-space preflight, complete-temp-before-SAF-copy behavior and deterministic temp cleanup.
+- Added Settings create-document action, single-flight exporting state, loading/success/error UI, sensitive-data guidance and legacy-photo warning with exact TR/EN resources.
+- Added [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]] and updated feature/architecture/design/test/risk/roadmap/atlas/impact/start nodes.
+
+Files changed:
+- Portability DAO, typed archive model/writer, export repository, app database DAO registry and DI.
+- Managed photo storage read boundary, Settings ViewModel/Screen and TR/EN resources.
+- JVM archive tests, Room/export repository instrumentation tests, Settings/localization/storage safety coverage.
+
+Tests run/results:
+- `testDebugUnitTest`: 42/42, 0 failure/error/skipped.
+- Targeted API 34 export/storage/settings package: 19/19, 0 failure/error/skipped.
+- Full `ciQuality`: success in 2m48s; lint, debug, minified APK/AAB, R8 mapping and embedded profile.
+- Resource contract: 385/385 string keys, no missing side.
+- Full API 34 suite: success, 85/85 after a clean emulator reboot; 0 failure/error/skipped. The pre-reboot run had one screenshot-capture readiness timeout before pixel comparison; targeted golden then passed 2/2.
+- Hosted acceptance is the next gate.
+
+Risks changed:
+- R18 added partial+: manual export is implemented and test-backed; restore and all-data deletion are deliberately not claimed.
+- Export failure preserves an existing selected target until copy begins; copy failure performs best-effort target deletion. Temp archives are always removed.
+- Legacy provider media remains metadata-only because persisted provider access cannot be guaranteed.
+
+Next concrete action:
+- Run full API 34 device suite, commit graph evidence, push/open PR25, audit hosted artifacts and merge with a merge commit.
+- Then implement staged validation + atomic replace/rollback restore as PR26.
+
+Blockers:
+- No local code blocker. Production secrets/Play, branch protection, real backup transport and physical-device performance remain external.
 
 ## 2026-07-20 - PR24 Settings and architecture foundation
 

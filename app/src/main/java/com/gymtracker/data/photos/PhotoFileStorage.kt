@@ -141,15 +141,16 @@ class PhotoFileStorage private constructor(
 
     fun deleteManaged(uriValue: String?): Boolean {
         if (uriValue == null) return true
-        val uri = Uri.parse(uriValue)
-        if (uri.scheme != "file") return true
-        val path = uri.path ?: return true
-        val file = File(path)
-        val managedRoot = directory.canonicalFile
-        val candidate = file.canonicalFile
-        if (candidate.parentFile != managedRoot) return false
+        if (Uri.parse(uriValue).scheme != "file") return true
+        val candidate = resolveManagedFile(uriValue) ?: return false
         return !candidate.exists() || candidate.delete()
     }
+
+    fun openManaged(uriValue: String): InputStream? =
+        resolveManagedFile(uriValue)
+            ?.takeIf(File::isFile)
+            ?.inputStream()
+            ?.buffered()
 
     fun reconcile(knownManagedUris: Set<String>): PhotoStorageReconciliation {
         check(directory.exists() || directory.mkdirs()) { "Fotoğraf klasörü oluşturulamadı." }
@@ -190,6 +191,15 @@ class PhotoFileStorage private constructor(
             output.write(buffer, 0, read)
         }
         return total
+    }
+
+    private fun resolveManagedFile(uriValue: String): File? {
+        val uri = Uri.parse(uriValue)
+        if (uri.scheme != "file") return null
+        val path = uri.path ?: return null
+        val managedRoot = directory.canonicalFile
+        val candidate = File(path).canonicalFile
+        return candidate.takeIf { file -> file.parentFile == managedRoot }
     }
 
     private fun sampleSize(width: Int, height: Int, maxDimension: Int): Int {

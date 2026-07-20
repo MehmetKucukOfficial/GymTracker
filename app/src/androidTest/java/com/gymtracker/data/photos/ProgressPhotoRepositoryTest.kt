@@ -68,6 +68,17 @@ class ProgressPhotoRepositoryTest {
         val thumbnailFile = java.io.File(requireNotNull(Uri.parse(photo.thumbnailUri).path))
         assertTrue(managedFile.exists())
         assertTrue(thumbnailFile.exists())
+        assertTrue(storage.openManaged(photo.photoUri)?.use { it.read() >= 0 } == true)
+        val outsideManagedRoot = File(context.cacheDir, "outside-managed.jpg").apply {
+            writeText("outside")
+        }
+        try {
+            assertEquals(null, storage.openManaged(Uri.fromFile(outsideManagedRoot).toString()))
+            assertFalse(storage.deleteManaged(Uri.fromFile(outsideManagedRoot).toString()))
+            assertTrue(outsideManagedRoot.exists())
+        } finally {
+            outsideManagedRoot.delete()
+        }
         assertEquals(managedFile.length(), photo.sizeBytes)
         assertEquals("image/jpeg", photo.mimeType)
         assertEquals(2, photo.storageVersion)

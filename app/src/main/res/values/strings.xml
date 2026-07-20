@@ -395,6 +395,17 @@
     <string name="settings_data_supporting">Hesap veya otomatik bulut eşitlemesi kullanılmaz; verilerin cihazında kalır.</string>
     <string name="settings_local_first_title">Verilerin bu cihazda</string>
     <string name="settings_local_first_body">Antrenman, beslenme, ölçüm ve ilerleme verileri yerel saklanır. Progress fotoğrafları bulut yedeği ve cihaz aktarımı dışında tutulur.</string>
+    <string name="settings_export_title">Manuel veri yedeği</string>
+    <string name="settings_export_body">Tüm uygulama verilerini ve yönetilen progress fotoğraflarını seçtiğin konuma sürümlü bir ZIP arşivi olarak kaydeder. Arşiv hassas sağlık verileri içerebilir; güvenli sakla.</string>
+    <string name="settings_export_action">Yedek oluştur</string>
+    <string name="settings_export_in_progress">Yedek hazırlanıyor</string>
+    <string name="settings_export_do_not_close">Veriler tutarlı bir anlık görüntüden okunuyor. İşlem tamamlanana kadar uygulamayı kapatma.</string>
+    <string name="settings_export_success">%1$d kayıt ve %2$d fotoğraf dışa aktarıldı · %3$s</string>
+    <string name="settings_export_legacy_warning">%1$d eski fotoğrafın kaynak dosyasına güvenli erişim yoktu; yalnız metadata arşive eklendi.</string>
+    <string name="settings_export_error_storage">Yedeği güvenle hazırlamak için cihazda yeterli boş alan yok.</string>
+    <string name="settings_export_error_missing_photo">Yönetilen bir fotoğraf dosyası bulunamadı. Fotoğraflar ekranını açıp depolamayı uzlaştırdıktan sonra yeniden dene.</string>
+    <string name="settings_export_error_generic">Yedek oluşturulamadı. Hedef konumu ve kullanılabilir alanı kontrol edip yeniden dene.</string>
+    <string name="settings_export_filename" translatable="false">GymTracker-backup.zip</string>
     <string name="settings_about_title">Uygulama hakkında</string>
     <string name="settings_version">Sürüm %1$s · Yerel önizleme</string>
 

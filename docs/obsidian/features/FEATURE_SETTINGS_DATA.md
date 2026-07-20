@@ -2,10 +2,15 @@
 type: feature
 status: current
 implementation_status: active
-verified_commit: 4906402
+verified_commit: 81cb7fe
 updated: 2026-07-20
 source_files:
   - app/src/main/java/com/gymtracker/data/settings/AppSettings.kt
+  - app/src/main/java/com/gymtracker/data/portability/DataPortabilityDao.kt
+  - app/src/main/java/com/gymtracker/data/portability/PortableArchive.kt
+  - app/src/main/java/com/gymtracker/data/portability/PortableArchiveWriter.kt
+  - app/src/main/java/com/gymtracker/data/portability/DataExportRepository.kt
+  - app/src/main/java/com/gymtracker/data/photos/PhotoFileStorage.kt
   - app/src/main/java/com/gymtracker/di/SettingsModule.kt
   - app/src/main/java/com/gymtracker/ui/screens/settings/SettingsViewModel.kt
   - app/src/main/java/com/gymtracker/ui/screens/settings/SettingsScreen.kt
@@ -15,6 +20,9 @@ source_files:
   - app/src/test/java/com/gymtracker/data/settings/AppSettingsTest.kt
   - app/src/androidTest/java/com/gymtracker/ui/screens/settings/SettingsScreenTest.kt
   - app/src/androidTest/java/com/gymtracker/data/settings/SettingsRepositoryTest.kt
+  - app/src/test/java/com/gymtracker/data/portability/PortableArchiveWriterTest.kt
+  - app/src/androidTest/java/com/gymtracker/data/portability/DataPortabilityDaoTest.kt
+  - app/src/androidTest/java/com/gymtracker/data/portability/DataExportRepositoryTest.kt
   - app/src/androidTest/java/com/gymtracker/ui/navigation/NavigationSmokeTest.kt
 tags: [gymtracker/feature, gymtracker/settings, gymtracker/data]
 ---
@@ -29,13 +37,17 @@ tags: [gymtracker/feature, gymtracker/settings, gymtracker/data]
 - Activity-scoped settings state’i `GymTrackerTheme` seçimini anında değiştirir; explicit tema Activity recreation ve sonraki uygulama açılışında korunur.
 - Bilgi kartı local-first saklama ve progress fotoğraflarının cloud/device-transfer dışında tutulduğunu açıklar; sürüm paket yöneticisinden okunur.
 - Route/Content ayrımı, lifecycle-aware state collection, tek seçim semantics’i, TR/EN eş kaynak ve `%200` fontta kaydırılabilir düzen aktiftir.
+- Manuel veri dışa aktarma SAF `CreateDocument` ile kullanıcı seçtiği ZIP hedefini kullanır; gizli bulut aktarımı veya geniş storage izni yoktur.
+- Format v1 arşivi on bir Room tablosunu tek transaction anında, tema tercihini ve storage v1/v2 yönetilen fotoğraf byte'larını taşır. Cihaz `file://` yolları JSON'a girmez; provider-backed v0 fotoğraflar açıkça metadata-only işaretlenir.
+- Cache'te tamamla-sonra-kopyala akışı, düşük alan preflight'i, eksik yönetilen medya hatası, bounded medya kopyası, canonical uygulama kökü ve geçici dosya temizliği aktiftir. Karar: [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]].
 
 ## Açık ürün dilimleri
 
 - Birim sistemi ancak bütün kg/cm gösterim ve girişleri dönüşüm sözleşmesine bağlandığında kullanıcıya açılacak.
 - Haftanın ilk günü ancak takvim/hafta sorgularını gerçekten etkilediğinde kullanıcıya açılacak.
 - Varsayılan dinlenme süresi ve haptic tercihleri, workout rest-timer davranışıyla aynı dilimde eklenecek.
-- Versiyonlanmış export/restore, güçlü onaylı tüm veriyi silme ve backup açıklaması ayrı veri yönetimi kabul kapısıdır.
+- Format v1 geri yükleme; staging doğrulaması, ilişki/enum/media bütünlüğü, atomik Room replace ve dosya rollback'iyle ayrı dilimde uygulanacak.
+- Güçlü onaylı tüm veriyi silme; Room, DataStore ve yönetilen dosyaları birlikte temizleyen ayrı veri yönetimi kabul kapısıdır.
 
 ## Kabul
 
@@ -45,6 +57,9 @@ tags: [gymtracker/feature, gymtracker/settings, gymtracker/data]
 - Geçen: tam `ciQuality`; 40/40 JVM, lint, debug, minified APK/AAB, R8 mapping ve embedded profile.
 - Geçen: gerçek API 34 light/büyük-font görsel QA; top bar, üç tema seçeneği, gizlilik ve sürüm kartları kırpılmadan erişiliyor.
 - Geçen: tam yerel `connectedDebugAndroidTest`, 80/80 app cihaz testi.
-- Bekleyen: PR24 hosted API 34 kabulü, export/restore, tüm veriyi silme ve davranışa bağlı diğer tercihler.
+- Geçen: PR24 hosted run `29775858318`; 40 JVM, 80 app, 4 process-death, 1 beş-iterasyon benchmark, reboot seed/verify 1+1; merge commit `80c79b5`.
+- Geçen: PR25 dışa aktarma hedefli API 34 paketi 19/19, JVM 42/42 ve tam `ciQuality`; gerçek seçili dosyaya okunabilir ZIP, düşük alan, temp cleanup, path güvenliği, TR/EN ve `%200` font kanıtları.
+- Geçen: temiz reboot sonrası hedefli Progress Hub golden 2/2 ve tam API 34 regresyon paketi 85/85, 0 failure/error/skipped.
+- Bekleyen: format v1 restore, tüm veriyi silme, PR25 hosted kabulü ve davranışa bağlı diğer tercihler.
 
-Bağlar: [[ARCH_STATE_DATA_FLOW]], [[ARCH_NAVIGATION]], [[DESIGN_SYSTEM_GRAPH]], [[ROADMAP_EXECUTION_GRAPH]].
+Bağlar: [[ARCH_STATE_DATA_FLOW]], [[ARCH_DATABASE]], [[ARCH_NAVIGATION]], [[DESIGN_SYSTEM_GRAPH]], [[ROADMAP_EXECUTION_GRAPH]].

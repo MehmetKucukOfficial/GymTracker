@@ -2,7 +2,7 @@
 type: workflow
 status: current
 implementation_status: active
-verified_commit: 26696b9
+verified_commit: 81cb7fe
 updated: 2026-07-20
 tags: [gymtracker/workflow, gymtracker/impact]
 ---
@@ -116,3 +116,10 @@ Graf: [[DESIGN_SYSTEM_GRAPH]], ilgili feature.
 Oku: `data/settings/AppSettings.kt`, `di/SettingsModule.kt`, Settings Screen/ViewModel, `MainActivity.kt`, `Theme.kt`, etkilenen gerçek feature tüketicileri ve TR/EN kaynakları.
 Test: settings fallback/round-trip, gerçek davranış tüketimi, Activity recreation, navigation back, light/dark, `%200` font ve `ResourceCoverageTest`. Henüz davranışa bağlanmayan tercih UI’a eklenmez.
 Graf: [[FEATURE_SETTINGS_DATA]], [[ARCH_STATE_DATA_FLOW]], [[ARCH_NAVIGATION]], [[DESIGN_SYSTEM_GRAPH]].
+
+## Veri export/restore veya tüm veriyi silme
+
+Oku: `DataPortabilityDao`, `PortableArchive`, writer/repository, `AppDatabase`, bütün entity/enum/foreign-key ilişkileri, `PhotoFileStorage`, `SettingsRepository`, Settings Screen/ViewModel, backup kuralları ve [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]].
+Test: bütün tablolar ve kararlı sıra; tek transaction snapshot; format/schema sürüm reddi; enum/sonlu sayı/ilişki doğrulaması; yönetilen ana/thumbnail byte'ı; legacy metadata-only; `file://` sızıntısı/traversal; eksik medya; düşük alan; yarım hedef/temp cleanup; TR/EN, `%200` font ve çift eylem engeli. Restore eklenirse staging, hash/uzunluk, conflict/replace, Room rollback, dosya rollback, process kill ve mevcut veriyi kaybetmeme zorunludur.
+Şema değişirse export DTO/migrator ve restore uyumluluğu aynı PR içinde güncellenir. Destructive migration veya canlı DB'ye parça parça restore kullanılmaz.
+Graf: [[FEATURE_SETTINGS_DATA]], [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]], [[ARCH_DATABASE]], [[ARCH_STATE_DATA_FLOW]], [[TEST_MATRIX]].

@@ -2,7 +2,7 @@
 type: roadmap
 status: current
 implementation_status: active
-verified_commit: 4906402
+verified_commit: 81cb7fe
 updated: 2026-07-20
 tags: [gymtracker/roadmap, gymtracker/workflow]
 ---
@@ -37,11 +37,13 @@ flowchart TD
     AF --> ST[PR 22 Saved state + time resilience]
     ST --> PH[PR 23 Photo device resilience]
     PH --> SD[PR 24 Settings + architecture foundation]
+    SD --> DE[PR 25 Versioned manual data export]
+    DE --> DR[PR 26 Staged restore + delete]
 ```
 
 ## Birleştirme durumu
 
-GitHub PR #1–#17 merge commit kullanılarak `master`a alındı; kaynak dallar silinmedi ve first-parent soy ağacı korundu. PR23/GitHub PR #17 hosted koşusu `29771389567` tamamen yeşildir; indirilen artifact XML 75 app + 5 benchmark/process testini sıfır failure/error/skipped ile doğrular. Reboot seed/verify 1/1 + 1/1, benchmark beş tekrar ve beş Perfetto trace üretmiştir. PR23 merge commit `ce20615`; aktif PR24 integration head `4906402`, `codex/settings-foundation` dalındadır.
+GitHub PR #1–#18 merge commit kullanılarak `master`a alındı; kaynak dallar silinmedi ve first-parent soy ağacı korundu. PR24/GitHub PR #18 hosted koşusu `29775858318` tamamen yeşildir; indirilen artifact XML 80 app + 5 benchmark/process testini sıfır failure/error/skipped ile doğrular. Reboot seed/verify 1/1 + 1/1, benchmark beş tekrar ve beş Perfetto trace üretmiştir. PR24 merge commit `80c79b5`; aktif PR25 integration head `81cb7fe`, `codex/data-export` dalındadır.
 
 ## PR 1 — Build hygiene
 
@@ -202,16 +204,23 @@ Kabul: hosted 37 JVM + 75 API 34 normal app instrumentation + 2 gerçek reboot f
 
 ## Sonraki dikey dilim
 
-1. PR24 hosted 40 JVM + 80 app + reboot/benchmark/process-death kabulü, artifact denetimi ve merge
-2. Versiyonlanmış export/restore/tüm veriyi silme transaction dilimleri
+1. PR25 format v1 manuel export tam cihaz/hosted kabulü, artifact denetimi ve merge
+2. PR26 staged/atomik restore ve güçlü onaylı tüm veriyi silme transaction dilimleri
 3. Photos/Load/Settings golden ve erişilebilirlik yayılımı
 4. Production secret + Play internal-track smoke, branch protection, gerçek backup transport restore ve fiziksel cihaz performans kabulü
 
 ## PR 24 — Settings + architecture foundation
 
 Node: [[FEATURE_SETTINGS_DATA]], [[ARCH_STATE_DATA_FLOW]], [[ARCH_NAVIGATION]], [[DESIGN_SYSTEM_GRAPH]].
-Durum: code baseline `cc2f4fa`, quality head `4653a79`, process-death hardening `c32476e`, integration head `4906402`; PR23 merge commit soy ağacı korunarak `codex/settings-foundation` dalına birleştirildi. Yerel kabul tamamlandı, yayın ve hosted kabul sırada.
+Durum: code baseline `cc2f4fa`, process-death hardening `c32476e`, final head `6168a9e`; GitHub PR #18 hosted run `29775858318` artifact denetiminden geçti ve merge commit `80c79b5` ile `master`a alındı. Kaynak dal korundu.
 Çıktı: singleton Preferences DataStore, typed Settings repository/state, gerçek `SYSTEM/LIGHT/DARK` tema tüketimi, Home→Settings child rotası, ortak top-bar/back, local-first gizlilik ve sürüm bilgisi, TR/EN ve büyük-font erişilebilir UI.
-Kabul: 40/40 JVM ve tam `ciQuality`; 80/80 tam app cihaz paketi; gerçek DataStore round-trip; hedefli 11 API 34 cihaz testi; 9-test Navigation smoke paketi; sağlamlaştırılmış process-death üç ardışık turda 12/12. Hosted kabul sırada.
+Kabul: hosted 40 JVM + 80 API 34 app + 2 reboot fazı + 4 process-death + 1 beş-iterasyon benchmark; artifact XML 80+5, reboot 1+1, beş trace; tam `ciQuality`.
+
+## PR 25 — Versioned manual data export
+
+Node: [[FEATURE_SETTINGS_DATA]], [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]], [[ARCH_DATABASE]], [[TEST_MATRIX]].
+Durum: code baseline `e6ae602`, PR24 merge-integration head `81cb7fe`; `codex/data-export` dalında yerel kalite kapısı tamamlandı.
+Çıktı: format v1/schema v9 typed ZIP; on bir Room tablosunun tek transaction snapshot'ı; tema tercihi; storage v1/v2 yönetilen ana/thumbnail medya; v0 metadata-only politikası; canonical-kök/path traversal/30 MB medya güvenliği; cache'te tamamla-sonra-SAF kopyası; düşük alan, eksik medya ve temp cleanup; Settings loading/success/error + legacy uyarısı; 385/385 TR/EN.
+Kabul: 42/42 JVM, hedefli 19/19 ve tam 85/85 API 34 cihaz testi, hedefli golden reboot sonrası 2/2 ve tam `ciQuality` başarılı. Hosted kabul, artifact denetimi ve merge sırada.
 
 Detaylı süre: [[GELISTIRME_MASTER_PLANI#18. Fazlar ve süre tahmini]]. Aktif durum: [[SESSION_HANDOFF]].
