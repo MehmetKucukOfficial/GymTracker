@@ -4,20 +4,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gymtracker.data.dao.WorkoutDao
 import com.gymtracker.data.dao.MeasurementDao
-import com.gymtracker.data.home.homeDashboardPeriod
+import com.gymtracker.data.home.currentDashboardPeriods
 import com.gymtracker.domain.MuscleLoadCalculator
 import com.gymtracker.domain.MuscleLoadSummary
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.Clock
 import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -39,7 +37,7 @@ class FatigueViewModel @Inject constructor(
     private val retryGeneration = MutableStateFlow(0)
 
     val uiState = retryGeneration
-        .flatMapLatest { loadPeriods() }
+        .flatMapLatest { currentDashboardPeriods(clock) }
         .flatMapLatest { period ->
             combine(
                 workoutDao.observeCompletedSetsForLoadSince(period.weekStartMillis),
@@ -65,13 +63,5 @@ class FatigueViewModel @Inject constructor(
 
     fun retry() {
         retryGeneration.update { it + 1 }
-    }
-
-    private fun loadPeriods() = flow {
-        while (true) {
-            val period = homeDashboardPeriod(clock.instant(), clock.zone)
-            emit(period)
-            delay((period.nextDayStartMillis - clock.millis()).coerceAtLeast(1_000L))
-        }
     }
 }

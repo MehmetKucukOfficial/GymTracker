@@ -13,6 +13,7 @@ import com.gymtracker.data.nutrition.isValidFoodItem
 import com.gymtracker.data.nutrition.isValidNutritionGoal
 import com.gymtracker.data.nutrition.nutritionDayRange
 import com.gymtracker.data.nutrition.nutritionEntryTime
+import com.gymtracker.data.nutrition.restoredNutritionDate
 import com.gymtracker.data.nutrition.updateFoodEntrySnapshot
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.Clock
@@ -53,9 +54,7 @@ class NutritionViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _selectedDate = MutableStateFlow(
-        savedStateHandle.get<String>(SELECTED_DATE_KEY)
-            ?.let(LocalDate::parse)
-            ?: LocalDate.now(clock)
+        restoredNutritionDate(savedStateHandle[SELECTED_DATE_KEY], clock)
     )
     val selectedDate: StateFlow<LocalDate> = _selectedDate.asStateFlow()
 

@@ -3,6 +3,8 @@ package com.gymtracker.data.nutrition
 import com.gymtracker.data.entities.NutritionGoal
 import com.gymtracker.data.entities.FoodEntry
 import com.gymtracker.data.entities.MealType
+import java.time.Clock
+import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import org.junit.Assert.assertEquals
@@ -54,5 +56,17 @@ class NutritionRulesTest {
         assertEquals(45f, updated.carbs)
         assertEquals(12f, updated.fat)
         assertEquals(null, updateFoodEntrySnapshot(original, 0f))
+    }
+
+    @Test
+    fun restoredDateFallsBackToClockWhenSavedValueIsMalformed() {
+        val clock = Clock.fixed(
+            Instant.parse("2026-07-20T12:00:00Z"),
+            ZoneId.of("Europe/Istanbul")
+        )
+
+        assertEquals(LocalDate.of(2026, 7, 19), restoredNutritionDate("2026-07-19", clock))
+        assertEquals(LocalDate.of(2026, 7, 20), restoredNutritionDate("not-a-date", clock))
+        assertEquals(LocalDate.of(2026, 7, 20), restoredNutritionDate(null, clock))
     }
 }

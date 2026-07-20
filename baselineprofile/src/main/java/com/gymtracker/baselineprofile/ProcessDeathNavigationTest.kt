@@ -57,9 +57,77 @@ class ProcessDeathNavigationTest {
         )
     }
 
+    @Test
+    fun nutritionTask_restoresSelectedDateAfterRealProcessDeath() {
+        var selectedDate = ""
+        assertTaskRestoredAfterProcessDeath(
+            deepLink = "gymtracker://app/nutrition",
+            expectedText = Pattern.compile("Beslenme|Nutrition", Pattern.CASE_INSENSITIVE),
+            beforeKill = {
+                clickSemanticChild(
+                    By.desc(
+                        Pattern.compile(
+                            "Önceki gün|Previous day",
+                            Pattern.CASE_INSENSITIVE or Pattern.UNICODE_CASE
+                        )
+                    )
+                )
+                selectedDate = requireNotNull(
+                    device.wait(
+                        Until.findObject(By.text(DATE_HEADING)),
+                        DESTINATION_TIMEOUT_MS
+                    )
+                ).text
+                assertTrue("Previous-day selection did not expose a date", selectedDate.isNotBlank())
+            },
+            afterRestore = {
+                val restoredDate = device.wait(
+                    Until.findObject(By.text(selectedDate)),
+                    DESTINATION_TIMEOUT_MS
+                )
+                assertNotNull("Selected nutrition date was not restored: $selectedDate", restoredDate)
+            }
+        )
+    }
+
+    @Test
+    fun measurementsTask_restoresChartPeriodAfterRealProcessDeath() {
+        assertTaskRestoredAfterProcessDeath(
+            deepLink = "gymtracker://app/progress/measurements",
+            expectedText = Pattern.compile(
+                "Vücut ölçümleri|Body measurements",
+                Pattern.CASE_INSENSITIVE or Pattern.UNICODE_CASE
+            ),
+            beforeKill = {
+                ensureMeasurementExists()
+                val period = requireNotNull(
+                    device.wait(
+                        Until.findObject(By.text(NINETY_DAY_LABEL)),
+                        DESTINATION_TIMEOUT_MS
+                    )
+                )
+                period.parent.click()
+                assertTrue("90-day chart period was not selected", period.parent.isChecked)
+            },
+            afterRestore = {
+                val restoredPeriod = device.wait(
+                    Until.findObject(By.text(NINETY_DAY_LABEL)),
+                    DESTINATION_TIMEOUT_MS
+                )
+                assertNotNull("90-day chart period was not visible after restore", restoredPeriod)
+                assertTrue(
+                    "90-day chart period lost its checked state after process death",
+                    requireNotNull(restoredPeriod).parent.isChecked
+                )
+            }
+        )
+    }
+
     private fun assertTaskRestoredAfterProcessDeath(
         deepLink: String,
-        expectedText: Pattern
+        expectedText: Pattern,
+        beforeKill: () -> Unit = {},
+        afterRestore: () -> Unit = {}
     ) {
         device.executeShellCommand("am force-stop $PACKAGE_NAME")
         val launchOutput = device.executeShellCommand(
@@ -68,6 +136,7 @@ class ProcessDeathNavigationTest {
         )
         assertTrue("Deep link launch failed: $launchOutput", launchOutput.contains("Status: ok"))
         assertDestinationVisible(expectedText)
+        beforeKill()
 
         val originalPid = waitForPid()
         val taskId = currentTaskId()
@@ -100,6 +169,35 @@ class ProcessDeathNavigationTest {
         val restoredPid = waitForPid(differentFrom = originalPid)
         assertNotEquals("Task restore reused the killed process", originalPid, restoredPid)
         assertDestinationVisible(expectedText)
+        afterRestore()
+    }
+
+    private fun ensureMeasurementExists() {
+        if (device.hasObject(By.text(NINETY_DAY_LABEL))) return
+
+        clickSemanticChild(By.text(ADD_MEASUREMENT_LABEL))
+        val fields = device.wait(
+            Until.findObjects(By.clazz("android.widget.EditText")),
+            DESTINATION_TIMEOUT_MS
+        )
+        assertTrue("Measurement dialog did not expose weight input", fields.size >= 2)
+        fields[1].text = "80"
+        device.pressBack()
+        clickSemanticChild(By.text(SAVE_LABEL))
+        assertNotNull(
+            "Chart period controls did not appear after creating a measurement",
+            device.wait(Until.findObject(By.text(NINETY_DAY_LABEL)), DESTINATION_TIMEOUT_MS)
+        )
+    }
+
+    private fun clickSemanticChild(selector: androidx.test.uiautomator.BySelector) {
+        val child = device.wait(Until.findObject(selector), DESTINATION_TIMEOUT_MS)
+        assertNotNull("Expected semantic action was not visible: $selector", child)
+        val action = requireNotNull(child)
+        val clickable = generateSequence(action) { it.parent }.firstOrNull { it.isClickable }
+        assertNotNull("No clickable ancestor was found for: $selector", clickable)
+        requireNotNull(clickable).click()
+        device.waitForIdle()
     }
 
     private fun assertDestinationVisible(expectedText: Pattern) {
@@ -146,6 +244,23 @@ class ProcessDeathNavigationTest {
         const val DESTINATION_TIMEOUT_MS = 15_000L
         const val PROCESS_TIMEOUT_MS = 10_000L
         const val POLL_INTERVAL_MS = 200L
+
+        val DATE_HEADING = Pattern.compile(
+            "\\d{1,2}\\s+\\p{L}+\\s+\\d{4},\\s+\\p{L}+",
+            Pattern.CASE_INSENSITIVE or Pattern.UNICODE_CASE
+        )
+        val NINETY_DAY_LABEL = Pattern.compile(
+            "90 gün|90 days",
+            Pattern.CASE_INSENSITIVE or Pattern.UNICODE_CASE
+        )
+        val ADD_MEASUREMENT_LABEL = Pattern.compile(
+            "İlk ölçümü ekle|Ölçüm ekle|Add first measurement|Add measurement",
+            Pattern.CASE_INSENSITIVE or Pattern.UNICODE_CASE
+        )
+        val SAVE_LABEL = Pattern.compile(
+            "Kaydet|Save",
+            Pattern.CASE_INSENSITIVE or Pattern.UNICODE_CASE
+        )
 
         val RECENT_TASK = Regex(
             "Recent #\\d+: Task\\{[^\\r\\n]*#(\\d+)[^\\r\\n]*com\\.gymtracker"
