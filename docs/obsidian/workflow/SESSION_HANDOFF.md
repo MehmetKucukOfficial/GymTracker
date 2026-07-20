@@ -108,6 +108,7 @@ Tests run/results:
 - Targeted Settings/Navigation/Localization device package: 11/11.
 - Updated full Navigation smoke class: 9/9, including explicit theme persistence across Activity recreation.
 - Real Preferences DataStore repository write/read round-trip: 1/1.
+- Manual API 34 light/large-font visual QA: top bar, all theme choices, privacy and version cards remain readable/reachable; future-tense placeholder copy was replaced with current local-first behavior.
 
 Risks changed:
 - Settings no longer has an unowned persistence path; visible preferences must have real consumers.

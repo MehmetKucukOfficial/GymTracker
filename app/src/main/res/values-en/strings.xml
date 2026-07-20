@@ -390,7 +390,7 @@
     <string name="settings_theme_dark">Dark theme</string>
     <string name="settings_theme_dark_support">Always shows the app with the dark theme.</string>
     <string name="settings_data_title">Data and privacy</string>
-    <string name="settings_data_supporting">Export and deletion will be added as separate, verifiable flows.</string>
+    <string name="settings_data_supporting">No account or automatic cloud sync is used; your data stays on this device.</string>
     <string name="settings_local_first_title">Your data stays on this device</string>
     <string name="settings_local_first_body">Workout, nutrition, measurement, and progress data are stored locally. Progress photos are excluded from cloud backup and device transfer.</string>
     <string name="settings_about_title">About the app</string>

@@ -43,6 +43,7 @@ tags: [gymtracker/feature, gymtracker/settings, gymtracker/data]
 - Geçen: explicit açık tema seçimi Activity recreation sonrasında seçili kalır.
 - Geçen: Settings rotasında ana navigation gizlenir; top-bar geri Home’a döner.
 - Geçen: tam `ciQuality`; 40/40 JVM, lint, debug, minified APK/AAB, R8 mapping ve embedded profile.
+- Geçen: gerçek API 34 light/büyük-font görsel QA; top bar, üç tema seçeneği, gizlilik ve sürüm kartları kırpılmadan erişiliyor.
 - Bekleyen: hosted API 34 kabulü, export/restore, tüm veriyi silme ve davranışa bağlı diğer tercihler.
 
 Bağlar: [[ARCH_STATE_DATA_FLOW]], [[ARCH_NAVIGATION]], [[DESIGN_SYSTEM_GRAPH]], [[ROADMAP_EXECUTION_GRAPH]].
