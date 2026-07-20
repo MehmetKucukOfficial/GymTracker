@@ -2,7 +2,7 @@
 type: atlas
 status: current
 implementation_status: active
-verified_commit: 43b523a
+verified_commit: 26696b9
 updated: 2026-07-20
 tags: [gymtracker/workflow, gymtracker/source-map]
 ---
@@ -13,14 +13,15 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 
 | Dosya | Sorumluluk | Bağ |
 |---|---|---|
-| `.github/workflows/android-ci.yml` | PR/`master` quality + API 34 app/golden + ayrı-process task-restoration CI ve artifact’ler | [[ARCH_BUILD_DI]], [[TEST_MATRIX]] |
+| `.github/workflows/android-ci.yml` | PR/`master` quality + API 34 app/golden + gerçek photo reboot + grid benchmark + ayrı-process task-restoration CI ve artifact’ler | [[ARCH_BUILD_DI]], [[TEST_MATRIX]] |
+| `.github/scripts/photo-reboot-acceptance.sh` | 120-row photo fixture seed → gerçek `adb reboot`/boot-complete → dosya/metadata verify iki-faz host orkestrasyonu | [[FEATURE_PROGRESS_PHOTOS]], [[TEST_MATRIX]] |
 | `.github/workflows/android-release.yml` | protected production secret’larıyla signed APK/AAB üretim ve doğrulama | [[ADR_009_SECRET_BACKED_RELEASES]] |
 | `build.gradle.kts` | root plugin alias + tek `ciQuality` kapısı | [[ARCH_BUILD_DI]] |
 | `settings.gradle.kts` | repositories + `:app` + `:baselineprofile` | [[ARCH_BUILD_DI]] |
 | `gradle/libs.versions.toml` | dependency/plugin versions | [[ARCH_BUILD_DI]] |
 | `gradle/wrapper/gradle-wrapper.properties`, `gradlew` | Gradle 8.4 URL + Linux çalıştırılabilir wrapper | [[ARCH_BUILD_DI]] |
 | `app/build.gradle.kts` | Android/Compose/Hilt/Room + minified release, signing/profile doğrulama görevleri | [[ARCH_BUILD_DI]] |
-| `baselineprofile/` | startup/Home scroll/Workout profile producer, macrobenchmark’lar ve hedef uygulamadan ayrı destination + SavedState değer process-death kabulü | [[PERFORMANCE_BASELINE]], [[ARCH_NAVIGATION]] |
+| `baselineprofile/` | startup/Home/Workout profil ve benchmark’ları, 120-thumbnail grid FrameTiming/Perfetto ölçümü ve hedef uygulamadan ayrı destination + SavedState değer process-death kabulü | [[PERFORMANCE_BASELINE]], [[ARCH_NAVIGATION]] |
 | `app/src/release/generated/baselineProfiles/` | ölçülerek üretilen release Baseline + Startup Profile | [[PERFORMANCE_BASELINE]] |
 | `app/proguard-rules.pro` | yalnız kanıtla eklenecek proje R8 istisnaları | [[ARCH_BUILD_DI]] |
 | `AndroidManifest.xml` | permission/app/activity/backup + trusted external deep-link intent filter | [[ARCH_BUILD_DI]], [[ARCH_NAVIGATION]] |
@@ -97,6 +98,8 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | `ui/golden/CriticalStateGoldenTest.kt` | Nutrition over-goal ve Measurements chart/top bar kalıcı golden baselineları |
 | `ui/navigation/NavigationSmokeTest.kt` | ortak top bar back + sistem back + route/detail/recreation |
 | `baselineprofile/ProcessDeathNavigationTest.kt` | farklı PID’de route/task + Nutrition tarihi + Measurements checked-period restorasyonu |
+| `data/photos/PhotoRebootAcceptanceTest.kt` | 120 managed main/thumbnail + boot-count seed/verify fazları ve reboot sonrası reconciliation |
+| `baselineprofile/PhotoGridBenchmark.kt` | reboot fixture’ı üzerinde beş iterasyon thumbnail grid FrameTiming + Perfetto |
 
 ## Nutrition
 
@@ -118,10 +121,12 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 
 | Dosya | Rol |
 |---|---|
-| `ui/screens/progress/ProgressViewModel.kt` | Fotoğraf doğrulama, kayıt/silme, typed mesajlar ve storage reconciliation |
+| `ui/screens/progress/ProgressViewModel.kt` | Fotoğraf doğrulama, kayıt/silme, typed low-storage mesajları ve storage reconciliation |
 | `data/photos/ProgressPhotoRules.kt` | opsiyonel kilo/not validation |
-| `data/photos/PhotoFileStorage.kt` | bounded decode + EXIF + 2048 ana/512 thumbnail + atomik publish/reconciliation |
+| `data/photos/PhotoFileStorage.kt` | 48 MB free-space preflight + bounded decode + EXIF + 2048 ana/512 thumbnail + atomik publish/reconciliation |
 | `ui/screens/progress/ProgressScreen.kt` | ortak child top bar/Snackbar + picker/adaptive thumbnail grid/ana viewer/v0 reselect + v1 optimize UI |
+| `data/photos/PhotoBackupPolicyTest.kt` | legacy cloud + modern cloud/device-transfer XML dışlama sözleşmesi |
+| `ui/screens/progress/ProgressPhotoScreenTest.kt` | light/dark/%200 yükseltme UX’i + 500-row lazy-grid erişimi |
 
 ## Programs
 

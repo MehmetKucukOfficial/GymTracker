@@ -254,7 +254,31 @@ class ProgressPhotoRepositoryTest {
     }
 
     @Test
-    fun reconcileStorage_removesOrphanAndMissingManagedRowButKeepsLegacyRow() =
+    fun importPhoto_whenStorageIsLow_failsBeforeCreatingFilesOrDatabaseRow() =
+        kotlinx.coroutines.runBlocking {
+            reader.bytes = createJpeg(width = 64, height = 64)
+            val directory = File(context.filesDir, "progress_photos")
+            val filesBefore = directory.listFiles()?.map(File::getName)?.sorted().orEmpty()
+            val lowSpaceRepository = ProgressPhotoRepository(
+                database.progressPhotoDao(),
+                reader,
+                PhotoFileStorage(context, availableBytes = 0L)
+            )
+
+            val result = lowSpaceRepository.importPhoto(
+                Uri.parse("content://test/low-storage"),
+                PhotoAngle.FRONT,
+                null,
+                ""
+            )
+
+            assertTrue(result.exceptionOrNull() is InsufficientPhotoStorageException)
+            assertTrue(database.progressPhotoDao().getAllSync().isEmpty())
+            assertEquals(filesBefore, directory.listFiles()?.map(File::getName)?.sorted().orEmpty())
+        }
+
+    @Test
+    fun reconcileStorage_afterMetadataOnlyRestore_removesMissingManagedRowsButKeepsLegacy() =
         kotlinx.coroutines.runBlocking {
             val directory = File(context.filesDir, "progress_photos").apply { mkdirs() }
             File(directory, "orphan.jpg").writeBytes("orphan".toByteArray())

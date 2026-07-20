@@ -14,6 +14,31 @@ internal fun MacrobenchmarkScope.startFromHome() {
     device.waitForIdle()
 }
 
+internal fun MacrobenchmarkScope.startFromProgressPhotos() {
+    pressHome()
+    val launchOutput = device.executeShellCommand(
+        "am start -W -a android.intent.action.VIEW " +
+            "-d gymtracker://app/progress/photos $PACKAGE_NAME"
+    )
+    check(launchOutput.contains("Status: ok")) {
+        "Progress Photos deep link failed: $launchOutput"
+    }
+    checkNotNull(
+        device.wait(
+            Until.findObject(
+                By.text(
+                    Pattern.compile(
+                        "İlerleme fotoğrafları|Progress photos",
+                        Pattern.CASE_INSENSITIVE or Pattern.UNICODE_CASE
+                    )
+                )
+            ),
+            10_000
+        )
+    ) { "Progress Photos title was not visible" }
+    device.waitForIdle()
+}
+
 internal fun MacrobenchmarkScope.openWorkout() {
     val workout = device.wait(
         Until.findObject(By.text(Pattern.compile("Antrenman|Workouts", Pattern.CASE_INSENSITIVE))),
@@ -32,4 +57,19 @@ internal fun MacrobenchmarkScope.scrollHome() {
     device.waitForIdle()
     content.fling(Direction.UP)
     device.waitForIdle()
+}
+
+internal fun MacrobenchmarkScope.scrollPhotoGrid() {
+    val grid = device.findObjects(By.scrollable(true))
+        .maxByOrNull { it.visibleBounds.height() }
+        ?: error("No scrollable photo grid was visible")
+    grid.setGestureMargin(device.displayWidth / 5)
+    repeat(3) {
+        grid.fling(Direction.DOWN)
+        device.waitForIdle()
+    }
+    repeat(3) {
+        grid.fling(Direction.UP)
+        device.waitForIdle()
+    }
 }

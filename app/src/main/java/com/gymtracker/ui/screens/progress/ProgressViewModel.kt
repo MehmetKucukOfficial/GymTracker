@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gymtracker.data.entities.PhotoAngle
 import com.gymtracker.data.entities.ProgressPhoto
+import com.gymtracker.data.photos.InsufficientPhotoStorageException
 import com.gymtracker.data.photos.ProgressPhotoRepository
 import com.gymtracker.data.photos.ProgressPhotoValidationError
 import com.gymtracker.data.photos.validateProgressPhotoInput
@@ -28,6 +29,7 @@ enum class ProgressPhotoMessage {
     UPGRADED,
     DELETED,
     SAVE_FAILED,
+    STORAGE_FULL,
     UPGRADE_FAILED,
     DELETE_FAILED,
     MAINTENANCE_FAILED,
@@ -82,7 +84,13 @@ class ProgressViewModel @Inject constructor(
                     isSaving = false,
                     message = result.fold(
                         onSuccess = { ProgressPhotoMessage.SAVED },
-                        onFailure = { ProgressPhotoMessage.SAVE_FAILED }
+                        onFailure = { error ->
+                            if (error is InsufficientPhotoStorageException) {
+                                ProgressPhotoMessage.STORAGE_FULL
+                            } else {
+                                ProgressPhotoMessage.SAVE_FAILED
+                            }
+                        }
                     )
                 )
             }
@@ -118,7 +126,13 @@ class ProgressViewModel @Inject constructor(
                     isSaving = false,
                     message = result.fold(
                         onSuccess = { ProgressPhotoMessage.UPGRADED },
-                        onFailure = { ProgressPhotoMessage.UPGRADE_FAILED }
+                        onFailure = { error ->
+                            if (error is InsufficientPhotoStorageException) {
+                                ProgressPhotoMessage.STORAGE_FULL
+                            } else {
+                                ProgressPhotoMessage.UPGRADE_FAILED
+                            }
+                        }
                     )
                 )
             }

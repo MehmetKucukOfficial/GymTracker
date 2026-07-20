@@ -3,7 +3,7 @@ aliases: [GymTracker Graph Start, Başlangıç]
 type: moc
 status: current
 implementation_status: mixed
-verified_commit: 43b523a
+verified_commit: 26696b9
 updated: 2026-07-20
 tags: [gymtracker/moc, gymtracker/graph]
 ---
@@ -21,7 +21,7 @@ tags: [gymtracker/moc, gymtracker/graph]
 - Local-first; backend ve gerçek ödeme yok
 - 5 ana navigation hedefi, 3 İlerleme alt hedefi, ID tabanlı workout/program detayları
 - 82 benzersiz egzersiz, 108 hazır program egzersiz referansı
-- `ciQuality` debug + minified release APK/AAB üretir; 37 JVM + 71 app cihaz + 4 gerçek process-death testi geçiyor; lint 0 hata
+- `ciQuality` debug + minified release APK/AAB üretir; 37 JVM + 75 app cihaz + 2 gerçek reboot fazı + 4 gerçek process-death + 1 grid macrobenchmark geçiyor; lint 0 hata
 - Workout ve Programs compact’ta ID rotası, 840 dp+ genişlikte ortak liste–özet kullanır; altı kalıcı golden baseline vardır
 - Destructive migration, yeni fotoğraf URI kaybı, seed race ve temel navigation/state riskleri kapatıldı veya azaltıldı
 
@@ -68,9 +68,10 @@ tags: [gymtracker/moc, gymtracker/graph]
 
 ## Grafın güncellik durumu
 
-- Master code baseline: `39927a7`; GitHub PR #1–#15 merge commit ile sırayla birleştirildi ve kaynak dallar korundu
+- Master code baseline: `79a80f4`; GitHub PR #1–#16 merge commit ile sırayla birleştirildi ve kaynak dallar korundu
 - PR21 hosted koşusu `29764819516` tamamen yeşil; artifact XML 71 app + 2 process-death testi gösteriyor
-- Aktif PR22 code baseline: `43b523a` (`codex/state-time-resilience`); SavedState değer restorasyonu ile Clock/ZoneId rollover dayanıklılığı yerel kabulden geçti
-- Dokümanlar: PR21 master kabulü ile PR22 state/time/navigation/test/roadmap/handoff durumuyla senkron
+- PR22 hosted retry `29769324578` tamamen yeşil; artifact XML 71 app + 4 process-death testi gösteriyor ve GitHub PR #16 merge commit `79a80f4` ile birleştirildi
+- Aktif PR23 code baseline: `26696b9`, integration head `5456d1b` (`codex/photo-device-resilience`); 48 MB preflight, backup/restore sözleşmesi, gerçek reboot ve 120-row grid benchmark yerel kabulden geçti
+- Dokümanlar: PR22 master ve PR23 fotoğraf cihaz dayanıklılığı koduyla senkron
 - Son tam doğrulama: 2026-07-20
-- Aktif önerilen iş: PR22 graph commit’ini tamamla, hosted quality/API 34 kabulünü doğrula ve merge et; ardından Progress Photos cihaz dayanıklılığı dilimine geç
+- Aktif önerilen iş: PR23 dalını yayınlayıp hosted reboot/benchmark kabulüne geçir ve merge commit ile birleştir

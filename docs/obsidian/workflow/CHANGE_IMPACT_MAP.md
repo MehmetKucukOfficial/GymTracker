@@ -2,7 +2,7 @@
 type: workflow
 status: current
 implementation_status: active
-verified_commit: 43b523a
+verified_commit: 26696b9
 updated: 2026-07-20
 tags: [gymtracker/workflow, gymtracker/impact]
 ---
@@ -66,7 +66,7 @@ Graf: [[FEATURE_PROGRAMS]], [[ADR_007_RELATIONAL_PROGRAM_PLANS]], [[ARCH_DATABAS
 ## Fotoğraf saklama
 
 Oku: Progress Screen/VM/repository/DAO/entity, `PhotoFileStorage`, manifest, backup/data extraction rules, Coil config ve Room photo media metadata/migration.
-Test: provider, EXIF orientation, bounded decode/resize, thumbnail dimension, iki dosyalı import/DB rollback, limit, orphan/missing-main/missing-thumbnail reconciliation, legacy v0/v1, restart, reboot, bozuk dosya, low storage, delete cleanup, dark/%200 font.
+Test: provider, EXIF orientation, bounded decode/resize, thumbnail dimension, iki dosyalı import/DB rollback, 25 MB kaynak + 48 MB reserve sınırı, orphan/missing-main/missing-thumbnail/metadata-only restore reconciliation, backup XML, legacy v0/v1, gerçek host reboot + boot counter, bozuk dosya, delete cleanup, 500-row lazy grid, FrameTiming/Perfetto, dark/%200 font.
 Graf: [[FEATURE_PROGRESS_PHOTOS]], [[ADR_004_PERSISTENT_PHOTO_STORAGE]].
 
 ## Kas yükü hesabı veya haritası
@@ -102,7 +102,7 @@ Graf: [[ADR_009_SECRET_BACKED_RELEASES]], [[ARCH_BUILD_DI]], [[RISK_REGISTER_GRA
 ## Baseline Profile veya macrobenchmark
 
 Oku: `baselineprofile/`, app baseline plugin/dependency, generated profile kaynakları ve kritik UI semantics/navigation metinleri.
-Test: `generateBaselineProfile`; startup None/Partial, Home scroll, Workout navigation; release APK/AAB embedded profile. `ProcessDeathNavigationTest` değişirse benchmarkRelease üzerinde PID değişimi + aynı task restorasyonunu çalıştır. Emülatör performans sonucu yalnız ön baseline, performans kabulü fiziksel release cihazında.
+Test: `generateBaselineProfile`; startup None/Partial, Home scroll, Workout navigation ve fixture grain’ini açıkça doğrulayan büyük-grid FrameTiming; release APK/AAB embedded profile. `ProcessDeathNavigationTest` değişirse temiz DB üzerinde PID değişimi + aynı task restorasyonunu çalıştır. Photo benchmark değişirse önce 120-row seed/reboot/verify fazını çalıştır; benchmark JSON + Perfetto trace artifact’lerini sakla. Emülatör performans sonucu yalnız ön baseline, performans kabulü fiziksel release cihazında.
 Graf: [[PERFORMANCE_BASELINE]], [[TEST_MATRIX]], ilgili feature.
 
 ## String/locale/birim

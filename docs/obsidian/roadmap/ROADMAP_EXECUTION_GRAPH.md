@@ -2,7 +2,7 @@
 type: roadmap
 status: current
 implementation_status: active
-verified_commit: 43b523a
+verified_commit: 26696b9
 updated: 2026-07-20
 tags: [gymtracker/roadmap, gymtracker/workflow]
 ---
@@ -35,11 +35,12 @@ flowchart TD
     DL --> PD[PR 20 Real process-death acceptance]
     PD --> AF[PR 21 Adaptive top bar + feedback + golden]
     AF --> ST[PR 22 Saved state + time resilience]
+    ST --> PH[PR 23 Photo device resilience]
 ```
 
 ## Birleştirme durumu
 
-GitHub PR #1–#15 merge commit kullanılarak `master`a alındı; kaynak dallar silinmedi ve first-parent soy ağacı korundu. PR21/GitHub PR #15 hosted koşusu `29764819516` tamamen yeşildir; indirilen artifact XML 71 app + 2 ayrı process-death testini sıfır failure/error/skipped ile doğrular. PR21 merge commit `39927a7`; aktif PR22 code baseline `43b523a`, `codex/state-time-resilience` dalındadır.
+GitHub PR #1–#16 merge commit kullanılarak `master`a alındı; kaynak dallar silinmedi ve first-parent soy ağacı korundu. PR22/GitHub PR #16 hosted retry `29769324578` tamamen yeşildir; indirilen artifact XML 71 app + 4 ayrı process-death testini sıfır failure/error/skipped ile doğrular. PR22 merge commit `79a80f4`; PR23 code baseline `26696b9`, integration head `5456d1b`, `codex/photo-device-resilience` dalındadır.
 
 ## PR 1 — Build hygiene
 
@@ -187,15 +188,21 @@ Kabul: 34 JVM + 71 API 34 app instrumentation + 2 ayrı gerçek process-death te
 ## PR 22 — Saved state + Clock/ZoneId resilience
 
 Node: [[ARCH_STATE_DATA_FLOW]], [[ARCH_NAVIGATION]], [[FEATURE_HOME]], [[FEATURE_NUTRITION]], [[FEATURE_MEASUREMENTS]], [[FEATURE_MUSCLE_LOAD]], [[TEST_MATRIX]].
-Durum: code baseline `43b523a`, `codex/state-time-resilience` dalında; yerel tam kabul tamamlandı, graph/publish/hosted kabul sırada.
+Durum: code baseline `43b523a`, graph baseline `e8f8ca5`, CI-stability head `a4f7bd9`; `codex/state-time-resilience` GitHub PR #16’da. İlk hosted koşuda 71/71 app geçti, boş-veritabanı Measurements klavye yarışı nedeniyle 4 process-death testinden biri kaldı; koşullu IME düzeltmesi yerelde temiz DB ile 4/4 geçti ve retry `29769324578` başladı.
 Çıktı: Home ve Kas Yükü için tek injectable `Clock`/dinamik `ZoneId` period Flow’u; yerel gece yarısı ve en geç 60 saniyede zone-change yeniden hesaplaması; bozuk Nutrition SavedState tarihinin güvenli Clock fallback’i; Nutrition seçili tarih ve Measurements 90-gün checked state’i için gerçek PID değişimli OS process-death restorasyonu.
 Kabul: 37 JVM + 71 API 34 app instrumentation + 4 ayrı gerçek process-death testi; `ciQuality`, lint, debug, minified APK/AAB, R8 mapping ve embedded profile yerelde başarılı.
 
+## PR 23 — Progress Photos device resilience
+
+Node: [[FEATURE_PROGRESS_PHOTOS]], [[ADR_004_PERSISTENT_PHOTO_STORAGE]], [[TEST_MATRIX]], [[PERFORMANCE_BASELINE]].
+Durum: code baseline `26696b9`, integration head `5456d1b`, `codex/photo-device-resilience` dalında; yerel tam kabul tamamlandı ve PR22 master merge commit’i soy ağacı korunarak dala birleştirildi. Push/hosted kabul sırada.
+Çıktı: 48 MB free-space preflight ve typed kullanıcı mesajı; legacy/modern backup XML sözleşme testleri; metadata-only restore reconciliation; annotation ile ayrılan 120-row seed/verify fazları arasında gerçek `adb reboot` + `BOOT_COUNT` kanıtı; 500-row lazy Compose grid testi; reboot fixture’ı üzerinde beş iterasyon FrameTiming/Perfetto macrobenchmark; CI artifact’lerinde reboot çıktısı, benchmark JSON ve trace’ler.
+Kabul: 37 JVM + 75 API 34 normal app instrumentation + 2 gerçek reboot fazı + 4 gerçek process-death + 1 thumbnail-grid macrobenchmark; `ciQuality`, lint, debug, minified APK/AAB, R8 mapping ve embedded profile yerelde başarılı.
+
 ## Sonraki dikey dilim
 
-1. PR22 graph/publish/hosted kabul ve merge
-2. Progress Photos düşük alan/reboot/backup-restore ve büyük grid performans kabulü
-3. Architecture/settings/export/beta hardening
-4. Production secret + Play internal-track smoke, branch protection ve fiziksel cihaz performans kabulü
+1. PR23 graph commit/push/hosted reboot + benchmark kabulü ve merge
+2. Architecture/settings/export/beta hardening
+3. Production secret + Play internal-track smoke, branch protection, gerçek backup transport restore ve fiziksel cihaz performans kabulü
 
 Detaylı süre: [[GELISTIRME_MASTER_PLANI#18. Fazlar ve süre tahmini]]. Aktif durum: [[SESSION_HANDOFF]].

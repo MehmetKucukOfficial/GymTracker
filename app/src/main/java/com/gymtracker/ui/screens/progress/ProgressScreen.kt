@@ -336,7 +336,7 @@ private fun PhotoGridItem(
                 when (photo.storageVersion) {
                     0 -> Modifier.testTag("progress-photo-legacy")
                     1 -> Modifier.testTag("progress-photo-v1")
-                    else -> Modifier
+                    else -> Modifier.testTag("progress-photo-item-${photo.id}")
                 }
             )
             .clickable(onClick = onOpen, role = Role.Button)
@@ -607,6 +607,7 @@ private fun progressMessageText(message: ProgressPhotoMessage): String = stringR
         ProgressPhotoMessage.UPGRADED -> R.string.progress_photos_upgraded
         ProgressPhotoMessage.DELETED -> R.string.progress_photos_deleted
         ProgressPhotoMessage.SAVE_FAILED -> R.string.progress_photos_save_failed
+        ProgressPhotoMessage.STORAGE_FULL -> R.string.progress_photos_storage_full
         ProgressPhotoMessage.UPGRADE_FAILED -> R.string.progress_photos_upgrade_failed
         ProgressPhotoMessage.DELETE_FAILED -> R.string.progress_photos_delete_failed
         ProgressPhotoMessage.MAINTENANCE_FAILED -> R.string.progress_photos_maintenance_failed
