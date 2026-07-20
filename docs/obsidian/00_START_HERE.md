@@ -3,7 +3,7 @@ aliases: [GymTracker Graph Start, Başlangıç]
 type: moc
 status: current
 implementation_status: mixed
-verified_commit: e1359bb
+verified_commit: 43b523a
 updated: 2026-07-20
 tags: [gymtracker/moc, gymtracker/graph]
 ---
@@ -21,7 +21,7 @@ tags: [gymtracker/moc, gymtracker/graph]
 - Local-first; backend ve gerçek ödeme yok
 - 5 ana navigation hedefi, 3 İlerleme alt hedefi, ID tabanlı workout/program detayları
 - 82 benzersiz egzersiz, 108 hazır program egzersiz referansı
-- `ciQuality` debug + minified release APK/AAB üretir; 34 JVM + 71 app cihaz + 2 gerçek process-death testi geçiyor; lint 0 hata
+- `ciQuality` debug + minified release APK/AAB üretir; 37 JVM + 71 app cihaz + 4 gerçek process-death testi geçiyor; lint 0 hata
 - Workout ve Programs compact’ta ID rotası, 840 dp+ genişlikte ortak liste–özet kullanır; altı kalıcı golden baseline vardır
 - Destructive migration, yeni fotoğraf URI kaybı, seed race ve temel navigation/state riskleri kapatıldı veya azaltıldı
 
@@ -68,9 +68,9 @@ tags: [gymtracker/moc, gymtracker/graph]
 
 ## Grafın güncellik durumu
 
-- Master code baseline: `625489a`; GitHub PR #1–#14 merge commit ile sırayla birleştirildi ve kaynak dallar korundu
-- PR20 sonrası otomatik `master` koşusu `29762392465` tamamen yeşil; artifact XML 66 app + 2 process-death testi gösteriyor
-- Aktif PR21 code baseline: `e1359bb` (`codex/adaptive-feedback-goldens`); ortak top app bar/Snackbar, görünür child/detail geri navigasyonu ve iki yeni golden yerel kabulden geçti
-- Dokümanlar: PR20 master kabulü ile PR21 design/navigation/test/roadmap/handoff durumuyla senkron
+- Master code baseline: `39927a7`; GitHub PR #1–#15 merge commit ile sırayla birleştirildi ve kaynak dallar korundu
+- PR21 hosted koşusu `29764819516` tamamen yeşil; artifact XML 71 app + 2 process-death testi gösteriyor
+- Aktif PR22 code baseline: `43b523a` (`codex/state-time-resilience`); SavedState değer restorasyonu ile Clock/ZoneId rollover dayanıklılığı yerel kabulden geçti
+- Dokümanlar: PR21 master kabulü ile PR22 state/time/navigation/test/roadmap/handoff durumuyla senkron
 - Son tam doğrulama: 2026-07-20
-- Aktif önerilen iş: PR21 graph commit’ini tamamla, hosted quality/API 34 kabulünü doğrula ve merge et; ardından Nutrition/Measurements gerçek process-death state dilimine geç
+- Aktif önerilen iş: PR22 graph commit’ini tamamla, hosted quality/API 34 kabulünü doğrula ve merge et; ardından Progress Photos cihaz dayanıklılığı dilimine geç

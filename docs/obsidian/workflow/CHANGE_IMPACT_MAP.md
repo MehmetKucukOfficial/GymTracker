@@ -2,7 +2,7 @@
 type: workflow
 status: current
 implementation_status: active
-verified_commit: e1359bb
+verified_commit: 43b523a
 updated: 2026-07-20
 tags: [gymtracker/workflow, gymtracker/impact]
 ---
@@ -78,13 +78,13 @@ Graf: [[FEATURE_MUSCLE_LOAD]], [[ADR_005_MUSCLE_LOAD_NAMING]], [[FEATURE_WORKOUT
 ## Tarih veya zaman hesabı
 
 Oku: `TimeModule.kt`, `HomeDashboardPeriod.kt`, `NutritionRules.kt`, ilgili ViewModel, Fatigue/Load ve Measurement date queries.
-Test: Istanbul/Berlin DST geçmiş örnekleri, 23/25 saat, midnight, zone change, inclusive/exclusive boundary, SavedStateHandle/process recreation.
+Test: Istanbul/Berlin DST geçmiş örnekleri, 23/25 saat, injectable Clock ile midnight, runtime zone change, inclusive/exclusive boundary, SavedStateHandle/process recreation ve değer taşıyan gerçek OS process death.
 Graf: [[ARCH_STATE_DATA_FLOW]], feature notları.
 
 ## Nutrition veya Measurements input/state/edit/undo/chart
 
 Oku: ilgili Screen/ViewModel/DAO, `MeasurementRepository`, `LocalizedDecimal.kt`, Nutrition/Measurement rules, Home aggregate çağıranları ve TR/EN resources.
-Test: rules + `MutationContractTest`, `HomeDashboardRepositoryTest`, Screen/locale testleri; snapshot scale, aynı-ID undo, empty, comma/dot, min/max, zero/over-goal, period boundary, latest/history, 0/1/2+ chart, light/dark/%200 font ve second locale.
+Test: rules + `MutationContractTest`, `HomeDashboardRepositoryTest`, Screen/locale testleri; malformed restore, snapshot scale, aynı-ID undo, empty, comma/dot, min/max, zero/over-goal, period boundary, latest/history, 0/1/2+ chart, light/dark/%200 font, second locale ve seçili tarih/period gerçek process death.
 Graf: [[FEATURE_NUTRITION]], [[FEATURE_MEASUREMENTS]], [[ADR_008_SNAPSHOT_SAFE_EDIT_UNDO]], [[ARCH_STATE_DATA_FLOW]], [[DESIGN_SYSTEM_GRAPH]].
 
 ## Gradle/dependency/SDK

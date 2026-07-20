@@ -3,16 +3,15 @@ package com.gymtracker.ui.screens.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gymtracker.data.home.HomeDashboardRepository
-import com.gymtracker.data.home.homeDashboardPeriod
+import com.gymtracker.data.home.currentDashboardPeriods
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
+import java.time.Clock
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
@@ -28,7 +27,8 @@ sealed interface HomeUiState {
 @HiltViewModel
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModel @Inject constructor(
-    private val repository: HomeDashboardRepository
+    private val repository: HomeDashboardRepository,
+    private val clock: Clock
 ) : ViewModel() {
     private val retryGeneration = MutableStateFlow(0)
 
@@ -42,7 +42,7 @@ class HomeViewModel @Inject constructor(
         retryGeneration.update { it + 1 }
     }
 
-    private fun observeCurrentDashboard(): Flow<HomeUiState> = dashboardPeriods()
+    private fun observeCurrentDashboard(): Flow<HomeUiState> = currentDashboardPeriods(clock)
         .flatMapLatest { period ->
             repository.observeDashboard(
                 weekStartMillis = period.weekStartMillis,
@@ -54,12 +54,4 @@ class HomeViewModel @Inject constructor(
         .onStart { emit(HomeUiState.Loading) }
         .catch { emit(HomeUiState.Error) }
 
-    private fun dashboardPeriods() = flow {
-        while (true) {
-            val period = homeDashboardPeriod()
-            emit(period)
-            val remainingToday = period.nextDayStartMillis - System.currentTimeMillis()
-            delay(remainingToday.coerceAtLeast(1_000L))
-        }
-    }
 }

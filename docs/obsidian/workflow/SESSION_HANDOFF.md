@@ -2,14 +2,17 @@
 type: handoff
 status: ready
 implementation_status: active
-code_baseline: e1359bb
+code_baseline: 43b523a
 updated: 2026-07-20
-active_phase: "Phase 7 - PR21 adaptive top bar, feedback, and critical goldens"
-next_pr: "Publish PR21 and verify hosted 71 app + 2 process-death device checks"
+active_phase: "Phase 8 - PR22 saved state and Clock/ZoneId resilience"
+next_pr: "Publish PR22 and verify hosted 71 app + 4 process-death device checks"
 primary_nodes:
+  - ARCH_STATE_DATA_FLOW
   - ARCH_NAVIGATION
-  - ADR_002_FIVE_TARGET_NAVIGATION
-  - DESIGN_SYSTEM_GRAPH
+  - FEATURE_HOME
+  - FEATURE_NUTRITION
+  - FEATURE_MEASUREMENTS
+  - FEATURE_MUSCLE_LOAD
   - TEST_MATRIX
   - RISK_REGISTER_GRAPH
   - ROADMAP_EXECUTION_GRAPH
@@ -20,9 +23,9 @@ tags: [gymtracker/workflow, gymtracker/session]
 
 ## Şu anki durum
 
-- GitHub PR #1–#14 merge commit stratejisiyle sırayla `master`a alındı; son master code baseline `625489a` ve first-parent soy ağacı korunuyor.
-- PR20/GitHub PR #14 sonrası otomatik `master` koşusu `29762392465` tamamen yeşil; indirilen artifact XML 66/66 app ve 2/2 gerçek process-death testi gösteriyor.
-- PR21 code baseline `e1359bb`, `codex/adaptive-feedback-goldens` dalında: ortak `%200` font uyumlu top bar, tek geri semantics’i, ortak Snackbar, child/detail route entegrasyonu ve iki yeni golden yerel kabulden geçti.
+- GitHub PR #1–#15 merge commit stratejisiyle sırayla `master`a alındı; son master code baseline `39927a7` ve first-parent soy ağacı korunuyor.
+- PR21/GitHub PR #15 hosted koşusu `29764819516` tamamen yeşil; indirilen artifact XML 71/71 app ve 2/2 gerçek process-death testi gösteriyor.
+- PR22 code baseline `43b523a`, `codex/state-time-resilience` dalında: Nutrition tarihi ve Measurements period değeri gerçek process death sonrasında korunuyor; Home/Load ortak Clock/ZoneId akışı yerel midnight ve runtime zone değişimini kapsıyor.
 - Uygulama baseline: `f9d6d75`; PR8 `codex/workout-lifecycle` dalında draft PR #1 olarak yayınlandı.
 - PR9 baseline: `341bf79`; `codex/nutrition-measurements` dalı PR8’i hedefleyen stacked draft PR #2 olarak yayınlandı.
 - PR10 baseline: `2ad7ad8`; `codex/progress-load` dalı PR9’u hedefleyen stacked draft PR #3 olarak yayınlandı.
@@ -35,39 +38,39 @@ tags: [gymtracker/workflow, gymtracker/session]
 - PR17 code baseline: `a573ab9`; `codex/list-detail-goldens` dalı PR16’yı hedefleyen stacked draft PR #10 olarak yayınlandı: https://github.com/MehmetKucukOfficial/GymTracker/pull/10
 - Room v9; explicit 8→9 photo thumbnail/dimension metadata migration aktif, destructive fallback yok; v0/v1 fotoğraf satırları kayıpsız korunur.
 - Compact navigation shell’i 5 ana hedefli bottom bar, 600 dp+ shell aynı hedeflerle rail kullanıyor; Workout/Programs 840 dp+ ortak liste–özet düzenine geçiyor; `gymtracker://app` dış URI’leri aynı route/pozitif-ID + SavedStateHandle sözleşmesini kullanıyor.
-- Home completed/active workout, measurement ve nutrition kaynaklarına reaktif; aktif workout varsa CTA doğrudan session ID’ye devam ediyor.
+- Home completed/active workout, measurement ve nutrition kaynaklarına reaktif; aktif workout varsa CTA doğrudan session ID’ye devam ediyor. Home ve Kas Yükü aynı injectable Clock/ZoneId period akışını kullanıyor.
 - Workout tek aktif seans, status-korumalı mutation, COMPLETED salt-okunur geçmiş ve adaptive modern UI kullanıyor.
-- Nutrition DST-safe tarih aralığı, SavedStateHandle tarih seçimi, snapshot-safe amount/meal edit, delete undo, locale sayı/tarih ve TR/EN adaptive UI kullanıyor.
-- Measurements repository + indexed 7/30/90/tümü query, gerçek kilo chart, özel tarih, edit/delete undo, latest/history/trend ve TR/EN adaptive UI kullanıyor.
+- Nutrition DST-safe tarih aralığı, malformed restore fallback’i, process-death-safe SavedStateHandle tarih seçimi, snapshot-safe amount/meal edit, delete undo, locale sayı/tarih ve TR/EN adaptive UI kullanıyor.
+- Measurements repository + indexed 7/30/90/tümü query, process-death-safe selected period, gerçek kilo chart, özel tarih, edit/delete undo, latest/history/trend ve TR/EN adaptive UI kullanıyor.
 - Progress fotoğrafları cihaz-yerel backup politikası, bounded decode, EXIF normalize, 2048 ana/512 thumbnail, iki dosyalı rollback/reconciliation, v0/v1 yükseltme, viewer ve adaptive grid kullanıyor.
 - Muscle Load completed-set Flow’unu latest-valid measurement Flow’uyla birleştirir; recency/personal-bodyweight/fallback/unknown sözleşmesi, kalibrasyon kaynağı, metodoloji ve erişilebilir liste aktiftir.
 - Programs locked/ownership/target kurallarını repository’de doğrular; program günü atomik ACTIVE workout’a planlanan set olarak kopyalanır, tamamlanmayan set Muscle Load’a girmez ve finish’i kilitler.
 - Light/dark tasarım sistemi token temeli ve ortak Home bileşenleri aktif; Home loading/content/error, retry, midnight period tick ve adaptive kolon kullanıyor.
 - Uygulama geneli Türkçe/English kaynak kataloğu 356/356 eşit; muscle adları ve program para biçimi locale-aware.
-- Test temeli aktif: 34 JVM + 71 app API 34 instrumentation + 2 ayrı gerçek process-death testi geçiyor; Progress Hub, Programs, Workout, Nutrition ve Measurements için altı kalıcı golden baseline var.
+- Test temeli aktif: 37 JVM + 71 app API 34 instrumentation + 4 ayrı gerçek process-death testi geçiyor; Progress Hub, Programs, Workout, Nutrition ve Measurements için altı kalıcı golden baseline var.
 - Debug build başarılı; lint 0 error; assemble başarılı.
 - `ciQuality` JVM/lint/debug ile R8/resource-shrunk unsigned APK, AAB ve mapping üretir; GitHub Actions quality + API 34 device/golden workflow’u kaynakta.
 
 ## Sıradaki önerilen iş
 
-PR21 graf commit’ini tamamla, dalı yayınla ve hosted quality/API 34 app + ayrı process-death kontrollerini doğrula; merge sonrası Nutrition/Measurements gerçek process-death state ve Clock/ZoneId rollover dilimine otomatik geç.
+PR22 graf commit’ini tamamla, dalı yayınla ve hosted quality/API 34 app + dört ayrı process-death kontrolünü doğrula; merge sonrası Progress Photos düşük alan/reboot/restore ve büyük-grid performans dilimine otomatik geç.
 
 ## Açık P0/P1
 
 - GitHub branch protection içinde quality + API 34 check’lerini zorunlu yapma
 - Photos/Load ile disabled/loading golden baseline’larını genişletme
-- Nutrition/Measurements seçili değerleri için gerçek OS process-death kapsam genişletmesi
+- Progress Photos gerçek düşük alan/reboot/restore ve büyük-grid performans kabulü
 - Gerçek production secret/Play internal-track smoke ve fiziksel cihaz benchmark kabulü
 
 ## Son doğrulama
 
-- `testDebugUnitTest`: success, 34/34.
-- `connectedDebugAndroidTest`: success, 71/71, Pixel 6 Pro API 34 (1m45s, warm local AVD).
-- `ProcessDeathNavigationTest`: success, 2/2, Pixel 6 Pro API 34; iki senaryoda eski PID yok oldu ve aynı task yeni PID ile doğru destination’ı geri yükledi.
+- `testDebugUnitTest`: success, 37/37.
+- `connectedDebugAndroidTest`: success, 71/71, Pixel 6 Pro API 34.
+- `ProcessDeathNavigationTest`: success, 4/4, Pixel 6 Pro API 34; dört senaryoda eski PID yok oldu, aynı task yeni PID ile doğru destination/state’i geri yükledi.
 - `lintDebug`: success, 0 error.
 - `assembleDebug`: success.
 - `ciQuality`: success; JVM/lint/debug, minified APK/AAB, R8 mapping ve embedded profile kapıları geçti.
-- PR20 master run `29762392465`: hosted quality + API 34 app/process-death success; artifact XML 66+2, 0 failure/error/skipped.
+- PR21 hosted run `29764819516`: quality 7m10s + API 34 device 15m12s; artifact XML 71+2, 0 failure/error/skipped; merge commit `39927a7`.
 - Kalıcı görsel kapı: iki Progress Hub, Programs, Workout, `nutrition_over_goal_dark_tr_font200.png` ve `measurements_chart_topbar_light_en.png` olmak üzere altı baseline API 34 üzerinde pixel tolerance ile geçti.
 
 ## Handoff güncelleme şablonu
@@ -81,6 +84,36 @@ Graph notes updated:
 Next concrete action:
 Blockers:
 ```
+
+## 2026-07-20 - PR22 saved state and Clock/ZoneId resilience
+
+Completed:
+- Unified Home and Muscle Load calendar windows behind `currentDashboardPeriods(Clock)`, with local-midnight rollover, bounded runtime-zone detection and duplicate suppression.
+- Injected Clock into HomeViewModel and removed direct `System.currentTimeMillis()`/default-zone ownership from both ViewModels.
+- Made malformed Nutrition SavedState dates fall back to the injected Clock day instead of crashing.
+- Expanded the target-process-independent acceptance class from two route tests to four tests, preserving Nutrition selected date and Measurements 90-day checked state across a proven PID change.
+
+Files changed:
+- `HomeDashboardPeriod.kt`, Home/Fatigue ViewModels, Nutrition rules/ViewModel.
+- Home/Nutrition JVM tests and `ProcessDeathNavigationTest`.
+- State/navigation/Home/Nutrition/Measurements/Load/test/risk/roadmap/atlas/impact/start/handoff graph nodes.
+
+Tests run/results:
+- `testDebugUnitTest`: 37/37, 0 failure/error/skipped.
+- Full `connectedDebugAndroidTest`: 71/71, 0 failure/error/skipped.
+- `ProcessDeathNavigationTest`: 4/4, 0 failure/error/skipped on Pixel 6 Pro API 34.
+- `ciQuality`: success including lint, debug, minified release APK/AAB, R8 mapping and embedded Baseline Profile.
+
+Risks changed:
+- R5 resolved: Home/Load Clock, midnight and runtime zone-change behavior is deterministic.
+- R9 resolved+: malformed Nutrition restore and selected-date process death are covered.
+- R13 resolved++++: real task restoration now includes value-specific SavedState evidence.
+
+Next concrete action:
+- Publish PR22, verify hosted 37 JVM + 71 app + 4 process-death acceptance, merge with merge commit, then start Progress Photos device resilience.
+
+Blockers:
+- No code blocker. Local Gradle requires explicit JDK 17 because the machine default remains Java 11.
 
 ## 2026-07-20 - PR21 adaptive top bar, feedback, and critical goldens
 
@@ -107,7 +140,7 @@ Risks changed:
 - R15 improves to mitigated+++; shared top bar/Snackbar and six permanent goldens are active. Photos/Load and disabled/loading golden variants remain.
 
 Next concrete action:
-- Publish PR21, verify hosted quality + 71 app device + 2 process-death jobs, merge with merge commit, then start real process-death state/time rollover work.
+- Completed: hosted run `29764819516` passed; artifact XML is 71 app + 2 process-death; GitHub PR #15 merged as `39927a7` with source branch retained.
 
 Blockers:
 - No code blocker. Local Gradle requires explicit JDK 17 because the machine default remains Java 11.

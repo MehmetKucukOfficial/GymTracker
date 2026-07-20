@@ -2,8 +2,8 @@
 type: feature
 status: current
 implementation_status: current
-verified_commit: 4d0cad8
-updated: 2026-07-15
+verified_commit: 43b523a
+updated: 2026-07-20
 source_files:
   - app/src/main/java/com/gymtracker/ui/screens/home/HomeScreen.kt
   - app/src/main/java/com/gymtracker/ui/screens/home/HomeViewModel.kt
@@ -23,7 +23,7 @@ Route `home`, başlangıç destination’dır. Ana antrenman CTA’sı aktif sea
 
 ## Mevcut akış
 
-Workout completed/active, measurement ve günün nutrition Room Flow’ları → `HomeDashboardRepository.combine` → `HomeViewModel` `Loading/Content/Error` → lifecycle-aware `HomeScreen`. Her veri kaynağındaki değişim aynı açık ekranda dashboard’u yeniler. ViewModel, sonraki yerel gün başlangıcına kadar bekleyip `flatMapLatest` ile sorgu aralığını yeniden kurar; retry aynı akışı yeniden başlatır.
+Workout completed/active, measurement ve günün nutrition Room Flow’ları → `HomeDashboardRepository.combine` → `HomeViewModel` `Loading/Content/Error` → lifecycle-aware `HomeScreen`. Her veri kaynağındaki değişim aynı açık ekranda dashboard’u yeniler. Home ve Kas Yükü aynı injectable `Clock` tabanlı `currentDashboardPeriods` akışını kullanır. Akış yerel gece yarısında yeni aralığı yayınlar; dinamik sistem `ZoneId` değişimini en geç 60 saniyede yeniden hesaplar, aynı aralığı gereksiz yere tekrar yayınlamaz. Retry aynı akışı yeniden başlatır.
 
 ## Bağımlılıklar
 
@@ -35,13 +35,12 @@ Workout completed/active, measurement ve günün nutrition Room Flow’ları →
 
 ## Kalan sınırlar
 
-- Gece yarısı ticker’ı uygulanmış olsa da Clock/ZoneId injection ve zone-change testi bekliyor.
-- Compact/expanded içerik kolonları var; uygulama geneli navigation rail ve list-detail henüz yok.
-- Kalıcı screenshot golden/diff altyapısı yok; PR7 kanıtları build artifact olarak tutuluyor.
+- Compact/expanded içerik kolonları var; Home için kalıcı liste–detay gerekmiyor.
+- Home’a özel kalıcı golden yok; uygulama genelinde altı kritik golden aktiftir.
 
 ## Hedef durum
 
-Reaktif özet, tasarım sistemi ve [[FEATURE_WORKOUT]] aktif-seans CTA entegrasyonu tamamlandı. Sonraki hedef, gerçek trend datası geldiğinde mini grafiği eklemek ve Clock/ZoneId bağımlılıklarını test için enjekte etmektir.
+Reaktif özet, tasarım sistemi, [[FEATURE_WORKOUT]] aktif-seans CTA entegrasyonu ve Clock/ZoneId dayanıklılığı tamamlandı. Sonraki hedef, gerçek trend datası geldiğinde mini grafiği eklemektir.
 
 ## Değişiklik dosya kümesi
 
@@ -50,7 +49,7 @@ Reaktif özet, tasarım sistemi ve [[FEATURE_WORKOUT]] aktif-seans CTA entegrasy
 ## Zorunlu testler
 
 - Completed workout/active workout/measurement/nutrition ayrı ayrı değişince state yenilenir; aktif kayıt toplam ve son-workout metriklerini şişirmez: API 34 repository testi geçiyor.
-- Tarihsel Istanbul DST sınırı unit testte doğrulandı; ViewModel otomatik rollover yapıyor, enjekte Clock ile deterministik ticker testi bekliyor.
+- Tarihsel Istanbul DST sınırı, enjekte Clock ile gerçek yerel gece yarısı geçişi ve çalışma anındaki UTC→Tokyo zone değişimi JVM testinde deterministik olarak doğrulandı.
 - Empty/content/error ve retry Compose testleri geçiyor; loading state açıkça modelleniyor.
 - Light/dark, %200 font ve compact davranışı API 34 test/görselleriyle doğrulandı; kolon politikası JVM testlidir.
 

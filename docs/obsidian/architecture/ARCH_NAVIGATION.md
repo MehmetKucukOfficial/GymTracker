@@ -2,7 +2,7 @@
 type: architecture
 status: current
 implementation_status: current
-verified_commit: e1359bb
+verified_commit: 43b523a
 updated: 2026-07-20
 source_files:
   - app/src/main/java/com/gymtracker/MainActivity.kt
@@ -33,9 +33,9 @@ Workout ve Programs ana rotaları 840 dp+ genişlikte ortak liste–detay iskele
 
 PR19 dış giriş sözleşmesi `gymtracker://app/<route>` tabanını kullanır. Manifest yalnız `gymtracker` scheme + `app` host eşleşmesini `VIEW/DEFAULT/BROWSABLE` olarak dışa açar; her NavHost destination merkezi `DeepLinkContract` pattern’ine bağlanır. Workout/program detail argümanları `PositiveLongNavType` ile sıfır, negatif ve sayısal olmayan ID’leri route eşleşmesinden çıkarır. Geçersiz veya bilinmeyen URI güvenli `home` başlangıcında kalır.
 
-PR20 gerçek süreç-ölümü kabulü hedef uygulamadan ayrı `:baselineprofile` instrumentation sürecinde çalışır. Test dış URI ile alt rota veya pozitif-ID detay görevini kurar, görevi Home ile arka plana alır, `am kill` sonrasında hedef PID’nin kaybolduğunu kanıtlar ve aynı Android task kimliğini yeniden öne getirir. Yeni PID ile aynı destination metninin görünmesi, Activity recreation taklidinden bağımsız olarak NavHost/SavedState task restorasyonunu doğrular.
+Gerçek süreç-ölümü kabulü hedef uygulamadan ayrı `:baselineprofile` instrumentation sürecinde çalışır. Test dış URI ile hedef görevi kurar, görevi Home ile arka plana alır, `am kill` sonrasında hedef PID’nin kaybolduğunu kanıtlar ve aynı Android task kimliğini yeniden öne getirir. Yeni PID ile aynı destination metninin görünmesi NavHost/task restorasyonunu; Nutrition tarih metni ile Measurements 90-gün `checked` state’inin korunması da ViewModel `SavedStateHandle` restorasyonunu Activity recreation taklidinden bağımsız doğrular.
 
-PR20 merge commit `625489a` sonrası otomatik `master` koşusu `29762392465` quality ve API 34 cihaz işlerinde yeşildir; indirilen artifact XML 66 app testi ile ayrı 2 process-death testinin sıfır failure/error/skipped sonucunu doğrular. PR21 `e1359bb`, child/detail görünür geri sözleşmesini ortak bileşene taşır ve `NavigationSmokeTest` içinde top bar back ile sistem back yollarını ayrı ayrı doğrular.
+PR21 hosted koşusu `29764819516` quality ve API 34 cihaz işlerinde yeşildir; artifact XML 71 app + 2 process-death testini sıfır failure/error/skipped ile doğrular. GitHub PR #15 merge commit `39927a7` ile `master`a alındı ve kaynak dal korundu. PR22 `43b523a`, process-death paketini Nutrition/Measurements state’iyle dört teste genişletir.
 
 ## Hedef
 
@@ -77,7 +77,7 @@ Telefon ana hedefleri:
 ## Değişiklik kontrol listesi
 
 - [[ADR_002_FIVE_TARGET_NAVIGATION]] kararı
-- Ortak top bar back/system back, Activity recreation/selected-tab, compact→rail, 839/840 dp liste–detay, harici cold-start deep link ve gerçek OS process-death testleri geçiyor
+- Ortak top bar back/system back, Activity recreation/selected-tab, compact→rail, 839/840 dp liste–detay, harici cold-start deep link, gerçek OS process-death destination ve SavedState değer testleri geçiyor
 - `SavedStateHandle`
 - Bottom bar selected state
 - Ana destination’larda state restore

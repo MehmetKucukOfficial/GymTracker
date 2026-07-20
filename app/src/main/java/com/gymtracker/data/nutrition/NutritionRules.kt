@@ -24,6 +24,11 @@ fun nutritionEntryTime(date: LocalDate, clock: Clock): Long {
     return date.atTime(LocalTime.now(clock)).atZone(clock.zone).toInstant().toEpochMilli()
 }
 
+fun restoredNutritionDate(savedValue: String?, clock: Clock): LocalDate =
+    savedValue
+        ?.let { runCatching { LocalDate.parse(it) }.getOrNull() }
+        ?: LocalDate.now(clock)
+
 fun nutritionProgress(current: Float, goal: Number): Float {
     val target = goal.toFloat()
     if (!current.isFinite() || !target.isFinite() || target <= 0f) return 0f

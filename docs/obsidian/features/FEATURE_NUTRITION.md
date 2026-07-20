@@ -2,8 +2,8 @@
 type: feature
 status: current
 implementation_status: current
-verified_commit: 9c90471
-updated: 2026-07-15
+verified_commit: 43b523a
+updated: 2026-07-20
 source_files:
   - app/src/main/java/com/gymtracker/ui/screens/nutrition/NutritionScreen.kt
   - app/src/main/java/com/gymtracker/ui/screens/nutrition/NutritionViewModel.kt
@@ -25,7 +25,7 @@ tags: [gymtracker/feature, gymtracker/feature/nutrition]
 
 ## Mevcut akış
 
-`SavedStateHandle` içindeki ISO `LocalDate` → `nutritionDayRange(date, Clock.zone)` → `flatMapLatest(getEntriesForDay)` + goal Flow → `DailyNutrition`. Takvim günü başlangıç/bitişi DST-safe hesaplanır. Bugünkü entry `Clock.instant()`, geçmiş gün entry’si seçilen günün yerel saatiyle yazılır.
+`SavedStateHandle` içindeki ISO `LocalDate` → `nutritionDayRange(date, Clock.zone)` → `flatMapLatest(getEntriesForDay)` + goal Flow → `DailyNutrition`. Takvim günü başlangıç/bitişi DST-safe hesaplanır. Restore edilen tarih parse edilemiyorsa ekran çökmez ve injectable `Clock` gününe güvenli döner. Bugünkü entry `Clock.instant()`, geçmiş gün entry’si seçilen günün yerel saatiyle yazılır.
 
 Ondalık girdiler ortak `LocalizedDecimal` ile virgül/nokta destekli parse edilir. Besin miktarı, besin değerleri ve pozitif hedefler yazmadan önce doğrulanır; başarısız Room işlemi dialogu kapatmaz.
 
@@ -36,8 +36,7 @@ Nutrition yüzeyi Türkçe ve İngilizce resource, cihaz-locale tarih biçimi ve
 ## Kalan kapsam
 
 - Food search DAO var, UI kullanmaz; recent/favorite quick-add yoktur.
-- Seçili gün process recreation’da korunur; uygulama açıkken gece yarısı seçimi otomatik ilerlemez.
-- Gerçek OS process-death testi ve tam uygulama İngilizce kapsamı bekliyor.
+- Seçili gün process recreation ve gerçek OS process death sonrasında korunur; uygulama açıkken kullanıcı geçmiş bir gün seçmişse seçim otomatik olarak bugüne ilerlemez.
 
 ## Hedef durum
 
@@ -45,6 +44,6 @@ Recent/favorite food search, öğün kartında hızlı ekleme ve tam uygulama lo
 
 ## Zorunlu testler
 
-Uygulandı: 23/25 saat DST day range, goal 0 güvenliği, aşım görünümü, snapshot miktar ölçekleme, update/delete/aynı-ID undo Room sözleşmesi, Home update reaktivitesi, İngilizce resource ve light/dark/%200 font Compose/görsel kabulü. Kalan: gerçek process-death ve Snackbar UI interaction testi.
+Uygulandı: 23/25 saat DST day range, goal 0 güvenliği, aşım görünümü, bozuk restore değerinde güvenli Clock fallback’i, snapshot miktar ölçekleme, update/delete/aynı-ID undo Room sözleşmesi, Home update reaktivitesi, İngilizce resource, light/dark/%200 font/golden kabulü ve ayrı süreçte PID değişimli seçili-tarih restorasyonu. Ortak Snackbar mesaj/undo semantics testi aktiftir; tam öğün silme→undo etkileşim testi iyileştirme olarak açıktır.
 
 Bağlar: [[FEATURE_HOME]], [[ARCH_STATE_DATA_FLOW]], [[ARCH_DATABASE]], [[DESIGN_SYSTEM_GRAPH]].

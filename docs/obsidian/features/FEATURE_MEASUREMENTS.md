@@ -2,8 +2,8 @@
 type: feature
 status: current
 implementation_status: current
-verified_commit: 9c90471
-updated: 2026-07-15
+verified_commit: 43b523a
+updated: 2026-07-20
 source_files:
   - app/src/main/java/com/gymtracker/ui/screens/measurements/MeasurementsScreen.kt
   - app/src/main/java/com/gymtracker/ui/screens/measurements/MeasurementsViewModel.kt
@@ -38,7 +38,7 @@ Kilo, yağ ve sekiz çevre ölçümünü ekler; ISO özel tarih seçer, mevcut k
 
 - Not alanı ve shoulders alanı edit formunda henüz açılmamıştır; mevcut kayıt düzenlenirken korunur.
 - Grafik kilo odaklıdır; yağ/çevre metrik seçici ve zoom yoktur.
-- Gerçek OS process-death, timezone change ve tam uygulama İngilizce kapsamı bekler.
+- Çoklu metrik chart ve daha güçlü tarih seçici bekler; chart period gerçek OS process death sonrasında korunur.
 
 ## Hedef durum
 
@@ -50,6 +50,6 @@ Room v8, `body_measurements(date)` index’ini explicit `MIGRATION_7_8` ile ekle
 
 ## Testler
 
-Uygulandı: boş/aralık dışı form engeli, locale decimal, en yeni iki nokta trendi, v7→v8 index migration, period query, update/delete/aynı-ID undo, Home update reaktivitesi, 0/1/2+ chart state, English resource ve light/dark/%200 font kabulü. Kalan: gerçek process-death/timezone ve screenshot golden altyapısı.
+Uygulandı: boş/aralık dışı form engeli, locale decimal, en yeni iki nokta trendi, v7→v8 index migration, period query, update/delete/aynı-ID undo, Home update reaktivitesi, 0/1/2+ chart state, English resource, light/dark/%200 font + kalıcı chart/top-bar golden ve ayrı süreçte PID değişimli 90-gün checked-state restorasyonu. Takvim zone/day aralığı ortak Clock akışı ve period kurallarıyla testlidir.
 
 Bağlar: [[FEATURE_HOME]], [[SCREEN_BLUEPRINT_GRAPH#İlerleme merkezi]], [[ARCH_DATABASE]].
