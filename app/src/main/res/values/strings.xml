@@ -256,6 +256,7 @@
     <string name="progress_photos_upgraded">Fotoğraf kaydı güvenli depolama biçimine yükseltildi.</string>
     <string name="progress_photos_deleted">Fotoğraf silindi.</string>
     <string name="progress_photos_save_failed">Fotoğraf kaydedilemedi. Dosyayı ve boş alanı kontrol edip tekrar dene.</string>
+    <string name="progress_photos_storage_full">Fotoğrafı güvenle işlemek için en az 48 MB boş alan gerekiyor. Yer açıp tekrar dene.</string>
     <string name="progress_photos_upgrade_failed">Fotoğraf iyileştirilemedi. Kaynak dosyayı ve boş alanı kontrol edip tekrar dene.</string>
     <string name="progress_photos_delete_failed">Fotoğraf tamamen silinemedi. Tekrar deneyebilirsin.</string>
     <string name="progress_photos_maintenance_failed">Fotoğraf depolama kontrolü tamamlanamadı.</string>

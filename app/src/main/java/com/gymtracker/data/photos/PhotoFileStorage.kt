@@ -6,8 +6,10 @@ import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.media.ExifInterface
 import android.net.Uri
+import android.os.StatFs
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
+import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import java.util.UUID
@@ -30,10 +32,26 @@ data class PhotoStorageReconciliation(
     val missingManagedUris: Set<String>
 )
 
+class InsufficientPhotoStorageException(
+    val requiredBytes: Long,
+    val availableBytes: Long
+) : IOException("Progress photo import requires $requiredBytes bytes; $availableBytes bytes available.")
+
 @Singleton
-class PhotoFileStorage @Inject constructor(
-    @ApplicationContext context: Context
+class PhotoFileStorage private constructor(
+    context: Context,
+    private val availableBytes: (File) -> Long
 ) {
+    @Inject
+    constructor(
+        @ApplicationContext context: Context
+    ) : this(context, { directory -> StatFs(directory.path).availableBytes })
+
+    internal constructor(
+        context: Context,
+        availableBytes: Long
+    ) : this(context, { availableBytes })
+
     private val directory = File(context.filesDir, DIRECTORY_NAME)
 
     init {
@@ -48,6 +66,11 @@ class PhotoFileStorage @Inject constructor(
      */
     fun store(input: InputStream, mimeType: String): StoredPhoto {
         check(directory.exists() || directory.mkdirs()) { "Fotoğraf klasörü oluşturulamadı." }
+        require(mimeType.startsWith("image/")) { "Seçilen dosya bir görsel değil." }
+        val freeBytes = availableBytes(directory)
+        if (freeBytes < REQUIRED_FREE_BYTES) {
+            throw InsufficientPhotoStorageException(REQUIRED_FREE_BYTES, freeBytes)
+        }
         val sourceTemp = File.createTempFile("source-", TEMP_SUFFIX, directory)
         val mainTemp = File.createTempFile("main-", TEMP_SUFFIX, directory)
         val thumbnailTemp = File.createTempFile("thumb-", TEMP_SUFFIX, directory)
@@ -222,6 +245,7 @@ class PhotoFileStorage @Inject constructor(
         const val TEMP_SUFFIX = ".tmp"
         const val OUTPUT_MIME_TYPE = "image/jpeg"
         const val MAX_FILE_BYTES = 25L * 1024L * 1024L
+        const val REQUIRED_FREE_BYTES = 48L * 1024L * 1024L
         const val MAX_SOURCE_DIMENSION = 20_000
         const val MAX_DISPLAY_DIMENSION = 2_048
         const val THUMBNAIL_DIMENSION = 512

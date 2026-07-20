@@ -121,6 +121,35 @@ class ProgressPhotoScreenTest {
         assertEquals(1, optimizeClicks.get())
     }
 
+    @Test
+    fun largeManagedDatasetRemainsLazyAndCanReachLastPhoto() {
+        val photos = (1L..500L).map { id ->
+            ProgressPhoto(
+                id = id,
+                date = id,
+                photoUri = "file:///missing-main-$id.jpg",
+                thumbnailUri = "file:///missing-thumb-$id.jpg",
+                angle = PhotoAngle.values()[(id % PhotoAngle.values().size).toInt()],
+                storageVersion = 2
+            )
+        }
+        composeRule.setContent {
+            GymTrackerTheme(darkTheme = false) {
+                ProgressPhotoContent(
+                    photos = photos,
+                    uiState = ProgressPhotoUiState(),
+                    onAddPhoto = {},
+                    onDeletePhoto = {}
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag("progress-photo-item-500").assertDoesNotExist()
+        composeRule.onNodeWithTag("progress-photo-grid")
+            .performScrollToNode(hasTestTag("progress-photo-item-500"))
+        composeRule.onNodeWithTag("progress-photo-item-500").assertIsDisplayed()
+    }
+
     private fun text(id: Int): String =
         InstrumentationRegistry.getInstrumentation().targetContext.getString(id)
 }
