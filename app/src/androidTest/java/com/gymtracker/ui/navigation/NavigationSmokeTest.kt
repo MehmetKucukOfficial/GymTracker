@@ -55,19 +55,31 @@ class NavigationSmokeTest {
     }
 
     @Test
-    fun progressChild_keepsProgressSelectedAndSystemBackReturnsToHub() {
+    fun progressChild_keepsProgressSelectedAndTopAppBarBackReturnsToHub() {
         composeRule.onNodeWithTag("bottom-nav-progress").performClick()
         composeRule.onNodeWithText(text(R.string.progress_hub_subtitle))
             .assertIsDisplayed()
 
         composeRule.onNodeWithText(text(R.string.measurements_title)).performClick()
         composeRule.onNodeWithTag("bottom-nav-progress").assertIsSelected()
+        composeRule.onNodeWithTag("gt-top-app-bar").assertIsDisplayed()
+
+        composeRule.onNodeWithTag("gt-top-app-bar-back").performClick()
+        composeRule.onNodeWithText(text(R.string.progress_hub_subtitle))
+            .assertIsDisplayed()
+    }
+
+    @Test
+    fun progressChild_systemBackStillReturnsToHub() {
+        composeRule.onNodeWithTag("bottom-nav-progress").performClick()
+        composeRule.onNodeWithTag("progress-destination-progress/photos").performClick()
+        composeRule.onNodeWithTag("gt-top-app-bar-back").assertIsDisplayed()
 
         composeRule.activityRule.scenario.onActivity {
             it.onBackPressedDispatcher.onBackPressed()
         }
-        composeRule.onNodeWithText(text(R.string.progress_hub_subtitle))
-            .assertIsDisplayed()
+
+        composeRule.onNodeWithText(text(R.string.progress_hub_subtitle)).assertIsDisplayed()
     }
 
     @Test
@@ -102,6 +114,7 @@ class NavigationSmokeTest {
         }
 
         composeRule.onNodeWithTag("workout-detail-active").assertIsDisplayed()
+        composeRule.onNodeWithTag("gt-top-app-bar-back").assertIsDisplayed()
         composeRule.onNodeWithTag("bottom-nav-workouts").assertDoesNotExist()
 
         composeRule.activityRule.scenario.recreate()
@@ -120,6 +133,7 @@ class NavigationSmokeTest {
         composeRule.onNodeWithText("Full Body 3 Gün").performClick()
 
         composeRule.onNodeWithText(text(R.string.program_plan_title)).performScrollTo().assertIsDisplayed()
+        composeRule.onNodeWithTag("gt-top-app-bar-back").assertIsDisplayed()
         composeRule.onNodeWithTag("bottom-nav-programs").assertDoesNotExist()
 
         composeRule.activityRule.scenario.recreate()

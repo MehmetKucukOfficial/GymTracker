@@ -21,6 +21,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -47,19 +48,53 @@ import com.gymtracker.ui.components.GtEmptyState
 import com.gymtracker.ui.components.GtErrorState
 import com.gymtracker.ui.components.GtLoadingState
 import com.gymtracker.ui.components.GtSectionHeader
+import com.gymtracker.ui.components.GtTopAppBar
 import com.gymtracker.ui.components.MuscleBodyMap
 import com.gymtracker.ui.theme.GtSpacing
 
 @Composable
-fun FatigueScreen(viewModel: FatigueViewModel = hiltViewModel()) {
+fun FatigueScreen(
+    onBack: () -> Unit,
+    viewModel: FatigueViewModel = hiltViewModel()
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    MuscleLoadContent(uiState = uiState, onRetry = viewModel::retry)
+    var showMethodology by remember { mutableStateOf(false) }
+
+    Scaffold(
+        topBar = {
+            GtTopAppBar(
+                title = stringResource(R.string.muscle_load_title),
+                supportingText = stringResource(R.string.muscle_load_subtitle),
+                onBack = onBack,
+                actions = {
+                    IconButton(onClick = { showMethodology = true }) {
+                        Icon(
+                            Icons.Default.Info,
+                            contentDescription = stringResource(R.string.muscle_load_methodology_action)
+                        )
+                    }
+                }
+            )
+        }
+    ) { padding ->
+        MuscleLoadContent(
+            uiState = uiState,
+            onRetry = viewModel::retry,
+            showHeader = false,
+            modifier = Modifier.padding(padding)
+        )
+    }
+
+    if (showMethodology) {
+        MuscleLoadMethodologyDialog(onDismiss = { showMethodology = false })
+    }
 }
 
 @Composable
 fun MuscleLoadContent(
     uiState: MuscleLoadUiState,
     onRetry: () -> Unit,
+    showHeader: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     var showFront by remember { mutableStateOf(true) }
@@ -74,21 +109,23 @@ fun MuscleLoadContent(
         verticalArrangement = Arrangement.spacedBy(GtSpacing.md),
         contentPadding = androidx.compose.foundation.layout.PaddingValues(vertical = GtSpacing.lg)
     ) {
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.Top
-            ) {
-                GtSectionHeader(
-                    title = stringResource(R.string.muscle_load_title),
-                    supportingText = stringResource(R.string.muscle_load_subtitle),
-                    modifier = Modifier.weight(1f)
-                )
-                IconButton(onClick = { showMethodology = true }) {
-                    Icon(
-                        Icons.Default.Info,
-                        contentDescription = stringResource(R.string.muscle_load_methodology_action)
+        if (showHeader) {
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.Top
+                ) {
+                    GtSectionHeader(
+                        title = stringResource(R.string.muscle_load_title),
+                        supportingText = stringResource(R.string.muscle_load_subtitle),
+                        modifier = Modifier.weight(1f)
                     )
+                    IconButton(onClick = { showMethodology = true }) {
+                        Icon(
+                            Icons.Default.Info,
+                            contentDescription = stringResource(R.string.muscle_load_methodology_action)
+                        )
+                    }
                 }
             }
         }
@@ -192,17 +229,22 @@ fun MuscleLoadContent(
     }
 
     if (showMethodology) {
-        AlertDialog(
-            onDismissRequest = { showMethodology = false },
-            title = { Text(stringResource(R.string.muscle_load_methodology_title)) },
-            text = { Text(stringResource(R.string.muscle_load_methodology_body)) },
-            confirmButton = {
-                TextButton(onClick = { showMethodology = false }) {
-                    Text(stringResource(R.string.action_ok))
-                }
-            }
-        )
+        MuscleLoadMethodologyDialog(onDismiss = { showMethodology = false })
     }
+}
+
+@Composable
+private fun MuscleLoadMethodologyDialog(onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.muscle_load_methodology_title)) },
+        text = { Text(stringResource(R.string.muscle_load_methodology_body)) },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.action_ok))
+            }
+        }
+    )
 }
 
 @Composable

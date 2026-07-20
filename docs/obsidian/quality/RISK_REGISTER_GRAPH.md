@@ -2,8 +2,8 @@
 type: risk-register
 status: current
 implementation_status: current
-verified_commit: 8a2d350
-updated: 2026-07-16
+verified_commit: e1359bb
+updated: 2026-07-20
 tags: [gymtracker/risk, gymtracker/quality]
 ---
 
@@ -13,7 +13,7 @@ tags: [gymtracker/risk, gymtracker/quality]
 |---|---|---|---|---|---|
 | R1 | P0 | resolved (v3+) | Destructive migration veri siler | [[ARCH_DATABASE]] | [[ADR_003_EXPLICIT_ROOM_MIGRATIONS]] |
 | R2 | P0 | mitigated++ | Yeni fotoğraf URI’si, bounded decode/EXIF/thumbnail, iki dosyalı rollback, backup tutarlılığı, orphan/missing reconciliation ve kimlik koruyan legacy v0/v1 yükseltme çözüldü; gerçek düşük alan/reboot/restore cihaz kabulü açık | [[FEATURE_PROGRESS_PHOTOS]] | [[ADR_004_PERSISTENT_PHOTO_STORAGE]] |
-| R3 | P0/P1 | resolved-core+ | Linux wrapper, tek `ciQuality`, minified release ve KVM hızlandırmalı API 34 device/golden akışı otomatik `master` koşusu `29499237460` üzerinde yeşil; varsayılan dal push trigger’ı doğrulandı. Branch-protection zorunluluğu yönetim takibi | [[ARCH_BUILD_DI]] | PR 15 + post-merge fix |
+| R3 | P0/P1 | resolved-core++ | Linux wrapper, tek `ciQuality`, minified release ve KVM hızlandırmalı API 34 app/golden + ayrı process-death akışı otomatik `master` koşusu `29762392465` üzerinde yeşil; artifact XML 66+2 sonucu doğrulandı. Branch-protection özel depo/hesap planı nedeniyle yönetim takibi | [[ARCH_BUILD_DI]] | PR 15 + PR20 post-merge |
 | R4 | P1 | resolved | Program seed duplicate/yarım | [[FEATURE_PROGRAMS]] | unique + transaction test |
 | R5 | P1 | mitigated+ | Home reaktif, rollover ve loading/error uygulandı; Clock/zone-change testi açık | [[FEATURE_HOME]] | Flow combine + period tick + UiState |
 | R6 | P1 | resolved | Program purchase detail ve stale local selection | [[FEATURE_PROGRAMS]] | ID route/reactive detail |
@@ -25,7 +25,7 @@ tags: [gymtracker/risk, gymtracker/quality]
 | R12 | P2 | resolved-core (v7) | Program aktif okuma modeli ilişkisel; JSON yalnız kayıpsız legacy fallback ve bozuk payload UI’da güvenli boş state | [[ARCH_DATABASE]] | [[ADR_007_RELATIONAL_PROGRAM_PLANS]] |
 | R13 | P2 | resolved+++ | 5 hedefli compact bottom bar, 600 dp+ rail, 840 dp+ Workout/Programs liste–detay ve doğrulanmış dış deep-link URI’leri aynı route sahipliği/pozitif-ID/save-restore sözleşmesini kullanıyor; ayrı süreçte PID değişimiyle gerçek task restorasyonu CI kapsamındadır | [[ARCH_NAVIGATION]] | [[ADR_002_FIVE_TARGET_NAVIGATION]] |
 | R14 | P2 | mitigated+ | Permission azaltıldı; hassas progress fotoğrafları cloud backup/device transfer dışında | [[ARCH_BUILD_DI]] | permission + extraction rules |
-| R15 | P2 | mitigated++ | Uygulama geneli 356/356 TR/EN kaynak, adaptive shell, 840 dp+ Workout/Programs list-detail, selected semantics ve dört kalıcı golden aktif; kalan kritik ekran/state golden yayılımı açık | [[DESIGN_SYSTEM_GRAPH]] | design DoD |
+| R15 | P2 | mitigated+++ | Uygulama geneli 356/356 TR/EN kaynak, adaptive shell, 840 dp+ Workout/Programs list-detail, ortak büyük-font top bar/Snackbar, selected semantics ve altı kalıcı golden aktif; Photos/Load ile disabled/loading golden yayılımı açık | [[DESIGN_SYSTEM_GRAPH]] | design DoD |
 | R16 | P1 | mitigated-config | Protected environment, fail-fast secrets, geçici keystore, APK/AAB imza doğrulaması ve artifact kapısı tanımlı; gerçek production secret + Play internal-track smoke’u açık | [[ADR_009_SECRET_BACKED_RELEASES]] | production environment + release smoke |
 | R17 | P1 | partial | Baseline/Startup Profile ve macrobenchmark CUJ’ları üretildi; emülatör yalnız karşılaştırma baseline’ı, fiziksel referans cihaz kabulü yapılmadı | [[PERFORMANCE_BASELINE]] | physical release benchmark |
 

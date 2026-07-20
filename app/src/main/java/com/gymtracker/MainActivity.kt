@@ -160,19 +160,19 @@ private fun AppNavHost(navController: NavHostController, modifier: Modifier = Mo
             route = Screen.Measurements.route,
             deepLinks = listOf(navDeepLink { uriPattern = DeepLinkContract.patternFor(Screen.Measurements) })
         ) {
-            MeasurementsScreen()
+            MeasurementsScreen(onBack = { navController.popBackStack() })
         }
         composable(
             route = Screen.ProgressPhotos.route,
             deepLinks = listOf(navDeepLink { uriPattern = DeepLinkContract.patternFor(Screen.ProgressPhotos) })
         ) {
-            ProgressScreen()
+            ProgressScreen(onBack = { navController.popBackStack() })
         }
         composable(
             route = Screen.Fatigue.route,
             deepLinks = listOf(navDeepLink { uriPattern = DeepLinkContract.patternFor(Screen.Fatigue) })
         ) {
-            FatigueScreen()
+            FatigueScreen(onBack = { navController.popBackStack() })
         }
     }
 }

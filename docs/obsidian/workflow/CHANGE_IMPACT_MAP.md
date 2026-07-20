@@ -2,8 +2,8 @@
 type: workflow
 status: current
 implementation_status: active
-verified_commit: 8a2d350
-updated: 2026-07-16
+verified_commit: e1359bb
+updated: 2026-07-20
 tags: [gymtracker/workflow, gymtracker/impact]
 ---
 
@@ -30,8 +30,14 @@ Graf: [[ARCH_NAVIGATION]], [[ADR_002_FIVE_TARGET_NAVIGATION]].
 ## Theme veya ortak Compose bileşeni
 
 Oku: `Theme.kt`, `DesignTokens.kt`, `GymTrackerComponents.kt`, platform `values(-night)/themes.xml`, tüm call site’lar, design note.
-Test: `HomeLayoutConfigTest`, ilgili ScreenTest ve golden; light/dark, font 200%, TalkBack, screenshot, compact/expanded.
+Test: `HomeLayoutConfigTest`, `GtFeedbackComponentsTest`, ilgili ScreenTest ve golden; light/dark, font 200%, 48 dp touch, TalkBack, screenshot, compact/expanded.
 Graf: [[DESIGN_SYSTEM_GRAPH]], [[SCREEN_BLUEPRINT_GRAPH]].
+
+## Ortak top app bar, geri eylemi veya Snackbar
+
+Oku: `GymTrackerComponents.kt`, `MainActivity.kt`, bütün child/detail Screen call site’ları, `NavGraph.kt`, navigation policy ve TR/EN action kaynakları.
+Test: `GtFeedbackComponentsTest`, `NavigationSmokeTest`, `CriticalStateGoldenTest` ve ilgili ScreenTest; tek geri semantics’i, 48 dp touch, `%200` fontta kırpılmayan başlık/support, top bar/system back eşdeğerliği, loading/not-found/content, Snackbar mesaj/undo, light/dark ve golden.
+Graf: [[ARCH_NAVIGATION]], [[DESIGN_SYSTEM_GRAPH]], [[SCREEN_BLUEPRINT_GRAPH]], [[TEST_MATRIX]].
 
 ## Feature list-detail veya genişlik eşiği
 

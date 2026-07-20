@@ -33,9 +33,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
@@ -69,6 +69,8 @@ import com.gymtracker.data.measurements.validateMeasurement
 import com.gymtracker.domain.parseLocalizedDecimal
 import com.gymtracker.ui.components.GtEmptyState
 import com.gymtracker.ui.components.GtSectionHeader
+import com.gymtracker.ui.components.GtSnackbarHost
+import com.gymtracker.ui.components.GtTopAppBar
 import com.gymtracker.ui.theme.GtSize
 import com.gymtracker.ui.theme.GtSpacing
 import java.time.Instant
@@ -78,7 +80,10 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 @Composable
-fun MeasurementsScreen(viewModel: MeasurementsViewModel = hiltViewModel()) {
+fun MeasurementsScreen(
+    onBack: () -> Unit,
+    viewModel: MeasurementsViewModel = hiltViewModel()
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val validationError by viewModel.validationError.collectAsStateWithLifecycle()
     val deletedMeasurement by viewModel.deletedMeasurement.collectAsStateWithLifecycle()
@@ -86,15 +91,33 @@ fun MeasurementsScreen(viewModel: MeasurementsViewModel = hiltViewModel()) {
     var showAddDialog by remember { mutableStateOf(false) }
     var editingMeasurement by remember { mutableStateOf<BodyMeasurement?>(null) }
 
-    androidx.compose.foundation.layout.Box(Modifier.fillMaxSize()) {
+    Scaffold(
+        topBar = {
+            GtTopAppBar(
+                title = stringResource(R.string.measurements_title),
+                supportingText = stringResource(R.string.measurements_subtitle),
+                onBack = onBack
+            )
+        },
+        snackbarHost = { GtSnackbarHost(snackbarHostState) },
+        floatingActionButton = {
+            FloatingActionButton(onClick = { showAddDialog = true }) {
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = stringResource(R.string.measurements_add)
+                )
+            }
+        }
+    ) { padding ->
         MeasurementsContent(
             uiState = uiState,
             onAddMeasurement = { showAddDialog = true },
             onDeleteMeasurement = viewModel::deleteMeasurement,
             onEditMeasurement = { editingMeasurement = it },
-            onSelectChartPeriod = viewModel::selectChartPeriod
+            onSelectChartPeriod = viewModel::selectChartPeriod,
+            showHeader = false,
+            modifier = Modifier.padding(padding)
         )
-        SnackbarHost(snackbarHostState, Modifier.align(Alignment.BottomCenter))
     }
 
     val deletedMessage = stringResource(R.string.measurements_deleted)
@@ -147,6 +170,7 @@ fun MeasurementsContent(
     onDeleteMeasurement: (BodyMeasurement) -> Unit,
     onEditMeasurement: (BodyMeasurement) -> Unit = {},
     onSelectChartPeriod: (MeasurementChartPeriod) -> Unit = {},
+    showHeader: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -157,22 +181,27 @@ fun MeasurementsContent(
             .testTag("measurements-content"),
         verticalArrangement = Arrangement.spacedBy(GtSpacing.md)
     ) {
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(GtSpacing.md),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                GtSectionHeader(
-                    title = stringResource(R.string.measurements_title),
-                    supportingText = stringResource(R.string.measurements_subtitle),
-                    modifier = Modifier.weight(1f)
-                )
-                FloatingActionButton(
-                    onClick = onAddMeasurement,
-                    modifier = Modifier.size(GtSize.minimumTouchTarget)
+        if (showHeader) {
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(GtSpacing.md),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = stringResource(R.string.measurements_add))
+                    GtSectionHeader(
+                        title = stringResource(R.string.measurements_title),
+                        supportingText = stringResource(R.string.measurements_subtitle),
+                        modifier = Modifier.weight(1f)
+                    )
+                    FloatingActionButton(
+                        onClick = onAddMeasurement,
+                        modifier = Modifier.size(GtSize.minimumTouchTarget)
+                    ) {
+                        Icon(
+                            Icons.Default.Add,
+                            contentDescription = stringResource(R.string.measurements_add)
+                        )
+                    }
                 }
             }
         }

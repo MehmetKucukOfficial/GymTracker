@@ -26,7 +26,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ExpandLess
@@ -47,7 +46,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -86,6 +84,8 @@ import com.gymtracker.ui.components.GtErrorState
 import com.gymtracker.ui.components.GtLoadingState
 import com.gymtracker.ui.components.GtListDetailScaffold
 import com.gymtracker.ui.components.GtSectionHeader
+import com.gymtracker.ui.components.GtSnackbarHost
+import com.gymtracker.ui.components.GtTopAppBar
 import com.gymtracker.ui.theme.GtSize
 import com.gymtracker.ui.theme.GtSpacing
 import java.text.NumberFormat
@@ -461,7 +461,18 @@ fun ProgramDetailScreen(
         }
     }
 
-    Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }) { padding ->
+    Scaffold(
+        topBar = {
+            GtTopAppBar(
+                title = state.program?.name ?: stringResource(R.string.programs_title),
+                supportingText = state.program?.let {
+                    stringResource(R.string.program_creator, it.creatorName)
+                },
+                onBack = onBack
+            )
+        },
+        snackbarHost = { GtSnackbarHost(snackbarHostState) }
+    ) { padding ->
         when {
             state.isLoading -> GtLoadingState(
                 title = stringResource(R.string.program_detail_loading),
@@ -490,6 +501,7 @@ fun ProgramDetailScreen(
                         onOpenSession(sessionId)
                     }
                 },
+                showHeader = false,
                 modifier = Modifier.padding(padding)
             )
         }
@@ -515,6 +527,7 @@ fun ProgramDetailContent(
     onBack: () -> Unit,
     onPurchase: () -> Unit,
     onStartWorkout: (Long) -> Unit,
+    showHeader: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     val locked = program.isPaid && !program.isPurchased
@@ -525,18 +538,12 @@ fun ProgramDetailContent(
             .padding(horizontal = GtSpacing.md),
         verticalArrangement = Arrangement.spacedBy(GtSpacing.sm)
     ) {
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(top = GtSpacing.sm),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = onBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.action_back))
-                }
-                GtSectionHeader(
+        if (showHeader) {
+            item {
+                GtTopAppBar(
                     title = program.name,
                     supportingText = stringResource(R.string.program_creator, program.creatorName),
-                    modifier = Modifier.weight(1f)
+                    onBack = onBack
                 )
             }
         }

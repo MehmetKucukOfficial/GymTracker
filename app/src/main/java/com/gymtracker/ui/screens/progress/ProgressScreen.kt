@@ -51,7 +51,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -86,13 +85,18 @@ import com.gymtracker.data.photos.MAX_PROGRESS_PHOTO_NOTES_LENGTH
 import com.gymtracker.domain.parseLocalizedDecimal
 import com.gymtracker.ui.components.GtEmptyState
 import com.gymtracker.ui.components.GtSectionHeader
+import com.gymtracker.ui.components.GtSnackbarHost
+import com.gymtracker.ui.components.GtTopAppBar
 import com.gymtracker.ui.theme.GtSize
 import com.gymtracker.ui.theme.GtSpacing
 import java.text.DateFormat
 import java.util.Date
 
 @Composable
-fun ProgressScreen(viewModel: ProgressViewModel = hiltViewModel()) {
+fun ProgressScreen(
+    onBack: () -> Unit,
+    viewModel: ProgressViewModel = hiltViewModel()
+) {
     val photos by viewModel.photos.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -116,7 +120,14 @@ fun ProgressScreen(viewModel: ProgressViewModel = hiltViewModel()) {
     }
 
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        topBar = {
+            GtTopAppBar(
+                title = stringResource(R.string.progress_photos_title),
+                supportingText = stringResource(R.string.progress_photos_subtitle),
+                onBack = onBack
+            )
+        },
+        snackbarHost = { GtSnackbarHost(snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(onClick = { addPhotoLauncher.launch("image/*") }) {
                 Icon(Icons.Default.Add, contentDescription = stringResource(R.string.progress_photos_add))
@@ -135,6 +146,7 @@ fun ProgressScreen(viewModel: ProgressViewModel = hiltViewModel()) {
             onReoptimizePhoto = { photo ->
                 viewModel.upgradePhoto(photo, Uri.parse(photo.photoUri))
             },
+            showHeader = false,
             modifier = Modifier.padding(padding)
         )
     }
@@ -158,6 +170,7 @@ fun ProgressPhotoContent(
     onDeletePhoto: (ProgressPhoto) -> Unit,
     onReselectPhoto: (ProgressPhoto) -> Unit = {},
     onReoptimizePhoto: (ProgressPhoto) -> Unit = {},
+    showHeader: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     var selectedAngleName by rememberSaveable { mutableStateOf<String?>(null) }
@@ -178,11 +191,13 @@ fun ProgressPhotoContent(
                 .testTag("progress-photo-content"),
             verticalArrangement = Arrangement.spacedBy(GtSpacing.md)
         ) {
-        GtSectionHeader(
-            title = stringResource(R.string.progress_photos_title),
-            supportingText = stringResource(R.string.progress_photos_subtitle),
-            modifier = Modifier.padding(top = GtSpacing.lg)
-        )
+        if (showHeader) {
+            GtSectionHeader(
+                title = stringResource(R.string.progress_photos_title),
+                supportingText = stringResource(R.string.progress_photos_subtitle),
+                modifier = Modifier.padding(top = GtSpacing.lg)
+            )
+        }
         Text(
             text = stringResource(R.string.progress_photos_device_only),
             style = MaterialTheme.typography.bodyMedium,

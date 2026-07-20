@@ -2,8 +2,8 @@
 type: design
 status: current
 implementation_status: mixed
-verified_commit: a573ab9
-updated: 2026-07-16
+verified_commit: e1359bb
+updated: 2026-07-20
 tags: [gymtracker/design, gymtracker/feature]
 ---
 
@@ -15,19 +15,19 @@ Uygulandı: başlat CTA → açıklayıcı empty → haftalık/toplam/nutrition/
 
 ## Antrenman
 
-Uygulandı: compact aktif/geçmiş liste → ID tabanlı tam ekran detail; 840 dp+ seçili seans özeti; planned/kg/reps completion; add/delete; auto-save; read-only completed summary. Timer, previous values, edit/undo, rest timer ve gelişmiş finish summary sonraki üründür. Kaynak: [[FEATURE_WORKOUT]].
+Uygulandı: compact aktif/geçmiş liste → ID tabanlı tam ekran detail; 840 dp+ seçili seans özeti; planned/kg/reps completion; add/delete; auto-save; read-only completed summary; bütün loading/content/not-found durumlarında ortak görünür geri top bar. Timer, previous values, edit/undo, rest timer ve gelişmiş finish summary sonraki üründür. Kaynak: [[FEATURE_WORKOUT]].
 
 ## Programlar
 
-Uygulandı: adaptive program kart grid’i; 840 dp+ seçili program özeti; free/demo erişim badge’i; ID detail; ilişkisel gün accordion’ı; gün bazlı “Bu antrenmana başla”; locked/empty/error state; light/dark/%200 font. Program günü gerçek ACTIVE workout’a planlanan setler olarak aktarılır. Filtreleme ve program ilerleme takvimi sonraki üründür. Kaynak: [[FEATURE_PROGRAMS]].
+Uygulandı: adaptive program kart grid’i; 840 dp+ seçili program özeti; free/demo erişim badge’i; ID detail; ortak görünür geri top bar/Snackbar; ilişkisel gün accordion’ı; gün bazlı “Bu antrenmana başla”; locked/empty/error state; light/dark/%200 font. Program günü gerçek ACTIVE workout’a planlanan setler olarak aktarılır. Filtreleme ve program ilerleme takvimi sonraki üründür. Kaynak: [[FEATURE_PROGRAMS]].
 
 ## Beslenme
 
-Uygulandı: locale-aware date pager; calorie budget; adaptive macro progress; dört meal card; snapshot-safe miktar/meal edit ve delete Snackbar undo. Recent/favorite food ve quick add sonraki ürün. Kaynak: [[FEATURE_NUTRITION]].
+Uygulandı: locale-aware date pager; calorie budget; adaptive macro progress; dört meal card; snapshot-safe miktar/meal edit ve ortak Snackbar üzerinden delete undo; Turkish dark/%200 over-goal golden. Recent/favorite food ve quick add sonraki ürün. Kaynak: [[FEATURE_NUTRITION]].
 
 ## İlerleme merkezi
 
-Uygulandı: token tabanlı Overview kartları; Measurements latest/edit/delete-undo + 7/30/90/tümü gerçek kilo grafiği + özel tarih; adaptive photo grid + scrollable angle filter + viewer; completed-set kaynaklı kas haritası + renk bağımsız erişilebilir liste/metodoloji. Expanded list-detail, çoklu ölçüm metriği ve kalıcı karşılaştırma seçimi sonraki aşamadır. Kaynaklar: [[FEATURE_MEASUREMENTS]], [[FEATURE_PROGRESS_PHOTOS]], [[FEATURE_MUSCLE_LOAD]].
+Uygulandı: token tabanlı Overview kartları; Measurements latest/edit/delete-undo + 7/30/90/tümü gerçek kilo grafiği + özel tarih; adaptive photo grid + scrollable angle filter + viewer; completed-set kaynaklı kas haritası + renk bağımsız erişilebilir liste/metodoloji. Üç child rota ortak büyük-font uyumlu top bar, tek geri semantics’i ve sistem back sözleşmesini kullanır; Measurements English/light chart + top bar golden’ı kalıcıdır. Expanded list-detail, çoklu ölçüm metriği ve kalıcı karşılaştırma seçimi sonraki aşamadır. Kaynaklar: [[FEATURE_MEASUREMENTS]], [[FEATURE_PROGRESS_PHOTOS]], [[FEATURE_MUSCLE_LOAD]].
 
 ## Responsive kural
 
