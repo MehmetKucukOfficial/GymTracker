@@ -16,6 +16,7 @@ source_files:
   - app/src/main/java/com/gymtracker/ui/screens/progress/ProgressScreen.kt
   - app/src/main/java/com/gymtracker/ui/screens/fatigue/FatigueScreen.kt
   - app/src/main/java/com/gymtracker/ui/screens/programs/ProgramsScreen.kt
+  - app/src/main/java/com/gymtracker/ui/screens/settings/SettingsScreen.kt
   - app/src/main/res/values/themes.xml
   - app/src/main/res/values-night/themes.xml
 tags: [gymtracker/design, gymtracker/architecture]
@@ -38,6 +39,7 @@ tags: [gymtracker/design, gymtracker/architecture]
 - Compact shell alt bar, 600 dp+ shell navigation rail kullanır; ikonlar yinelenen TalkBack açıklaması üretmez ve Progress Hub kartları birleşik button semantics sunar.
 - Workout ve Programs 840 dp+ list–detail yüzeylerinde seçili kartı renk, 2 dp primary border ve `selected` semantics ile birlikte ifade eder; özet panelleri kaydırılabilir ve 48 dp ana eylem kullanır.
 - Measurements, Progress Photos ve Muscle Load child rotaları ile Workout/Program detail rotaları ortak görünür geri eylemini kullanır; sistem geri hareketi aynı back stack sonucunu korur. Nutrition, Measurements, Photos ve Program detail geçici mesajları ortak Snackbar host sözleşmesine bağlıdır.
+- Settings ortak top bar, section header, kart/token ve tek-seçim semantics sözleşmesini kullanır; `%200` fontta bütün görünüm/veri/sürüm içeriği kaydırılarak erişilebilir ve tema seçimi anında gerçek uygulama temasını değiştirir.
 
 ## Token ve tüketim grafı
 

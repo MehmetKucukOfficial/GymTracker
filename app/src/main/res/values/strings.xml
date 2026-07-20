@@ -380,6 +380,23 @@
     <string name="workout_complete_planned_set">Seti kaydet</string>
     <string name="workout_complete_planned_title">Planlanan seti tamamla</string>
     <string name="workout_finish_planned_sets_first">Antrenmanı bitirmeden önce planlanan setleri tamamla veya kullanmayacaklarını sil.</string>
+    <string name="settings_open">Ayarları aç</string>
+    <string name="settings_title">Ayarlar</string>
+    <string name="settings_supporting">Görünüm ve veri tercihleri</string>
+    <string name="settings_appearance_title">Görünüm</string>
+    <string name="settings_appearance_supporting">Tema tercihin anında uygulanır ve sonraki açılışlarda korunur.</string>
+    <string name="settings_theme_system">Sistem ayarını kullan</string>
+    <string name="settings_theme_system_support">Telefonun açık veya koyu tema tercihini izler.</string>
+    <string name="settings_theme_light">Açık tema</string>
+    <string name="settings_theme_light_support">Uygulamayı her zaman açık temada gösterir.</string>
+    <string name="settings_theme_dark">Koyu tema</string>
+    <string name="settings_theme_dark_support">Uygulamayı her zaman koyu temada gösterir.</string>
+    <string name="settings_data_title">Veri ve gizlilik</string>
+    <string name="settings_data_supporting">Hesap veya otomatik bulut eşitlemesi kullanılmaz; verilerin cihazında kalır.</string>
+    <string name="settings_local_first_title">Verilerin bu cihazda</string>
+    <string name="settings_local_first_body">Antrenman, beslenme, ölçüm ve ilerleme verileri yerel saklanır. Progress fotoğrafları bulut yedeği ve cihaz aktarımı dışında tutulur.</string>
+    <string name="settings_about_title">Uygulama hakkında</string>
+    <string name="settings_version">Sürüm %1$s · Yerel önizleme</string>
 
     <plurals name="program_weeks">
         <item quantity="one">%1$d hafta</item>

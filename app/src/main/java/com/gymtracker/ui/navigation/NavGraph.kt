@@ -30,6 +30,7 @@ sealed class Screen(val route: String) {
     }
     object Nutrition : Screen("nutrition")
     object Progress : Screen("progress")
+    object Settings : Screen("settings")
     object Measurements : Screen("progress/measurements")
     object ProgressPhotos : Screen("progress/photos")
     object Fatigue : Screen("progress/load")
@@ -68,7 +69,8 @@ object NavigationPolicy {
 
     fun shouldShowBottomBar(route: String?): Boolean {
         val normalized = route?.substringBefore('?') ?: return true
-        return normalized != Screen.WorkoutDetail.route &&
+        return normalized != Screen.Settings.route &&
+            normalized != Screen.WorkoutDetail.route &&
             normalized != Screen.ProgramDetail.route &&
             !normalized.startsWith("${Screen.Workout.route}/") &&
             !normalized.startsWith("${Screen.Programs.route}/")

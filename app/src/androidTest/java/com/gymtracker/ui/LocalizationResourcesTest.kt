@@ -32,6 +32,7 @@ class LocalizationResourcesTest {
         assertEquals("7-day muscle load", english.getString(R.string.muscle_load_title))
         assertEquals("Mid chest", english.getString(R.string.muscle_chest_mid))
         assertEquals("Programs", english.getString(R.string.programs_title))
+        assertEquals("Settings", english.getString(R.string.settings_title))
         assertEquals("Undo", english.getString(R.string.action_undo))
     }
 }

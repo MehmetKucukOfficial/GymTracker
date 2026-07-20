@@ -34,6 +34,7 @@ class NavigationContractTest {
 
     @Test
     fun detailRoutes_hideBottomBarWhileProgressChildrenKeepIt() {
+        assertFalse(NavigationPolicy.shouldShowBottomBar(Screen.Settings.route))
         assertFalse(NavigationPolicy.shouldShowBottomBar(Screen.WorkoutDetail.route))
         assertFalse(NavigationPolicy.shouldShowBottomBar("workouts/42"))
         assertFalse(NavigationPolicy.shouldShowBottomBar(Screen.ProgramDetail.route))
