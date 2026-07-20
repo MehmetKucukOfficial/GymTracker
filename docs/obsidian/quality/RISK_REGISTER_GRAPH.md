@@ -2,7 +2,7 @@
 type: risk-register
 status: current
 implementation_status: current
-verified_commit: a3bdbe6
+verified_commit: 8a2d350
 updated: 2026-07-16
 tags: [gymtracker/risk, gymtracker/quality]
 ---
@@ -23,7 +23,7 @@ tags: [gymtracker/risk, gymtracker/quality]
 | R10 | P1 | mitigated-core+ | UI kas yükü/seviye/skor olarak adlandırıldı; formül açık ve sıfır kilolu setler son ölçümle kalibre edilir. Stable-ID load projeksiyonu, hareket katsayısı ve kişisel hacim baseline’ı açık | [[FEATURE_MUSCLE_LOAD]] | [[ADR_005_MUSCLE_LOAD_NAMING]] |
 | R11 | P1 | mitigated-core | Workout, Nutrition, Measurements ve Programs input/mutation doğrulandı; Nutrition/Measurements edit-delete-undo kimliği ve snapshot’ı testli | bütün feature’lar | shared validator + [[ADR_008_SNAPSHOT_SAFE_EDIT_UNDO]] |
 | R12 | P2 | resolved-core (v7) | Program aktif okuma modeli ilişkisel; JSON yalnız kayıpsız legacy fallback ve bozuk payload UI’da güvenli boş state | [[ARCH_DATABASE]] | [[ADR_007_RELATIONAL_PROGRAM_PLANS]] |
-| R13 | P2 | resolved++ | 5 hedefli compact bottom bar, 600 dp+ rail, 840 dp+ Workout/Programs liste–detay ve doğrulanmış dış deep-link URI’leri aynı route sahipliği/pozitif-ID/save-restore sözleşmesini kullanıyor | [[ARCH_NAVIGATION]] | [[ADR_002_FIVE_TARGET_NAVIGATION]] |
+| R13 | P2 | resolved+++ | 5 hedefli compact bottom bar, 600 dp+ rail, 840 dp+ Workout/Programs liste–detay ve doğrulanmış dış deep-link URI’leri aynı route sahipliği/pozitif-ID/save-restore sözleşmesini kullanıyor; ayrı süreçte PID değişimiyle gerçek task restorasyonu CI kapsamındadır | [[ARCH_NAVIGATION]] | [[ADR_002_FIVE_TARGET_NAVIGATION]] |
 | R14 | P2 | mitigated+ | Permission azaltıldı; hassas progress fotoğrafları cloud backup/device transfer dışında | [[ARCH_BUILD_DI]] | permission + extraction rules |
 | R15 | P2 | mitigated++ | Uygulama geneli 356/356 TR/EN kaynak, adaptive shell, 840 dp+ Workout/Programs list-detail, selected semantics ve dört kalıcı golden aktif; kalan kritik ekran/state golden yayılımı açık | [[DESIGN_SYSTEM_GRAPH]] | design DoD |
 | R16 | P1 | mitigated-config | Protected environment, fail-fast secrets, geçici keystore, APK/AAB imza doğrulaması ve artifact kapısı tanımlı; gerçek production secret + Play internal-track smoke’u açık | [[ADR_009_SECRET_BACKED_RELEASES]] | production environment + release smoke |

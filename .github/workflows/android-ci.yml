@@ -80,7 +80,7 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: Run instrumentation and golden tests
+      - name: Run instrumentation, golden, and process-death tests
         uses: ReactiveCircus/android-emulator-runner@v2
         with:
           api-level: 34
@@ -88,7 +88,9 @@ jobs:
           profile: pixel_6_pro
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-metrics -camera-back none
-          script: ./gradlew connectedDebugAndroidTest --no-daemon --max-workers=2 --stacktrace
+          script: |
+            ./gradlew connectedDebugAndroidTest --no-daemon --max-workers=2 --stacktrace
+            ./gradlew :baselineprofile:connectedBenchmarkReleaseAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.gymtracker.baselineprofile.ProcessDeathNavigationTest --no-daemon --max-workers=2 --stacktrace
 
       - name: Upload device-test reports
         if: always()
@@ -98,5 +100,7 @@ jobs:
           path: |
             app/build/reports/androidTests/connected/debug/**
             app/build/outputs/androidTest-results/connected/debug/**
+            baselineprofile/build/reports/androidTests/connected/benchmarkRelease/**
+            baselineprofile/build/outputs/androidTest-results/connected/benchmarkRelease/**
           if-no-files-found: ignore
           retention-days: 14

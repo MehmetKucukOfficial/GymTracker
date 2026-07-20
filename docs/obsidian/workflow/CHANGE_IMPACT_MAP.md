@@ -2,7 +2,7 @@
 type: workflow
 status: current
 implementation_status: active
-verified_commit: a3bdbe6
+verified_commit: 8a2d350
 updated: 2026-07-16
 tags: [gymtracker/workflow, gymtracker/impact]
 ---
@@ -24,7 +24,7 @@ Graf: [[MOC_DATA]], ilgili feature.
 ## Navigation route değişikliği
 
 Oku: `MainActivity.kt`, `NavGraph.kt`, `DeepLinkContract.kt`, manifest, `BottomNavigationBar.kt`, `ProgressHubScreen.kt`, route ID alan ilgili ViewModel/repository ve çağıran hızlı erişim/kartlar.
-Test: `NavigationContractTest`, `AdaptiveNavigationTest`, `NavigationSmokeTest`; 599/600 dp, bottom bar/rail, back, detail ana navigasyonu, positive ID, selected tab, Activity/process recreation ve deep link.
+Test: `NavigationContractTest`, `AdaptiveNavigationTest`, `NavigationSmokeTest`, `DeepLinkNavigationTest`, `ProcessDeathNavigationTest`; 599/600 dp, bottom bar/rail, back, detail ana navigasyonu, positive ID, selected tab, Activity recreation, deep link ve ayrı süreçte PID/task restorasyonu.
 Graf: [[ARCH_NAVIGATION]], [[ADR_002_FIVE_TARGET_NAVIGATION]].
 
 ## Theme veya ortak Compose bileşeni
@@ -96,7 +96,7 @@ Graf: [[ADR_009_SECRET_BACKED_RELEASES]], [[ARCH_BUILD_DI]], [[RISK_REGISTER_GRA
 ## Baseline Profile veya macrobenchmark
 
 Oku: `baselineprofile/`, app baseline plugin/dependency, generated profile kaynakları ve kritik UI semantics/navigation metinleri.
-Test: `generateBaselineProfile`; startup None/Partial, Home scroll, Workout navigation; release APK/AAB embedded profile. Emülatör sonucu yalnız ön baseline, kabul fiziksel release cihazında.
+Test: `generateBaselineProfile`; startup None/Partial, Home scroll, Workout navigation; release APK/AAB embedded profile. `ProcessDeathNavigationTest` değişirse benchmarkRelease üzerinde PID değişimi + aynı task restorasyonunu çalıştır. Emülatör performans sonucu yalnız ön baseline, performans kabulü fiziksel release cihazında.
 Graf: [[PERFORMANCE_BASELINE]], [[TEST_MATRIX]], ilgili feature.
 
 ## String/locale/birim

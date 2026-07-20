@@ -2,7 +2,7 @@
 type: roadmap
 status: current
 implementation_status: active
-verified_commit: a3bdbe6
+verified_commit: 8a2d350
 updated: 2026-07-16
 tags: [gymtracker/roadmap, gymtracker/workflow]
 ---
@@ -32,6 +32,7 @@ flowchart TD
     RP --> LG[PR 17 List-detail + Golden]
     LG --> LR[PR 18 Legacy photo recovery]
     LR --> DL[PR 19 External deep links]
+    DL --> PD[PR 20 Real process-death acceptance]
 ```
 
 ## Birleştirme durumu
@@ -163,14 +164,21 @@ Kabul: 30 JVM + 62 API 34 instrumentation testi; hedefli photo paketi 13/13; `ci
 ## PR 19 — Validated external deep links
 
 Node: [[ARCH_NAVIGATION]], [[ADR_002_FIVE_TARGET_NAVIGATION]], [[TEST_MATRIX]].
-Durum: `a3bdbe6` kod commit’i `codex/external-deep-links` dalında; tam yerel kabul tamamlandı, yayın/hosted kabul sırada.
+Durum: `a3bdbe6` kod + `f73987a` graph commit’leri GitHub PR #13 olarak hosted quality/API 34 kabulünden geçti ve merge commit `1d642ad` ile `master`a alındı; kaynak dal korundu.
 Çıktı: `gymtracker://app` scheme/host manifest sözleşmesi; on NavHost destination pattern’i; merkezi URI üretme/parçalama; pozitif workout/program detail ID tipi; bilinmeyen/geçersiz URI safe-home fallback’i; cold-start ve recreation Compose testi.
 Kabul: 34 JVM + 66 API 34 instrumentation testi; hedefli deep-link paketi 4/4; `ciQuality`, lint, debug ve minified release/profile kapısı başarılı.
 
+## PR 20 — Real OS process-death acceptance
+
+Node: [[ARCH_NAVIGATION]], [[ADR_002_FIVE_TARGET_NAVIGATION]], [[TEST_MATRIX]], [[PERFORMANCE_BASELINE]].
+Durum: `8a2d350` kod commit’i `codex/process-death-acceptance` dalında; yerel tam kabul tamamlandı, yayın/hosted kabul sırada.
+Çıktı: hedef uygulamadan ayrı process’te çalışan API 34 kabul paketi; Progress Photos alt rotası ve pozitif-ID Program detayı için dış URI cold start; Home’a alma; `am kill`; eski PID’nin kaybolması; aynı Android task kimliğiyle yeni PID ve doğru destination restorasyonu. GitHub device job’u iki test modülünün raporlarını artifact olarak saklar.
+Kabul: 34 JVM + 66 app instrumentation + 2 ayrı gerçek process-death testi; `ciQuality`, lint, debug ve minified release/profile kapısı başarılı.
+
 ## Sonraki dikey dilim
 
-1. Production secret + Play internal-track smoke ve fiziksel cihaz performans kabulü
-2. Gerçek OS process-death kabul paketi
-3. Kalan kritik ekran/state golden kapsamı ve ortak top-app-bar/feedback bileşenleri
+1. Kalan kritik ekran/state golden kapsamı ve ortak top-app-bar/feedback bileşenleri
+2. Nutrition/Measurements seçili değerleri için gerçek process-death state kapsamını genişletme
+3. Production secret + Play internal-track smoke ve fiziksel cihaz performans kabulü
 
 Detaylı süre: [[GELISTIRME_MASTER_PLANI#18. Fazlar ve süre tahmini]]. Aktif durum: [[SESSION_HANDOFF]].

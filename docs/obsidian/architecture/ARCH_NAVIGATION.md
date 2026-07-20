@@ -2,7 +2,7 @@
 type: architecture
 status: current
 implementation_status: current
-verified_commit: a3bdbe6
+verified_commit: 8a2d350
 updated: 2026-07-16
 source_files:
   - app/src/main/java/com/gymtracker/MainActivity.kt
@@ -13,6 +13,8 @@ source_files:
   - app/src/main/java/com/gymtracker/ui/components/GymTrackerComponents.kt
   - app/src/main/java/com/gymtracker/ui/screens/workout/WorkoutScreen.kt
   - app/src/main/java/com/gymtracker/ui/screens/programs/ProgramsScreen.kt
+  - baselineprofile/src/main/java/com/gymtracker/baselineprofile/ProcessDeathNavigationTest.kt
+  - .github/workflows/android-ci.yml
 tags: [gymtracker/architecture, gymtracker/navigation]
 ---
 
@@ -27,6 +29,8 @@ Compact genişlikte alt bar; 600 dp ve üzerinde navigation rail kullanılır. H
 Workout ve Programs ana rotaları 840 dp+ genişlikte ortak liste–detay iskeletini kullanır. Kart seçimi aynı ana rotada `rememberSaveable` kimliği günceller; önizlemenin açık eylemi mevcut pozitif-ID detay rotasına gider. Böylece compact back davranışı, full-screen detay shell’i, route sahipliği ve repository veri çözümü tek sözleşme olarak kalır.
 
 PR19 dış giriş sözleşmesi `gymtracker://app/<route>` tabanını kullanır. Manifest yalnız `gymtracker` scheme + `app` host eşleşmesini `VIEW/DEFAULT/BROWSABLE` olarak dışa açar; her NavHost destination merkezi `DeepLinkContract` pattern’ine bağlanır. Workout/program detail argümanları `PositiveLongNavType` ile sıfır, negatif ve sayısal olmayan ID’leri route eşleşmesinden çıkarır. Geçersiz veya bilinmeyen URI güvenli `home` başlangıcında kalır.
+
+PR20 gerçek süreç-ölümü kabulü hedef uygulamadan ayrı `:baselineprofile` instrumentation sürecinde çalışır. Test dış URI ile alt rota veya pozitif-ID detay görevini kurar, görevi Home ile arka plana alır, `am kill` sonrasında hedef PID’nin kaybolduğunu kanıtlar ve aynı Android task kimliğini yeniden öne getirir. Yeni PID ile aynı destination metninin görünmesi, Activity recreation taklidinden bağımsız olarak NavHost/SavedState task restorasyonunu doğrular.
 
 ## Hedef
 
@@ -68,7 +72,7 @@ Telefon ana hedefleri:
 ## Değişiklik kontrol listesi
 
 - [[ADR_002_FIVE_TARGET_NAVIGATION]] kararı
-- System back/Activity recreation/selected-tab, compact→rail, 839/840 dp liste–detay ve harici cold-start deep-link testleri geçiyor; gerçek OS process-death bekliyor
+- System back/Activity recreation/selected-tab, compact→rail, 839/840 dp liste–detay, harici cold-start deep link ve gerçek OS process-death testleri geçiyor
 - `SavedStateHandle`
 - Bottom bar selected state
 - Ana destination’larda state restore

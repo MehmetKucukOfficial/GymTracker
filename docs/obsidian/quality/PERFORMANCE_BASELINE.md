@@ -2,7 +2,7 @@
 type: quality
 status: current
 implementation_status: measured-emulator
-verified_commit: a2586d1
+verified_commit: 8a2d350
 updated: 2026-07-16
 source_files:
   - baselineprofile/build.gradle.kts
@@ -10,6 +10,7 @@ source_files:
   - baselineprofile/src/main/java/com/gymtracker/baselineprofile/CriticalUserJourneys.kt
   - baselineprofile/src/main/java/com/gymtracker/baselineprofile/StartupBenchmark.kt
   - baselineprofile/src/main/java/com/gymtracker/baselineprofile/JourneyBenchmark.kt
+  - baselineprofile/src/main/java/com/gymtracker/baselineprofile/ProcessDeathNavigationTest.kt
   - app/src/release/generated/baselineProfiles/baseline-prof.txt
   - app/src/release/generated/baselineProfiles/startup-prof.txt
 tags: [gymtracker/quality, gymtracker/performance, gymtracker/release]
@@ -23,6 +24,7 @@ tags: [gymtracker/quality, gymtracker/performance, gymtracker/release]
 - Genel Baseline Profile: Home açılışı + iki yönlü scroll + Workout top-level navigation.
 - Macrobenchmark: cold startup `CompilationMode.None` ve `Partial`; Home scroll ve Workout açılışı `FrameTimingMetric`.
 - Beş tekrar ve Perfetto trace üretilir. CUJ helper’ları profil üretici ve benchmark tarafından ortak kullanılır.
+- Aynı ayrı-process test modülü, performans metriğinden bağımsız `ProcessDeathNavigationTest` ile hedef uygulamanın PID değişimi + Android task restorasyonunu kabul kapısına bağlar; bu iki test macrobenchmark ölçümü değildir.
 
 ## İlk API 34 emülatör baseline’ı
 

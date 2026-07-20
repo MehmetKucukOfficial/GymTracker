@@ -2,10 +2,10 @@
 type: handoff
 status: ready
 implementation_status: active
-code_baseline: a3bdbe6
+code_baseline: 8a2d350
 updated: 2026-07-16
-active_phase: "Phase 7 - PR19 external deep-link validation"
-next_pr: "Publish PR19 and verify hosted quality/device checks"
+active_phase: "Phase 7 - PR20 real process-death acceptance"
+next_pr: "Publish PR20 and verify hosted app + process-death device checks"
 primary_nodes:
   - ARCH_NAVIGATION
   - ADR_002_FIVE_TARGET_NAVIGATION
@@ -19,10 +19,12 @@ tags: [gymtracker/workflow, gymtracker/session]
 
 ## Şu anki durum
 
-- GitHub PR #1–#12, 2026-07-16 tarihinde merge commit stratejisiyle sırayla `master`a alındı; son code baseline `52da93a` ve first-parent geçmişinde on iki merge commit korunuyor.
+- GitHub PR #1–#13, 2026-07-16 tarihinde merge commit stratejisiyle sırayla `master`a alındı; son code baseline `1d642ad` ve first-parent geçmişinde on üç merge commit korunuyor.
 - PR #11, workflow push filtresini `main` yerine varsayılan `master` dalıyla eşledi. Otomatik `master` koşusu `29499237460` tamamen yeşil; artifact XML 58/58 cihaz testi gösteriyor.
 - PR18/GitHub PR #12 merge commit `52da93a` ile `master`a alındı. Master run `29504722658` tamamen yeşil ve artifact XML 62/62.
 - PR19 code baseline `a3bdbe6`, `codex/external-deep-links` dalında: trusted scheme/host, on destination, positive detail ID, cold start, safe fallback ve recreation yerel kabulden geçti.
+- PR19/GitHub PR #13 hosted run `29506986274` ile yeşil oldu ve merge commit `1d642ad` kullanılarak `master`a alındı; kaynak dal korundu.
+- PR20 code baseline `8a2d350`, `codex/process-death-acceptance` dalında: Progress Photos ve pozitif-ID Program detail için eski PID’nin gerçekten öldüğü ve aynı Android task içinde yeni PID ile doğru rotanın geri geldiği 2/2 API 34 kabul testi geçti.
 - Uygulama baseline: `f9d6d75`; PR8 `codex/workout-lifecycle` dalında draft PR #1 olarak yayınlandı.
 - PR9 baseline: `341bf79`; `codex/nutrition-measurements` dalı PR8’i hedefleyen stacked draft PR #2 olarak yayınlandı.
 - PR10 baseline: `2ad7ad8`; `codex/progress-load` dalı PR9’u hedefleyen stacked draft PR #3 olarak yayınlandı.
@@ -44,25 +46,26 @@ tags: [gymtracker/workflow, gymtracker/session]
 - Programs locked/ownership/target kurallarını repository’de doğrular; program günü atomik ACTIVE workout’a planlanan set olarak kopyalanır, tamamlanmayan set Muscle Load’a girmez ve finish’i kilitler.
 - Light/dark tasarım sistemi token temeli ve ortak Home bileşenleri aktif; Home loading/content/error, retry, midnight period tick ve adaptive kolon kullanıyor.
 - Uygulama geneli Türkçe/English kaynak kataloğu 356/356 eşit; muscle adları ve program para biçimi locale-aware.
-- Test temeli aktif: 34 JVM + 66 API 34 instrumentation testi geçiyor; Progress Hub, Programs ve Workout için dört kalıcı golden baseline var.
+- Test temeli aktif: 34 JVM + 66 app API 34 instrumentation + 2 ayrı gerçek process-death testi geçiyor; Progress Hub, Programs ve Workout için dört kalıcı golden baseline var.
 - Debug build başarılı; lint 0 error; assemble başarılı.
 - `ciQuality` JVM/lint/debug ile R8/resource-shrunk unsigned APK, AAB ve mapping üretir; GitHub Actions quality + API 34 device/golden workflow’u kaynakta.
 
 ## Sıradaki önerilen iş
 
-PR19 graf commit’ini tamamla, dalı yayınla ve hosted quality/API 34 kontrollerini doğrula; ardından sonraki geliştirme dilimine otomatik geç.
+PR20 graf commit’ini tamamla, dalı yayınla ve hosted quality/API 34 app + ayrı process-death kontrollerini doğrula; ardından kalan kritik state/golden geliştirme dilimine otomatik geç.
 
 ## Açık P0/P1
 
 - GitHub branch protection içinde quality + API 34 check’lerini zorunlu yapma
 - Golden baseline’ı kalan kritik ekran/state’lere genişletme
-- Gerçek OS process-death
+- Nutrition/Measurements seçili değerleri için gerçek OS process-death kapsam genişletmesi
 - Gerçek production secret/Play internal-track smoke ve fiziksel cihaz benchmark kabulü
 
 ## Son doğrulama
 
 - `testDebugUnitTest`: success, 34/34.
 - `connectedDebugAndroidTest`: success, 66/66, Pixel 6 Pro API 34 (1m15s, warm local AVD).
+- `ProcessDeathNavigationTest`: success, 2/2, Pixel 6 Pro API 34; iki senaryoda eski PID yok oldu ve aynı task yeni PID ile doğru destination’ı geri yükledi.
 - `lintDebug`: success, 0 error.
 - `assembleDebug`: success.
 - `ciQuality`: success; minified APK 2,661,123 bayt, AAB 4,928,049 bayt ve R8 mapping üretildi.
@@ -79,6 +82,33 @@ Graph notes updated:
 Next concrete action:
 Blockers:
 ```
+
+## 2026-07-16 - PR20 real OS process-death acceptance
+
+Completed:
+- Added a target-process-independent API 34 acceptance package for Progress Photos and positive-ID Program detail task restoration.
+- Proved the target process was actually removed by observing the old PID disappear after background `am kill`, then proved task recreation with a different PID and the original destination.
+- Extended the hosted device job to run the app instrumentation/golden suite first and the separate benchmarkRelease process-death class second, retaining reports from both modules.
+
+Files changed:
+- `baselineprofile/src/main/java/com/gymtracker/baselineprofile/ProcessDeathNavigationTest.kt`.
+- `.github/workflows/android-ci.yml`.
+- Navigation/ADR/performance/test/risk/roadmap/atlas/impact/start/handoff graph nodes.
+
+Tests run/results:
+- `ProcessDeathNavigationTest`: 2/2 on Pixel 6 Pro API 34, 0 failure/error/skipped.
+- Full `connectedDebugAndroidTest`: 66/66, 0 failure/error/skipped.
+- `testDebugUnitTest`: 34/34 through `ciQuality`; lint, debug, minified release APK/AAB, R8 mapping and embedded Baseline Profile all successful.
+
+Risks changed:
+- R13 improves to resolved+++; real task recreation now has target PID evidence rather than Activity recreation only.
+- Nutrition/Measurements value-specific process-death coverage, physical benchmark hardware and production distribution remain separate follow-ups.
+
+Next concrete action:
+- Publish PR20, verify hosted quality + app device + separate process-death jobs, merge with merge commit, then continue automatically to the remaining critical state/golden slice.
+
+Blockers:
+- No code blocker. Local Gradle still requires explicit JDK 17 because the machine default is Java 11.
 
 ## 2026-07-16 - PR19 validated external deep links
 
@@ -97,12 +127,13 @@ Tests run/results:
 - Targeted deep-link device package: 4/4.
 - Full Pixel 6 Pro API 34 `connectedDebugAndroidTest`: 66/66, 0 failure/error/skipped.
 - `ciQuality`: success; lint, debug, minified release APK/AAB, R8 mapping and embedded Baseline Profile verified.
+- Hosted run `29506986274`: quality and API 34 device/golden jobs successful; GitHub PR #13 merged as `1d642ad` with source branch retained.
 
 Risks changed:
-- ADR-002 external deep-link acceptance is complete; R13 improves to resolved++. True OS process-death remains a separate acceptance package.
+- ADR-002 external deep-link acceptance is complete; R13 improved to resolved++; PR20 subsequently adds real OS process-death evidence.
 
 Next concrete action:
-- Publish PR19, verify hosted quality + API 34 device jobs, then continue automatically to the process-death/golden roadmap work.
+- Completed: PR19 hosted acceptance and merge are done; PR20 process-death work follows.
 
 Blockers:
 - No code blocker. Local Gradle still requires explicit JDK 17 because the machine default is Java 11.
