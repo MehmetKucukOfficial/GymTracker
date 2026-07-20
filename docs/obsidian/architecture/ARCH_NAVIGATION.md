@@ -2,8 +2,8 @@
 type: architecture
 status: current
 implementation_status: current
-verified_commit: 8a2d350
-updated: 2026-07-16
+verified_commit: e1359bb
+updated: 2026-07-20
 source_files:
   - app/src/main/java/com/gymtracker/MainActivity.kt
   - app/src/main/java/com/gymtracker/ui/navigation/NavGraph.kt
@@ -13,6 +13,9 @@ source_files:
   - app/src/main/java/com/gymtracker/ui/components/GymTrackerComponents.kt
   - app/src/main/java/com/gymtracker/ui/screens/workout/WorkoutScreen.kt
   - app/src/main/java/com/gymtracker/ui/screens/programs/ProgramsScreen.kt
+  - app/src/main/java/com/gymtracker/ui/screens/measurements/MeasurementsScreen.kt
+  - app/src/main/java/com/gymtracker/ui/screens/progress/ProgressScreen.kt
+  - app/src/main/java/com/gymtracker/ui/screens/fatigue/FatigueScreen.kt
   - baselineprofile/src/main/java/com/gymtracker/baselineprofile/ProcessDeathNavigationTest.kt
   - .github/workflows/android-ci.yml
 tags: [gymtracker/architecture, gymtracker/navigation]
@@ -24,13 +27,15 @@ tags: [gymtracker/architecture, gymtracker/navigation]
 
 Compact genişlikte alt bar; 600 dp ve üzerinde navigation rail kullanılır. Her ikisi de Özet, Antrenman, Programlar, Beslenme, İlerleme olmak üzere aynı 5 hedefi, seçili hedef çözümünü ve save/restore navigasyon sözleşmesini paylaşır. `NavigationPolicy`, nested route’un sahibi olan ana hedefi ve detail ekranlarında ana navigasyon görünürlüğünü tek yerden belirler.
 
-Ölçüm (`progress/measurements`), fotoğraf (`progress/photos`) ve kas yükü (`progress/load`) İlerleme hub’ından açılır ve alt barda İlerleme seçili kalır. `workouts/{sessionId}` ve `programs/{programId}` detail ekranları alt barı gizler; Hilt ViewModel route ID’sini `SavedStateHandle` üzerinden alır ve repository Flow’dan veriyi yeniden çözer.
+Ölçüm (`progress/measurements`), fotoğraf (`progress/photos`) ve kas yükü (`progress/load`) İlerleme hub’ından açılır ve alt barda İlerleme seçili kalır. Bu üç child rota ortak `GtTopAppBar` geri eylemini gösterir; top bar geri eylemi ve sistem back aynı hub back stack sonucunu üretir. `workouts/{sessionId}` ve `programs/{programId}` detail ekranları alt barı gizler, loading/not-found/content durumlarının tamamında aynı görünür geri sözleşmesini korur; Hilt ViewModel route ID’sini `SavedStateHandle` üzerinden alır ve repository Flow’dan veriyi yeniden çözer.
 
 Workout ve Programs ana rotaları 840 dp+ genişlikte ortak liste–detay iskeletini kullanır. Kart seçimi aynı ana rotada `rememberSaveable` kimliği günceller; önizlemenin açık eylemi mevcut pozitif-ID detay rotasına gider. Böylece compact back davranışı, full-screen detay shell’i, route sahipliği ve repository veri çözümü tek sözleşme olarak kalır.
 
 PR19 dış giriş sözleşmesi `gymtracker://app/<route>` tabanını kullanır. Manifest yalnız `gymtracker` scheme + `app` host eşleşmesini `VIEW/DEFAULT/BROWSABLE` olarak dışa açar; her NavHost destination merkezi `DeepLinkContract` pattern’ine bağlanır. Workout/program detail argümanları `PositiveLongNavType` ile sıfır, negatif ve sayısal olmayan ID’leri route eşleşmesinden çıkarır. Geçersiz veya bilinmeyen URI güvenli `home` başlangıcında kalır.
 
 PR20 gerçek süreç-ölümü kabulü hedef uygulamadan ayrı `:baselineprofile` instrumentation sürecinde çalışır. Test dış URI ile alt rota veya pozitif-ID detay görevini kurar, görevi Home ile arka plana alır, `am kill` sonrasında hedef PID’nin kaybolduğunu kanıtlar ve aynı Android task kimliğini yeniden öne getirir. Yeni PID ile aynı destination metninin görünmesi, Activity recreation taklidinden bağımsız olarak NavHost/SavedState task restorasyonunu doğrular.
+
+PR20 merge commit `625489a` sonrası otomatik `master` koşusu `29762392465` quality ve API 34 cihaz işlerinde yeşildir; indirilen artifact XML 66 app testi ile ayrı 2 process-death testinin sıfır failure/error/skipped sonucunu doğrular. PR21 `e1359bb`, child/detail görünür geri sözleşmesini ortak bileşene taşır ve `NavigationSmokeTest` içinde top bar back ile sistem back yollarını ayrı ayrı doğrular.
 
 ## Hedef
 
@@ -72,7 +77,7 @@ Telefon ana hedefleri:
 ## Değişiklik kontrol listesi
 
 - [[ADR_002_FIVE_TARGET_NAVIGATION]] kararı
-- System back/Activity recreation/selected-tab, compact→rail, 839/840 dp liste–detay, harici cold-start deep link ve gerçek OS process-death testleri geçiyor
+- Ortak top bar back/system back, Activity recreation/selected-tab, compact→rail, 839/840 dp liste–detay, harici cold-start deep link ve gerçek OS process-death testleri geçiyor
 - `SavedStateHandle`
 - Bottom bar selected state
 - Ana destination’larda state restore

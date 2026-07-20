@@ -2,13 +2,14 @@
 type: handoff
 status: ready
 implementation_status: active
-code_baseline: 8a2d350
-updated: 2026-07-16
-active_phase: "Phase 7 - PR20 real process-death acceptance"
-next_pr: "Publish PR20 and verify hosted app + process-death device checks"
+code_baseline: e1359bb
+updated: 2026-07-20
+active_phase: "Phase 7 - PR21 adaptive top bar, feedback, and critical goldens"
+next_pr: "Publish PR21 and verify hosted 71 app + 2 process-death device checks"
 primary_nodes:
   - ARCH_NAVIGATION
   - ADR_002_FIVE_TARGET_NAVIGATION
+  - DESIGN_SYSTEM_GRAPH
   - TEST_MATRIX
   - RISK_REGISTER_GRAPH
   - ROADMAP_EXECUTION_GRAPH
@@ -19,12 +20,9 @@ tags: [gymtracker/workflow, gymtracker/session]
 
 ## Şu anki durum
 
-- GitHub PR #1–#13, 2026-07-16 tarihinde merge commit stratejisiyle sırayla `master`a alındı; son code baseline `1d642ad` ve first-parent geçmişinde on üç merge commit korunuyor.
-- PR #11, workflow push filtresini `main` yerine varsayılan `master` dalıyla eşledi. Otomatik `master` koşusu `29499237460` tamamen yeşil; artifact XML 58/58 cihaz testi gösteriyor.
-- PR18/GitHub PR #12 merge commit `52da93a` ile `master`a alındı. Master run `29504722658` tamamen yeşil ve artifact XML 62/62.
-- PR19 code baseline `a3bdbe6`, `codex/external-deep-links` dalında: trusted scheme/host, on destination, positive detail ID, cold start, safe fallback ve recreation yerel kabulden geçti.
-- PR19/GitHub PR #13 hosted run `29506986274` ile yeşil oldu ve merge commit `1d642ad` kullanılarak `master`a alındı; kaynak dal korundu.
-- PR20 code baseline `8a2d350`, `codex/process-death-acceptance` dalında: Progress Photos ve pozitif-ID Program detail için eski PID’nin gerçekten öldüğü ve aynı Android task içinde yeni PID ile doğru rotanın geri geldiği 2/2 API 34 kabul testi geçti.
+- GitHub PR #1–#14 merge commit stratejisiyle sırayla `master`a alındı; son master code baseline `625489a` ve first-parent soy ağacı korunuyor.
+- PR20/GitHub PR #14 sonrası otomatik `master` koşusu `29762392465` tamamen yeşil; indirilen artifact XML 66/66 app ve 2/2 gerçek process-death testi gösteriyor.
+- PR21 code baseline `e1359bb`, `codex/adaptive-feedback-goldens` dalında: ortak `%200` font uyumlu top bar, tek geri semantics’i, ortak Snackbar, child/detail route entegrasyonu ve iki yeni golden yerel kabulden geçti.
 - Uygulama baseline: `f9d6d75`; PR8 `codex/workout-lifecycle` dalında draft PR #1 olarak yayınlandı.
 - PR9 baseline: `341bf79`; `codex/nutrition-measurements` dalı PR8’i hedefleyen stacked draft PR #2 olarak yayınlandı.
 - PR10 baseline: `2ad7ad8`; `codex/progress-load` dalı PR9’u hedefleyen stacked draft PR #3 olarak yayınlandı.
@@ -46,30 +44,31 @@ tags: [gymtracker/workflow, gymtracker/session]
 - Programs locked/ownership/target kurallarını repository’de doğrular; program günü atomik ACTIVE workout’a planlanan set olarak kopyalanır, tamamlanmayan set Muscle Load’a girmez ve finish’i kilitler.
 - Light/dark tasarım sistemi token temeli ve ortak Home bileşenleri aktif; Home loading/content/error, retry, midnight period tick ve adaptive kolon kullanıyor.
 - Uygulama geneli Türkçe/English kaynak kataloğu 356/356 eşit; muscle adları ve program para biçimi locale-aware.
-- Test temeli aktif: 34 JVM + 66 app API 34 instrumentation + 2 ayrı gerçek process-death testi geçiyor; Progress Hub, Programs ve Workout için dört kalıcı golden baseline var.
+- Test temeli aktif: 34 JVM + 71 app API 34 instrumentation + 2 ayrı gerçek process-death testi geçiyor; Progress Hub, Programs, Workout, Nutrition ve Measurements için altı kalıcı golden baseline var.
 - Debug build başarılı; lint 0 error; assemble başarılı.
 - `ciQuality` JVM/lint/debug ile R8/resource-shrunk unsigned APK, AAB ve mapping üretir; GitHub Actions quality + API 34 device/golden workflow’u kaynakta.
 
 ## Sıradaki önerilen iş
 
-PR20 graf commit’ini tamamla, dalı yayınla ve hosted quality/API 34 app + ayrı process-death kontrollerini doğrula; ardından kalan kritik state/golden geliştirme dilimine otomatik geç.
+PR21 graf commit’ini tamamla, dalı yayınla ve hosted quality/API 34 app + ayrı process-death kontrollerini doğrula; merge sonrası Nutrition/Measurements gerçek process-death state ve Clock/ZoneId rollover dilimine otomatik geç.
 
 ## Açık P0/P1
 
 - GitHub branch protection içinde quality + API 34 check’lerini zorunlu yapma
-- Golden baseline’ı kalan kritik ekran/state’lere genişletme
+- Photos/Load ile disabled/loading golden baseline’larını genişletme
 - Nutrition/Measurements seçili değerleri için gerçek OS process-death kapsam genişletmesi
 - Gerçek production secret/Play internal-track smoke ve fiziksel cihaz benchmark kabulü
 
 ## Son doğrulama
 
 - `testDebugUnitTest`: success, 34/34.
-- `connectedDebugAndroidTest`: success, 66/66, Pixel 6 Pro API 34 (1m15s, warm local AVD).
+- `connectedDebugAndroidTest`: success, 71/71, Pixel 6 Pro API 34 (1m45s, warm local AVD).
 - `ProcessDeathNavigationTest`: success, 2/2, Pixel 6 Pro API 34; iki senaryoda eski PID yok oldu ve aynı task yeni PID ile doğru destination’ı geri yükledi.
 - `lintDebug`: success, 0 error.
 - `assembleDebug`: success.
-- `ciQuality`: success; minified APK 2,661,123 bayt, AAB 4,928,049 bayt ve R8 mapping üretildi.
-- Kalıcı görsel kapı: iki Progress Hub baseline’ına ek olarak `programs_list_detail_light_en.png` ve `workout_list_detail_dark_tr_font130.png`, API 34 üzerinde pixel tolerance ile geçti.
+- `ciQuality`: success; JVM/lint/debug, minified APK/AAB, R8 mapping ve embedded profile kapıları geçti.
+- PR20 master run `29762392465`: hosted quality + API 34 app/process-death success; artifact XML 66+2, 0 failure/error/skipped.
+- Kalıcı görsel kapı: iki Progress Hub, Programs, Workout, `nutrition_over_goal_dark_tr_font200.png` ve `measurements_chart_topbar_light_en.png` olmak üzere altı baseline API 34 üzerinde pixel tolerance ile geçti.
 
 ## Handoff güncelleme şablonu
 
@@ -82,6 +81,36 @@ Graph notes updated:
 Next concrete action:
 Blockers:
 ```
+
+## 2026-07-20 - PR21 adaptive top bar, feedback, and critical goldens
+
+Completed:
+- Added a dynamic-height `GtTopAppBar` that preserves title/supporting text at 200% font, one localized 48 dp back action, and optional route actions.
+- Added `GtSnackbarHost` and migrated Nutrition, Measurements, Progress Photos and Program detail transient feedback to one visual/semantics contract.
+- Applied the shared visible back contract to Measurements, Photos, Muscle Load, Workout detail and Program detail, including loading/not-found/content states; system back remains equivalent.
+- Added Turkish dark/200% Nutrition over-goal and English/light Measurements chart + top bar permanent golden baselines after visual inspection.
+
+Files changed:
+- `MainActivity.kt`, shared components and Workout/Programs/Nutrition/Measurements/Progress/Fatigue screens.
+- `GtFeedbackComponentsTest`, `CriticalStateGoldenTest`, `NavigationSmokeTest` and two PNG baselines.
+- Navigation/design/test/risk/roadmap/atlas/impact/start/handoff graph nodes.
+
+Tests run/results:
+- Targeted feedback/navigation/golden package: 11/11.
+- `testDebugUnitTest`: 34/34 through `ciQuality`.
+- Full `connectedDebugAndroidTest`: 71/71, 0 failure/error/skipped.
+- `ProcessDeathNavigationTest`: 2/2, 0 failure/error/skipped.
+- `ciQuality`: success including lint, debug, minified release APK/AAB, R8 mapping and embedded Baseline Profile.
+
+Risks changed:
+- R3 improves to resolved-core++ after PR20 automatic master artifact acceptance.
+- R15 improves to mitigated+++; shared top bar/Snackbar and six permanent goldens are active. Photos/Load and disabled/loading golden variants remain.
+
+Next concrete action:
+- Publish PR21, verify hosted quality + 71 app device + 2 process-death jobs, merge with merge commit, then start real process-death state/time rollover work.
+
+Blockers:
+- No code blocker. Local Gradle requires explicit JDK 17 because the machine default remains Java 11.
 
 ## 2026-07-16 - PR20 real OS process-death acceptance
 
@@ -105,7 +134,7 @@ Risks changed:
 - Nutrition/Measurements value-specific process-death coverage, physical benchmark hardware and production distribution remain separate follow-ups.
 
 Next concrete action:
-- Publish PR20, verify hosted quality + app device + separate process-death jobs, merge with merge commit, then continue automatically to the remaining critical state/golden slice.
+- Completed: PR20 hosted quality + app device + separate process-death jobs passed and merge commit `625489a` landed; automatic master run `29762392465` is green.
 
 Blockers:
 - No code blocker. Local Gradle still requires explicit JDK 17 because the machine default is Java 11.
