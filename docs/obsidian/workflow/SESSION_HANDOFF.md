@@ -2,17 +2,14 @@
 type: handoff
 status: ready
 implementation_status: active
-code_baseline: 43b523a
+code_baseline: 26696b9
 updated: 2026-07-20
-active_phase: "Phase 8 - PR22 saved state and Clock/ZoneId resilience"
-next_pr: "Publish PR22 and verify hosted 71 app + 4 process-death device checks"
+active_phase: "Phase 8 - PR22 hosted retry + PR23 photo device resilience"
+next_pr: "Merge PR22 after hosted artifact audit; publish PR23 reboot/benchmark gate"
 primary_nodes:
-  - ARCH_STATE_DATA_FLOW
-  - ARCH_NAVIGATION
-  - FEATURE_HOME
-  - FEATURE_NUTRITION
-  - FEATURE_MEASUREMENTS
-  - FEATURE_MUSCLE_LOAD
+  - FEATURE_PROGRESS_PHOTOS
+  - ADR_004_PERSISTENT_PHOTO_STORAGE
+  - PERFORMANCE_BASELINE
   - TEST_MATRIX
   - RISK_REGISTER_GRAPH
   - ROADMAP_EXECUTION_GRAPH
@@ -25,7 +22,8 @@ tags: [gymtracker/workflow, gymtracker/session]
 
 - GitHub PR #1–#15 merge commit stratejisiyle sırayla `master`a alındı; son master code baseline `39927a7` ve first-parent soy ağacı korunuyor.
 - PR21/GitHub PR #15 hosted koşusu `29764819516` tamamen yeşil; indirilen artifact XML 71/71 app ve 2/2 gerçek process-death testi gösteriyor.
-- PR22 code baseline `43b523a`, `codex/state-time-resilience` dalında: Nutrition tarihi ve Measurements period değeri gerçek process death sonrasında korunuyor; Home/Load ortak Clock/ZoneId akışı yerel midnight ve runtime zone değişimini kapsıyor.
+- PR22 code baseline `43b523a`, graph baseline `e8f8ca5`, kararlılık head’i `a4f7bd9`, GitHub PR #16’da: Nutrition tarihi ve Measurements period değeri gerçek process death sonrasında korunuyor; Home/Load ortak Clock/ZoneId akışı yerel midnight ve runtime zone değişimini kapsıyor. İlk hosted koşu 71/71 app + 3/4 process-death ile boş-DB IME yarışını yakaladı; koşullu klavye düzeltmesi yerelde temiz DB üzerinde 4/4 geçti ve retry `29769324578` sürüyor.
+- PR23 code baseline `26696b9`, `codex/photo-device-resilience` dalında: 48 MB free-space preflight, typed low-storage mesajı, backup XML/metadata-only restore testleri, gerçek `adb reboot` + `BOOT_COUNT` kanıtlı 120-row fixture, 500-row lazy-grid testi ve 120-thumbnail FrameTiming/Perfetto macrobenchmark hazır.
 - Uygulama baseline: `f9d6d75`; PR8 `codex/workout-lifecycle` dalında draft PR #1 olarak yayınlandı.
 - PR9 baseline: `341bf79`; `codex/nutrition-measurements` dalı PR8’i hedefleyen stacked draft PR #2 olarak yayınlandı.
 - PR10 baseline: `2ad7ad8`; `codex/progress-load` dalı PR9’u hedefleyen stacked draft PR #3 olarak yayınlandı.
@@ -42,35 +40,38 @@ tags: [gymtracker/workflow, gymtracker/session]
 - Workout tek aktif seans, status-korumalı mutation, COMPLETED salt-okunur geçmiş ve adaptive modern UI kullanıyor.
 - Nutrition DST-safe tarih aralığı, malformed restore fallback’i, process-death-safe SavedStateHandle tarih seçimi, snapshot-safe amount/meal edit, delete undo, locale sayı/tarih ve TR/EN adaptive UI kullanıyor.
 - Measurements repository + indexed 7/30/90/tümü query, process-death-safe selected period, gerçek kilo chart, özel tarih, edit/delete undo, latest/history/trend ve TR/EN adaptive UI kullanıyor.
-- Progress fotoğrafları cihaz-yerel backup politikası, bounded decode, EXIF normalize, 2048 ana/512 thumbnail, iki dosyalı rollback/reconciliation, v0/v1 yükseltme, viewer ve adaptive grid kullanıyor.
+- Progress fotoğrafları cihaz-yerel backup politikası, bounded decode, EXIF normalize, 48 MB alan preflight’i, 2048 ana/512 thumbnail, iki dosyalı rollback/reconciliation, v0/v1 yükseltme, viewer ve adaptive/lazy grid kullanıyor.
 - Muscle Load completed-set Flow’unu latest-valid measurement Flow’uyla birleştirir; recency/personal-bodyweight/fallback/unknown sözleşmesi, kalibrasyon kaynağı, metodoloji ve erişilebilir liste aktiftir.
 - Programs locked/ownership/target kurallarını repository’de doğrular; program günü atomik ACTIVE workout’a planlanan set olarak kopyalanır, tamamlanmayan set Muscle Load’a girmez ve finish’i kilitler.
 - Light/dark tasarım sistemi token temeli ve ortak Home bileşenleri aktif; Home loading/content/error, retry, midnight period tick ve adaptive kolon kullanıyor.
-- Uygulama geneli Türkçe/English kaynak kataloğu 356/356 eşit; muscle adları ve program para biçimi locale-aware.
-- Test temeli aktif: 37 JVM + 71 app API 34 instrumentation + 4 ayrı gerçek process-death testi geçiyor; Progress Hub, Programs, Workout, Nutrition ve Measurements için altı kalıcı golden baseline var.
+- Uygulama geneli Türkçe/English kaynak kataloğu 357/357 eşit; muscle adları ve program para biçimi locale-aware.
+- Test temeli aktif: 37 JVM + 75 app API 34 instrumentation + 2 gerçek reboot fazı + 4 ayrı gerçek process-death + 1 büyük-grid macrobenchmark geçiyor; Progress Hub, Programs, Workout, Nutrition ve Measurements için altı kalıcı golden baseline var.
 - Debug build başarılı; lint 0 error; assemble başarılı.
 - `ciQuality` JVM/lint/debug ile R8/resource-shrunk unsigned APK, AAB ve mapping üretir; GitHub Actions quality + API 34 device/golden workflow’u kaynakta.
 
 ## Sıradaki önerilen iş
 
-PR22 graf commit’ini tamamla, dalı yayınla ve hosted quality/API 34 app + dört ayrı process-death kontrolünü doğrula; merge sonrası Progress Photos düşük alan/reboot/restore ve büyük-grid performans dilimine otomatik geç.
+PR22 hosted retry `29769324578` tamamlanınca 71 app + 4 process-death XML’ini indirip doğrula ve merge commit ile birleştir. Ardından PR23 graph commit’ini pushla, PR’ı aç ve hosted 75 app + 2 reboot fazı + 1 macrobenchmark + 4 process-death artifact’lerini doğrula.
 
 ## Açık P0/P1
 
 - GitHub branch protection içinde quality + API 34 check’lerini zorunlu yapma
 - Photos/Load ile disabled/loading golden baseline’larını genişletme
-- Progress Photos gerçek düşük alan/reboot/restore ve büyük-grid performans kabulü
-- Gerçek production secret/Play internal-track smoke ve fiziksel cihaz benchmark kabulü
+- Progress Photos gerçek Android backup transport restore deneyi ve Photos/Load golden genişletmesi
+- Gerçek production secret/Play internal-track smoke, branch protection ve fiziksel cihaz benchmark kabulü
 
 ## Son doğrulama
 
 - `testDebugUnitTest`: success, 37/37.
-- `connectedDebugAndroidTest`: success, 71/71, Pixel 6 Pro API 34.
+- `connectedDebugAndroidTest`: success, 75/75, Pixel 6 Pro API 34; reboot fazları annotation ile normal paketten ayrıldı.
+- `photo-reboot-acceptance.sh`: success, seed 1/1 + gerçek `adb reboot` + verify 1/1; 120 managed ana/thumbnail çifti, Room metadata ve boot counter doğrulandı.
 - `ProcessDeathNavigationTest`: success, 4/4, Pixel 6 Pro API 34; dört senaryoda eski PID yok oldu, aynı task yeni PID ile doğru destination/state’i geri yükledi.
+- `PhotoGridBenchmark`: success, 1/1 × 5 iterasyon; P50 185,9 ms, P90 203,7 ms, beş Perfetto trace; emulator sonucu yalnız ön-baseline.
 - `lintDebug`: success, 0 error.
 - `assembleDebug`: success.
 - `ciQuality`: success; JVM/lint/debug, minified APK/AAB, R8 mapping ve embedded profile kapıları geçti.
 - PR21 hosted run `29764819516`: quality 7m10s + API 34 device 15m12s; artifact XML 71+2, 0 failure/error/skipped; merge commit `39927a7`.
+- PR22 ilk hosted run `29767217196`: quality geçti, app XML 71/71; boş-DB Measurements IME yarışı nedeniyle process-death 3/4. Düzeltme head’i `a4f7bd9`; retry `29769324578` quality işi geçti, device işi sürüyor.
 - Kalıcı görsel kapı: iki Progress Hub, Programs, Workout, `nutrition_over_goal_dark_tr_font200.png` ve `measurements_chart_topbar_light_en.png` olmak üzere altı baseline API 34 üzerinde pixel tolerance ile geçti.
 
 ## Handoff güncelleme şablonu
@@ -84,6 +85,39 @@ Graph notes updated:
 Next concrete action:
 Blockers:
 ```
+
+## 2026-07-20 - PR23 Progress Photos device resilience
+
+Completed:
+- Added a 48 MB free-space preflight before any source/main/thumbnail temp file or Room row is created, with a typed localized low-storage message.
+- Added executable backup-policy evidence for legacy cloud backup plus modern cloud backup/device transfer, and named the missing-file reconciliation path as metadata-only restore behavior.
+- Added annotation-isolated seed/verify phases that write 120 managed photo pairs, reboot the Android host, prove `BOOT_COUNT` increased, and verify every file/row plus reconciliation state.
+- Added 500-row lazy Compose coverage and a five-iteration 120-thumbnail FrameTiming/Perfetto macrobenchmark; CI now retains reboot text, XML, benchmark JSON and traces.
+- Stabilized the PR22 Measurements process-death setup by dismissing the keyboard only when InputMethod reports it visible.
+
+Files changed:
+- Photo storage/ViewModel/screen/resources; repository, backup, reboot and large-grid tests.
+- `PhotoGridBenchmark`, shared benchmark journeys, photo reboot host script and Android CI workflow.
+- Photo ADR/feature, performance/test/risk/roadmap/atlas/impact/start/handoff graph nodes.
+
+Tests run/results:
+- `testDebugUnitTest`: 37/37 through `ciQuality`.
+- Full `connectedDebugAndroidTest`: 75/75, 0 failure/error/skipped.
+- Real reboot acceptance: seed 1/1 + verify 1/1 with a proven boot-count increase and 120 managed photo pairs.
+- `ProcessDeathNavigationTest`: clean-DB 4/4 after IME stabilization.
+- `PhotoGridBenchmark`: 1/1, five iterations; emulator P50 185.9 ms, P90 203.7 ms; five Perfetto traces.
+- `ciQuality`: success including lint, debug, minified release APK/AAB, R8 mapping and embedded Baseline Profile.
+
+Risks changed:
+- R2 improves to mitigated+++: low-space, metadata-only restore and real reboot evidence are active; actual backup transport restore remains.
+- R14 improves to resolved-core: all three backup/transfer exclusions are parser-tested.
+- R17 improves to partial+: 120-thumbnail CUJ, JSON and trace artifact contract are active; physical device acceptance remains.
+
+Next concrete action:
+- Audit PR22 retry `29769324578`, merge PR #16 with a merge commit, then publish PR23 and audit its expanded hosted device artifact.
+
+Blockers:
+- No code blocker. Local Gradle requires explicit JDK 17 because the machine default remains Java 11. Branch protection and production distribution still require external account/secrets/hardware capabilities.
 
 ## 2026-07-20 - PR22 saved state and Clock/ZoneId resilience
 

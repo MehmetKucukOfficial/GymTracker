@@ -4,8 +4,8 @@ adr: 4
 status: accepted
 implementation_status: current
 date: 2026-07-14
-verified_commit: e28a22d
-updated: 2026-07-16
+verified_commit: 26696b9
+updated: 2026-07-20
 tags: [gymtracker/decision, gymtracker/photos, gymtracker/risk/p0]
 ---
 
@@ -25,6 +25,8 @@ PR10 kararı: hassas ve yüksek boyutlu `files/progress_photos` içeriği cloud 
 
 PR18 kararı: v0 dış URI kaydı yeniden seçimle, v1 app-owned kayıt doğrudan yeniden optimizasyonla v2’ye taşınır. Yükseltme yeni ana/thumbnail dosyalarını önce üretir, aynı Room kimliğini ve kullanıcı metadata’sını koruyarak satırı değiştirir, eski yönetilen dosyayı yalnız başarılı update sonrasında temizler. Update sıfır satır etkiler veya hata verirse yeni dosyalar rollback edilir.
 
+PR23 kararı: import veya optimizasyon başlamadan önce app-owned dizinin kullanılabilir alanı ölçülür. 25 MB kaynak üst sınırı, eşzamanlı source/main/thumbnail geçici çıktıları ve atomik publish payı için 48 MB rezerv zorunludur. Yetersiz alan typed hata olarak UI’a taşınır; temp dosya ve Room satırı yaratılmaz. Backup sözleşmesi “metadata restore olabilir, hassas medya dosyası restore/transfer edilmez” şeklindedir; açılış reconciliation’ı bu durumda eksik managed satırları temizler.
+
 ## Alternatif
 
 `OpenDocument + takePersistableUriPermission`: depolama kopyası daha az, fakat provider izin/restore bağımlılığı sürer. Sadece kullanıcı “orijinali yerinde tut” deneyimi istiyorsa seçilmeli.
@@ -36,7 +38,8 @@ PR18 kararı: v0 dış URI kaydı yeniden seçimle, v1 app-owned kayıt doğruda
 - Silme DB kaydını kaldırır ve yalnızca yönetilen `progress_photos` dizininin doğrudan çocukları olan ana/thumbnail dosyalarını temizler; dış `content://` kaynaklarına dokunmaz.
 - Ana görsel kayıpsa satır ve thumbnail kaldırılır; yalnız thumbnail kayıpsa satır korunur ve ana görsele geri düşülür.
 - Legacy yükseltmede DB satırı yeni dosyalara geçmeden eski kaynak silinmez; başarısız update yeni dosyaları bırakmaz.
-- Internal fotoğrafların Android backup kapsamı açık karardır.
+- Internal fotoğrafların Android backup kapsamı açık karardır: `backup_rules.xml` ile legacy cloud backup, `data_extraction_rules.xml` ile cloud backup ve device transfer dışındadır.
+- CI host’u 120 yönetilen kayıt üretir, Android’i gerçekten reboot eder, `BOOT_COUNT` artışını ve bütün ana/thumbnail dosyaları ile metadata tutarlılığını doğrular; ardından aynı veri setinde thumbnail grid macrobenchmark çalıştırır.
 
 ## Kabul
 
@@ -48,7 +51,8 @@ PR18 kararı: v0 dış URI kaydı yeniden seçimle, v1 app-owned kayıt doğruda
 - [x] Progress fotoğraf dosyaları backup/device transfer dışında bırakılır ve politika UI’da açıklanır.
 - [x] EXIF orientation normalize edilir; bounded ana görsel + thumbnail ve dimension metadata üretilir.
 - [x] Bozuk decode, iki dosyalı DB rollback ve missing-thumbnail onarımı testlidir.
-- [ ] Gerçek process death/reboot, düşük alan ve backup/restore cihaz testleri.
+- [x] Gerçek process death, host reboot, düşük alan ve metadata-only restore/reconciliation testleri.
+- [ ] Gerçek Android backup transport restore deneyi ve fiziksel cihaz performans kabulü.
 - [x] Legacy v0 yeniden seçim ve v1 isteğe bağlı yeniden optimizasyon UX’i.
 
 Bağlar: [[FEATURE_PROGRESS_PHOTOS]], [[ARCH_DATABASE]], [[TEST_MATRIX]].
