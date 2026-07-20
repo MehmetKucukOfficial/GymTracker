@@ -2,8 +2,8 @@
 type: feature
 status: current
 implementation_status: current
-verified_commit: 5c3ce35
-updated: 2026-07-16
+verified_commit: 43b523a
+updated: 2026-07-20
 source_files:
   - app/src/main/java/com/gymtracker/ui/screens/fatigue/FatigueScreen.kt
   - app/src/main/java/com/gymtracker/ui/screens/fatigue/FatigueViewModel.kt
@@ -12,6 +12,7 @@ source_files:
   - app/src/main/java/com/gymtracker/data/workout/CompletedSetForLoad.kt
   - app/src/main/java/com/gymtracker/data/dao/WorkoutDao.kt
   - app/src/main/java/com/gymtracker/data/dao/MeasurementDao.kt
+  - app/src/main/java/com/gymtracker/data/home/HomeDashboardPeriod.kt
   - app/src/main/java/com/gymtracker/domain/MuscleGroup.kt
 related_data: [WorkoutSet, WorkoutSession]
 tags: [gymtracker/feature, gymtracker/feature/workload]
@@ -37,6 +38,7 @@ Son yedi takvim günündeki yalnız `COMPLETED` seansların tamamlanmış setler
 - Bilinmeyen egzersiz sayısı state/UI’da görünür; skora sessizce eklenmez.
 - UI “yorgunluk yüzdesi” iddiası yapmaz; seviye ve normalize skor gösterir.
 - Harita semantics açıklaması ve aynı bilgiyi veren erişilebilir liste içerir.
+- Son yedi takvim günü aralığı Home ile aynı injectable `Clock`/dinamik `ZoneId` akışından gelir; yerel gece yarısı ve çalışma anındaki zone değişimi sorguyu yeniden kurar.
 
 ## Kalan kapsam
 
@@ -51,6 +53,6 @@ Son yedi takvim günündeki yalnız `COMPLETED` seansların tamamlanmış setler
 
 ## Testler
 
-Uygulandı: completed/incomplete/active query sınırı, activation dağılımı, recency, kişisel bodyweight/fallback/invalid ölçüm, en yeni geçerli ölçüm query’si, unknown exercise, range clamp, Flow reactivity ve kalibrasyon kaynağını gösteren dark/%200 font erişilebilir UI. Kalan: gerçek midnight rollover, hareket katsayısı, TalkBack cihaz turu ve mask hit koordinat testi.
+Uygulandı: completed/incomplete/active query sınırı, activation dağılımı, recency, kişisel bodyweight/fallback/invalid ölçüm, en yeni geçerli ölçüm query’si, unknown exercise, range clamp, Flow reactivity, deterministik yerel-midnight/zone-change akışı ve kalibrasyon kaynağını gösteren dark/%200 font erişilebilir UI. Kalan: hareket katsayısı, TalkBack cihaz turu ve mask hit koordinat testi.
 
 Bağlar: [[FEATURE_WORKOUT]], [[ARCH_STATE_DATA_FLOW]], [[DESIGN_SYSTEM_GRAPH]].

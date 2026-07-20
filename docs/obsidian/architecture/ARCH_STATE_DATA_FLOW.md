@@ -2,14 +2,15 @@
 type: architecture
 status: current
 implementation_status: mixed
-verified_commit: 5c3ce35
-updated: 2026-07-16
+verified_commit: 43b523a
+updated: 2026-07-20
 source_files:
   - app/src/main/java/com/gymtracker/ui/screens/home/HomeViewModel.kt
   - app/src/main/java/com/gymtracker/ui/screens/workout/WorkoutViewModel.kt
   - app/src/main/java/com/gymtracker/ui/screens/nutrition/NutritionViewModel.kt
   - app/src/main/java/com/gymtracker/ui/screens/measurements/MeasurementsViewModel.kt
   - app/src/main/java/com/gymtracker/data/home/HomeDashboardRepository.kt
+  - app/src/main/java/com/gymtracker/data/home/HomeDashboardPeriod.kt
   - app/src/main/java/com/gymtracker/data/nutrition/NutritionRules.kt
   - app/src/main/java/com/gymtracker/data/measurements/MeasurementRules.kt
   - app/src/main/java/com/gymtracker/data/measurements/MeasurementRepository.kt
@@ -25,20 +26,20 @@ tags: [gymtracker/architecture, gymtracker/state]
 ## Uygulanan iskelet
 
 - Home: workout + measurement + günün nutrition Room Flow’ları `HomeDashboardRepository.combine` ile tek state üretir.
-- Home ViewModel: `Loading/Content/Error`, retry ve yerel gece yarısında period Flow’unu `flatMapLatest` ile yeniden kurma uygular.
+- Home ViewModel: `Loading/Content/Error`, retry ve injectable `Clock` kullanan ortak `currentDashboardPeriods` akışını `flatMapLatest` ile uygular. Akış yerel gece yarısını doğrudan, dinamik `ZoneId` değişimini bounded poll ile algılar ve yalnız değişen aralığı yayınlar.
 - Workout: active/completed Room Flow’ları ayrı state üretir; detail ID `SavedStateHandle` kaynağındandır. Mutation repository/transaction sınırından geçer ve hata state’i UI’da gösterilir.
 - Program list/detail: ilişkisel repository Flow → ViewModel `Loading/Content/Error`; detail ID `SavedStateHandle` kaynağındandır. Program günü başlatma, locked/ownership/target doğrulaması ve active-session kontrolüyle tek transaction’da planlanan WorkoutSet’ler üretir.
-- Nutrition: seçili `LocalDate` ISO biçiminde `SavedStateHandle` içinde korunur; `Clock`/dinamik sistem `ZoneId` ile takvim günü aralığı hesaplanır ve `flatMapLatest` yeni Room Flow’una geçer. Edit snapshot-safe update’tir; delete aynı-ID Snackbar undo state’i üretir.
-- Measurements: `MeasurementRepository` all + indexed period Flow’larını ayırır. `SavedStateHandle` içindeki chart period `flatMapLatest` ile 7/30/90/tümü query’sini seçer; `MeasurementsUiState(latest, history, weightTrend, chartMeasurements)` üretir. Edit/update ve delete/aynı-ID undo Room Flow üzerinden Home ve UI’yı yeniler.
-- Muscle Load: takvim tabanlı son yedi gün period Flow’u `flatMapLatest` ile completed-set Room Flow’una geçer; bu Flow `MeasurementDao.observeLatestWithWeight()` ile birleşir. Saf calculator sıfır kilolu setleri en güncel kişisel ölçümle, ölçüm yoksa açık 20 kg fallback ile hesaplayıp kaynak bilgisini loading/content/error state’e taşır.
+- Nutrition: seçili `LocalDate` ISO biçiminde `SavedStateHandle` içinde korunur; parse edilemeyen restore değeri injectable `Clock` gününe düşer. `Clock`/dinamik sistem `ZoneId` ile takvim günü aralığı hesaplanır ve `flatMapLatest` yeni Room Flow’una geçer. Edit snapshot-safe update’tir; delete aynı-ID Snackbar undo state’i üretir.
+- Measurements: `MeasurementRepository` all + indexed period Flow’larını ayırır. `SavedStateHandle` içindeki chart period `flatMapLatest` ile 7/30/90/tümü query’sini seçer; `MeasurementsUiState(latest, history, weightTrend, chartMeasurements)` üretir. Nutrition selected date ve Measurements checked period gerçek OS process death sonrasında ayrı instrumentation sürecinde doğrulanır.
+- Muscle Load: Home ile aynı takvim period Flow’u `flatMapLatest` ile completed-set Room Flow’una geçer; bu Flow `MeasurementDao.observeLatestWithWeight()` ile birleşir. Saf calculator sıfır kilolu setleri en güncel kişisel ölçümle, ölçüm yoksa açık 20 kg fallback ile hesaplayıp kaynak bilgisini loading/content/error state’e taşır.
 - Bütün ana Compose ekranları `collectAsStateWithLifecycle()` kullanır.
 - Programdan gelen `WorkoutSet.isCompleted=false` satırları gerçek reps/kg mutation’ıyla tamamlanır; çözülmemiş planlı set varken finish reddedilir ve Muscle Load yalnız session + set tamamlandığında etkilenir.
 - Gün sınırı sabit 86.400.000 ms yerine `ZoneId` + takvim günü ile hesaplanır; tarihsel Istanbul DST unit testi vardır.
 
 ## Kalan desenler
 
-- Nutrition seçili gün process recreation’da korunur; gece yarısında otomatik bugün tick’i ve gerçek process-death testi bekler.
-- Home rollover çalışır; Clock/ZoneId injection, timezone-change gözlemi ve deterministik ViewModel testi bekler.
+- Kullanıcının geçmiş Nutrition günü seçimi bilinçli state’tir; gece yarısında otomatik olarak bugüne sıçratılmaz.
+- Tek seferlik mutation event’lerinin typed event/channel standardına taşınması ve ViewModel’lerin doğrudan DAO yerine repository/use-case sınırına tamamlanması açıktır.
 
 ## Sorun grafı
 
@@ -49,7 +50,7 @@ flowchart TD
     N[Nutrition day Flow] --> R
     BW[Latest valid weight Flow] --> ML[Muscle Load combine]
     CS[Completed set Flow] --> ML
-    T[Midnight period tick] --> F[flatMapLatest]
+    T[Clock midnight + ZoneId change] --> F[flatMapLatest]
     F --> R
     R --> U[HomeUiState]
     U --> UI[Lifecycle-aware Home]

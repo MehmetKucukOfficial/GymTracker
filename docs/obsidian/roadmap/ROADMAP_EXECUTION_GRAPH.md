@@ -2,7 +2,7 @@
 type: roadmap
 status: current
 implementation_status: active
-verified_commit: e1359bb
+verified_commit: 43b523a
 updated: 2026-07-20
 tags: [gymtracker/roadmap, gymtracker/workflow]
 ---
@@ -34,11 +34,12 @@ flowchart TD
     LR --> DL[PR 19 External deep links]
     DL --> PD[PR 20 Real process-death acceptance]
     PD --> AF[PR 21 Adaptive top bar + feedback + golden]
+    AF --> ST[PR 22 Saved state + time resilience]
 ```
 
 ## Birleştirme durumu
 
-GitHub PR #1–#14 merge commit kullanılarak `master`a alındı; kaynak dallar silinmedi ve first-parent soy ağacı korundu. PR20/GitHub PR #14 merge commit `625489a` sonrasında otomatik master kabul koşusu `29762392465` tamamen yeşildir; indirilen artifact XML 66 app + 2 ayrı process-death testini sıfır failure/error/skipped ile doğrular. PR21 code baseline `e1359bb`, `codex/adaptive-feedback-goldens` dalında yerel kabulden geçti.
+GitHub PR #1–#15 merge commit kullanılarak `master`a alındı; kaynak dallar silinmedi ve first-parent soy ağacı korundu. PR21/GitHub PR #15 hosted koşusu `29764819516` tamamen yeşildir; indirilen artifact XML 71 app + 2 ayrı process-death testini sıfır failure/error/skipped ile doğrular. PR21 merge commit `39927a7`; aktif PR22 code baseline `43b523a`, `codex/state-time-resilience` dalındadır.
 
 ## PR 1 — Build hygiene
 
@@ -179,15 +180,22 @@ Kabul: 34 JVM + 66 app instrumentation + 2 ayrı gerçek process-death testi; `c
 ## PR 21 — Adaptive top app bar + feedback + critical goldens
 
 Node: [[ARCH_NAVIGATION]], [[DESIGN_SYSTEM_GRAPH]], [[SCREEN_BLUEPRINT_GRAPH]], [[TEST_MATRIX]].
-Durum: code baseline `e1359bb`, `codex/adaptive-feedback-goldens` dalında; yerel tam kabul tamamlandı, graph/publish/hosted kabul sırada.
+Durum: `e1359bb` kod + `bb1a061` graph commit’leri GitHub PR #15 olarak hosted kabulden geçti ve merge commit `39927a7` ile `master`a alındı; kaynak dal korundu.
 Çıktı: `%200` fontta dinamik yüksekliğe sahip ortak `GtTopAppBar`; tek yerelleştirilmiş 48 dp geri eylemi; ortak `GtSnackbarHost`; Measurements/Photos/Load child rotaları ve Workout/Program detail loading/content/not-found durumlarında görünür geri sözleşmesi; Nutrition/Measurements/Photos/Programs feedback birliği; Turkish dark/%200 Nutrition over-goal ve English/light Measurements chart + top bar golden baselineları.
 Kabul: 34 JVM + 71 API 34 app instrumentation + 2 ayrı gerçek process-death testi; hedefli feedback/navigation/golden paketi 11/11; `ciQuality`, lint, debug, minified APK/AAB, R8 mapping ve embedded profile başarılı.
 
+## PR 22 — Saved state + Clock/ZoneId resilience
+
+Node: [[ARCH_STATE_DATA_FLOW]], [[ARCH_NAVIGATION]], [[FEATURE_HOME]], [[FEATURE_NUTRITION]], [[FEATURE_MEASUREMENTS]], [[FEATURE_MUSCLE_LOAD]], [[TEST_MATRIX]].
+Durum: code baseline `43b523a`, `codex/state-time-resilience` dalında; yerel tam kabul tamamlandı, graph/publish/hosted kabul sırada.
+Çıktı: Home ve Kas Yükü için tek injectable `Clock`/dinamik `ZoneId` period Flow’u; yerel gece yarısı ve en geç 60 saniyede zone-change yeniden hesaplaması; bozuk Nutrition SavedState tarihinin güvenli Clock fallback’i; Nutrition seçili tarih ve Measurements 90-gün checked state’i için gerçek PID değişimli OS process-death restorasyonu.
+Kabul: 37 JVM + 71 API 34 app instrumentation + 4 ayrı gerçek process-death testi; `ciQuality`, lint, debug, minified APK/AAB, R8 mapping ve embedded profile yerelde başarılı.
+
 ## Sonraki dikey dilim
 
-1. PR21 graph/publish/hosted kabul ve merge
-2. Nutrition/Measurements seçili değerleri için gerçek process-death state kapsamını genişletme; Home/Load Clock/ZoneId ve midnight rollover testlerini tamamlama
-3. Progress Photos düşük alan/reboot/backup-restore ve büyük grid performans kabulü
-4. Production secret + Play internal-track smoke ve fiziksel cihaz performans kabulü
+1. PR22 graph/publish/hosted kabul ve merge
+2. Progress Photos düşük alan/reboot/backup-restore ve büyük grid performans kabulü
+3. Architecture/settings/export/beta hardening
+4. Production secret + Play internal-track smoke, branch protection ve fiziksel cihaz performans kabulü
 
 Detaylı süre: [[GELISTIRME_MASTER_PLANI#18. Fazlar ve süre tahmini]]. Aktif durum: [[SESSION_HANDOFF]].

@@ -2,7 +2,7 @@
 type: atlas
 status: current
 implementation_status: active
-verified_commit: e1359bb
+verified_commit: 43b523a
 updated: 2026-07-20
 tags: [gymtracker/workflow, gymtracker/source-map]
 ---
@@ -20,7 +20,7 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | `gradle/libs.versions.toml` | dependency/plugin versions | [[ARCH_BUILD_DI]] |
 | `gradle/wrapper/gradle-wrapper.properties`, `gradlew` | Gradle 8.4 URL + Linux çalıştırılabilir wrapper | [[ARCH_BUILD_DI]] |
 | `app/build.gradle.kts` | Android/Compose/Hilt/Room + minified release, signing/profile doğrulama görevleri | [[ARCH_BUILD_DI]] |
-| `baselineprofile/` | startup/Home scroll/Workout profile producer, macrobenchmark’lar ve hedef uygulamadan ayrı gerçek process-death kabul testi | [[PERFORMANCE_BASELINE]], [[ARCH_NAVIGATION]] |
+| `baselineprofile/` | startup/Home scroll/Workout profile producer, macrobenchmark’lar ve hedef uygulamadan ayrı destination + SavedState değer process-death kabulü | [[PERFORMANCE_BASELINE]], [[ARCH_NAVIGATION]] |
 | `app/src/release/generated/baselineProfiles/` | ölçülerek üretilen release Baseline + Startup Profile | [[PERFORMANCE_BASELINE]] |
 | `app/proguard-rules.pro` | yalnız kanıtla eklenecek proje R8 istisnaları | [[ARCH_BUILD_DI]] |
 | `AndroidManifest.xml` | permission/app/activity/backup + trusted external deep-link intent filter | [[ARCH_BUILD_DI]], [[ARCH_NAVIGATION]] |
@@ -76,7 +76,7 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | Dosya | Rol |
 |---|---|
 | `ui/screens/home/HomeViewModel.kt` | period tick + repository Flow → Loading/Content/Error |
-| `data/home/HomeDashboardPeriod.kt` | ZoneId/DST-safe gün ve hafta sınırı |
+| `data/home/HomeDashboardPeriod.kt` | ZoneId/DST-safe gün/hafta sınırı + ortak midnight/runtime-zone period Flow’u |
 | `ui/screens/home/HomeScreen.kt` | token tabanlı adaptive CTA/empty/metric/quick/last workout UI |
 
 ## Workout
@@ -96,13 +96,14 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | `ui/components/GtFeedbackComponentsTest.kt` | `%200` top bar başlık/geri semantics + ortak Snackbar mesaj/undo |
 | `ui/golden/CriticalStateGoldenTest.kt` | Nutrition over-goal ve Measurements chart/top bar kalıcı golden baselineları |
 | `ui/navigation/NavigationSmokeTest.kt` | ortak top bar back + sistem back + route/detail/recreation |
+| `baselineprofile/ProcessDeathNavigationTest.kt` | farklı PID’de route/task + Nutrition tarihi + Measurements checked-period restorasyonu |
 
 ## Nutrition
 
 | Dosya | Rol |
 |---|---|
-| `ui/screens/nutrition/NutritionViewModel.kt` | selected day + totals + snapshot edit/delete/undo |
-| `data/nutrition/NutritionRules.kt` | DST-safe day range, validation ve snapshot miktar ölçekleme |
+| `ui/screens/nutrition/NutritionViewModel.kt` | process-death-safe selected day + totals + snapshot edit/delete/undo |
+| `data/nutrition/NutritionRules.kt` | DST-safe day range, malformed restore fallback, validation ve snapshot miktar ölçekleme |
 | `ui/screens/nutrition/NutritionScreen.kt` | locale tarih + adaptive summary/macro/meal/edit/ortak Snackbar undo UI |
 
 ## Measurements
