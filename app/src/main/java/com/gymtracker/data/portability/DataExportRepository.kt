@@ -15,6 +15,7 @@ import javax.inject.Singleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 
 class InsufficientExportStorageException(
@@ -77,68 +78,63 @@ class DataExportRepository private constructor(
     )
 
     suspend fun exportTo(destination: Uri): Result<DataExportSummary> =
-        withContext(Dispatchers.IO) {
-            try {
-                val snapshot = database.withTransaction { readSnapshot() }
-                val settings = settingsRepository.settings.first()
-                val exportedAt = clock.millis()
-                val archive = PortableArchive(
-                    exportedAtEpochMillis = exportedAt,
-                    appVersionName = appVersionName(),
-                    settings = PortableSettings(themeMode = settings.themeMode.name),
-                    data = snapshot.toPortableData()
-                )
-                val exportDirectory = File(context.cacheDir, EXPORT_CACHE_DIRECTORY)
-                check(exportDirectory.exists() || exportDirectory.mkdirs()) {
-                    "Export cache directory could not be created."
-                }
-                val requiredBytes = estimatedTemporaryBytes(snapshot)
-                val freeBytes = availableBytes(exportDirectory)
-                if (freeBytes < requiredBytes) {
-                    throw InsufficientExportStorageException(requiredBytes, freeBytes)
-                }
-
-                val temporaryArchive = File.createTempFile(
-                    EXPORT_TEMP_PREFIX,
-                    EXPORT_FILE_SUFFIX,
-                    exportDirectory
-                )
+        DataPortabilityOperationLock.mutex.withLock {
+            withContext(Dispatchers.IO) {
                 try {
-                    val writeSummary = temporaryArchive.outputStream().buffered().use { output ->
-                        archiveWriter.write(archive, snapshot, output)
+                    val snapshot = database.withTransaction { dao.readSnapshot() }
+                    val settings = settingsRepository.settings.first()
+                    val exportedAt = clock.millis()
+                    val archive = PortableArchive(
+                        exportedAtEpochMillis = exportedAt,
+                        appVersionName = appVersionName(),
+                        settings = PortableSettings(themeMode = settings.themeMode.name),
+                        data = snapshot.toPortableData()
+                    )
+                    val exportDirectory = File(context.cacheDir, EXPORT_CACHE_DIRECTORY)
+                    check(exportDirectory.exists() || exportDirectory.mkdirs()) {
+                        "Export cache directory could not be created."
                     }
-                    check(temporaryArchive.length() > 0L) { "Export archive is empty." }
-                    copyToDestination(temporaryArchive, destination)
-                    Result.success(DataExportSummary(
-                        totalRecords = snapshot.totalRecords(),
-                        includedManagedPhotos = writeSummary.includedManagedPhotos,
-                        metadataOnlyLegacyPhotos = writeSummary.metadataOnlyLegacyPhotos,
-                        mediaEntries = writeSummary.mediaEntries,
-                        archiveBytes = temporaryArchive.length()
-                    ))
-                } finally {
-                    temporaryArchive.delete()
+                    check(exportDirectory.clearChildren()) {
+                        "Stale export cache could not be cleared."
+                    }
+                    val requiredBytes = estimatedTemporaryBytes(snapshot)
+                    val freeBytes = availableBytes(exportDirectory)
+                    if (freeBytes < requiredBytes) {
+                        throw InsufficientExportStorageException(requiredBytes, freeBytes)
+                    }
+
+                    val temporaryArchive = File.createTempFile(
+                        EXPORT_TEMP_PREFIX,
+                        EXPORT_FILE_SUFFIX,
+                        exportDirectory
+                    )
+                    try {
+                        val writeSummary =
+                            temporaryArchive.outputStream().buffered().use { output ->
+                                archiveWriter.write(archive, snapshot, output)
+                            }
+                        check(temporaryArchive.length() > 0L) { "Export archive is empty." }
+                        copyToDestination(temporaryArchive, destination)
+                        Result.success(
+                            DataExportSummary(
+                                totalRecords = snapshot.totalRecords(),
+                                includedManagedPhotos = writeSummary.includedManagedPhotos,
+                                metadataOnlyLegacyPhotos =
+                                    writeSummary.metadataOnlyLegacyPhotos,
+                                mediaEntries = writeSummary.mediaEntries,
+                                archiveBytes = temporaryArchive.length()
+                            )
+                        )
+                    } finally {
+                        temporaryArchive.delete()
+                    }
+                } catch (error: CancellationException) {
+                    throw error
+                } catch (error: Exception) {
+                    Result.failure(error)
                 }
-            } catch (error: CancellationException) {
-                throw error
-            } catch (error: Exception) {
-                Result.failure(error)
             }
         }
-
-    private suspend fun readSnapshot(): DatabaseSnapshot = DatabaseSnapshot(
-        workoutSessions = dao.workoutSessions(),
-        workoutSets = dao.workoutSets(),
-        bodyMeasurements = dao.bodyMeasurements(),
-        foodItems = dao.foodItems(),
-        foodEntries = dao.foodEntries(),
-        progressPhotos = dao.progressPhotos(),
-        programs = dao.programs(),
-        programWorkouts = dao.programWorkouts(),
-        programDayExercises = dao.programDayExercises(),
-        nutritionGoals = dao.nutritionGoals(),
-        seedMetadata = dao.seedMetadata()
-    )
 
     private fun copyToDestination(archive: File, destination: Uri) {
         try {
@@ -171,18 +167,13 @@ class DataExportRepository private constructor(
         return managedMainBytes + EXPORT_SAFETY_BYTES
     }
 
-    private fun DatabaseSnapshot.totalRecords(): Int =
-        workoutSessions.size +
-            workoutSets.size +
-            bodyMeasurements.size +
-            foodItems.size +
-            foodEntries.size +
-            progressPhotos.size +
-            programs.size +
-            programWorkouts.size +
-            programDayExercises.size +
-            nutritionGoals.size +
-            seedMetadata.size
+    private fun File.clearChildren(): Boolean {
+        var cleared = true
+        listFiles().orEmpty().forEach { child ->
+            if (!child.deleteRecursively()) cleared = false
+        }
+        return cleared
+    }
 
     private companion object {
         const val EXPORT_CACHE_DIRECTORY = "data_exports"

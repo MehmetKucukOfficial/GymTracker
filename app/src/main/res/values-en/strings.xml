@@ -404,6 +404,36 @@
     <string name="settings_export_error_missing_photo">A managed photo file is missing. Open Progress Photos to reconcile storage, then try again.</string>
     <string name="settings_export_error_generic">The backup could not be created. Check the destination and available storage, then try again.</string>
     <string name="settings_export_filename" translatable="false">GymTracker-backup.zip</string>
+    <string name="settings_restore_title">Restore a backup</string>
+    <string name="settings_restore_body">Replaces current app data with a GymTracker backup that passes version and integrity checks. The selected archive is fully staged before replacement begins.</string>
+    <string name="settings_restore_action">Choose backup</string>
+    <string name="settings_restore_in_progress">Restoring backup</string>
+    <string name="settings_restore_do_not_close">Data is being validated and replaced atomically. Keep the app open until the operation finishes.</string>
+    <string name="settings_restore_confirm_title">Replace current data?</string>
+    <string name="settings_restore_confirm_body">If the selected backup is valid, it will replace current workouts, nutrition, measurements, programs, settings, and photo records. This cannot be undone.</string>
+    <string name="settings_restore_confirm_action">Validate and restore</string>
+    <string name="settings_restore_success">Restored %1$d records and %2$d managed photos.</string>
+    <string name="settings_restore_legacy_warning">%1$d legacy photo was restored as metadata only; you may need to select its image again.</string>
+    <string name="settings_restore_cleanup_warning">Some old photo files could not be removed. Open Progress Photos to run storage reconciliation.</string>
+    <string name="settings_restore_error_storage">There is not enough free space on the device to stage the backup safely.</string>
+    <string name="settings_restore_error_invalid">This is not a valid or supported GymTracker backup. Current data was not changed.</string>
+    <string name="settings_restore_error_rollback">Restore and automatic rollback both failed. Do not create a new backup before closing and reopening the app.</string>
+    <string name="settings_restore_error_generic">The backup could not be restored. Check the file and available storage, then try again; current data was preserved where possible.</string>
+    <string name="settings_delete_title">Delete all data</string>
+    <string name="settings_delete_body">Permanently removes workouts, nutrition entries, measurements, program access and progress, photo records, managed photo files, and settings from this device. The bundled program catalog returns to its defaults.</string>
+    <string name="settings_delete_action">Delete all data</string>
+    <string name="settings_delete_in_progress">Deleting data</string>
+    <string name="settings_delete_do_not_close">The database and settings are being cleared. Keep the app open until the operation finishes.</string>
+    <string name="settings_delete_confirm_title">Permanently delete all data?</string>
+    <string name="settings_delete_confirm_body">This cannot be undone. Before continuing, create a current and verified backup of anything you want to keep.</string>
+    <string name="settings_delete_confirm_instruction">Type %1$s to confirm.</string>
+    <string name="settings_delete_confirm_field">Confirmation text</string>
+    <string name="settings_delete_confirm_action">Delete permanently</string>
+    <string name="settings_delete_confirmation_phrase">DELETE</string>
+    <string name="settings_delete_success">Deleted %1$d records and %2$d managed photo files. Settings were reset to the system default.</string>
+    <string name="settings_delete_cleanup_warning">Some orphaned photo files could not be removed; the app will retry during the next storage reconciliation.</string>
+    <string name="settings_delete_error_rollback">Deletion and automatic rollback both failed. Close and reopen the app, then inspect the current state before adding new data.</string>
+    <string name="settings_delete_error_generic">All data could not be deleted. Existing data was preserved where possible; close and reopen the app before trying again.</string>
     <string name="settings_about_title">About the app</string>
     <string name="settings_version">Version %1$s · Local preview</string>
 

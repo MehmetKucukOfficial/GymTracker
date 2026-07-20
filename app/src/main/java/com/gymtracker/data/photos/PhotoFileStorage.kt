@@ -29,7 +29,13 @@ data class StoredPhoto(
 
 data class PhotoStorageReconciliation(
     val orphanFilesDeleted: Int,
-    val missingManagedUris: Set<String>
+    val missingManagedUris: Set<String>,
+    val orphanFileDeleteFailures: Int = 0
+)
+
+data class RestoredManagedPhoto(
+    val uri: String,
+    val thumbnailUri: String?
 )
 
 class InsufficientPhotoStorageException(
@@ -152,6 +158,62 @@ class PhotoFileStorage private constructor(
             ?.inputStream()
             ?.buffered()
 
+    fun publishRestored(main: File, thumbnail: File?): RestoredManagedPhoto {
+        check(directory.exists() || directory.mkdirs()) { "Fotoğraf klasörü oluşturulamadı." }
+        require(main.isFile && main.length() in 1..MAX_RESTORED_FILE_BYTES) {
+            "Geri yüklenen ana görsel geçersiz."
+        }
+        require(
+            thumbnail == null ||
+                (thumbnail.isFile && thumbnail.length() in 1..MAX_RESTORED_FILE_BYTES)
+        ) {
+            "Geri yüklenen küçük görsel geçersiz."
+        }
+        validateRestoredImage(main)
+        thumbnail?.let(::validateRestoredImage)
+
+        val baseName = "restore-${UUID.randomUUID()}"
+        val mainTemp = File(directory, "$baseName-main$TEMP_SUFFIX")
+        val thumbnailTemp = thumbnail?.let { File(directory, "$baseName-thumb$TEMP_SUFFIX") }
+        var mainDestination: File? = null
+        var thumbnailDestination: File? = null
+        try {
+            main.inputStream().buffered().use { input ->
+                mainTemp.outputStream().buffered().use { output ->
+                    copyWithLimit(input, output, MAX_RESTORED_FILE_BYTES)
+                }
+            }
+            if (thumbnail != null && thumbnailTemp != null) {
+                thumbnail.inputStream().buffered().use { input ->
+                    thumbnailTemp.outputStream().buffered().use { output ->
+                        copyWithLimit(input, output, MAX_RESTORED_FILE_BYTES)
+                    }
+                }
+            }
+            mainDestination = File(directory, "$baseName.jpg")
+            check(mainTemp.renameTo(mainDestination)) {
+                "Geri yüklenen ana görsel yayınlanamadı."
+            }
+            if (thumbnailTemp != null) {
+                thumbnailDestination = File(directory, "$baseName-thumb.jpg")
+                check(thumbnailTemp.renameTo(thumbnailDestination)) {
+                    "Geri yüklenen küçük görsel yayınlanamadı."
+                }
+            }
+            return RestoredManagedPhoto(
+                uri = Uri.fromFile(mainDestination).toString(),
+                thumbnailUri = thumbnailDestination?.let(Uri::fromFile)?.toString()
+            )
+        } catch (error: Throwable) {
+            mainDestination?.delete()
+            thumbnailDestination?.delete()
+            throw error
+        } finally {
+            mainTemp.delete()
+            thumbnailTemp?.delete()
+        }
+    }
+
     fun reconcile(knownManagedUris: Set<String>): PhotoStorageReconciliation {
         check(directory.exists() || directory.mkdirs()) { "Fotoğraf klasörü oluşturulamadı." }
         val managedRoot = directory.canonicalFile
@@ -169,28 +231,47 @@ class PhotoFileStorage private constructor(
             .keys
         val retainedPaths = knownFiles.values.filterNotNull().mapTo(mutableSetOf(), File::getPath)
         var deleted = 0
+        var deleteFailures = 0
         directory.listFiles()?.forEach { file ->
             val shouldDelete = file.isFile &&
                 (file.name.endsWith(TEMP_SUFFIX) || file.canonicalPath !in retainedPaths)
-            if (shouldDelete && file.delete()) deleted++
+            if (shouldDelete) {
+                if (file.delete()) deleted++ else deleteFailures++
+            }
         }
         return PhotoStorageReconciliation(
             orphanFilesDeleted = deleted,
-            missingManagedUris = missing
+            missingManagedUris = missing,
+            orphanFileDeleteFailures = deleteFailures
         )
     }
 
     private fun copyWithLimit(input: InputStream, output: OutputStream): Long {
+        return copyWithLimit(input, output, MAX_FILE_BYTES)
+    }
+
+    private fun copyWithLimit(input: InputStream, output: OutputStream, limit: Long): Long {
         val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
         var total = 0L
         while (true) {
             val read = input.read(buffer)
             if (read < 0) break
             total += read
-            require(total <= MAX_FILE_BYTES) { "Görsel boyutu 25 MB sınırını aşıyor." }
+            require(total <= limit) { "Görsel boyutu güvenlik sınırını aşıyor." }
             output.write(buffer, 0, read)
         }
         return total
+    }
+
+    private fun validateRestoredImage(file: File) {
+        val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        BitmapFactory.decodeFile(file.path, bounds)
+        require(bounds.outWidth > 0 && bounds.outHeight > 0) {
+            "Geri yüklenen görsel çözümlenemedi."
+        }
+        require(
+            bounds.outWidth <= MAX_SOURCE_DIMENSION && bounds.outHeight <= MAX_SOURCE_DIMENSION
+        ) { "Geri yüklenen görsel boyutları desteklenmiyor." }
     }
 
     private fun resolveManagedFile(uriValue: String): File? {
@@ -255,6 +336,7 @@ class PhotoFileStorage private constructor(
         const val TEMP_SUFFIX = ".tmp"
         const val OUTPUT_MIME_TYPE = "image/jpeg"
         const val MAX_FILE_BYTES = 25L * 1024L * 1024L
+        const val MAX_RESTORED_FILE_BYTES = 30L * 1024L * 1024L
         const val REQUIRED_FREE_BYTES = 48L * 1024L * 1024L
         const val MAX_SOURCE_DIMENSION = 20_000
         const val MAX_DISPLAY_DIMENSION = 2_048
