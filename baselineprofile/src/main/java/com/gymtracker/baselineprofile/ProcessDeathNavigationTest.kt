@@ -182,7 +182,7 @@ class ProcessDeathNavigationTest {
         )
         assertTrue("Measurement dialog did not expose weight input", fields.size >= 2)
         fields[1].text = "80"
-        device.pressBack()
+        dismissSoftKeyboardIfVisible()
         clickSemanticChild(By.text(SAVE_LABEL))
         assertNotNull(
             "Chart period controls did not appear after creating a measurement",
@@ -230,6 +230,20 @@ class ProcessDeathNavigationTest {
 
     private fun currentPid(): String =
         device.executeShellCommand("pidof $PACKAGE_NAME").trim()
+
+    private fun dismissSoftKeyboardIfVisible() {
+        val inputMethodState = device.executeShellCommand("dumpsys input_method")
+        if (!inputMethodState.contains("mInputShown=true")) return
+
+        device.pressBack()
+        assertTrue(
+            "Soft keyboard did not close without dismissing the measurement dialog",
+            waitUntil(PROCESS_TIMEOUT_MS) {
+                !device.executeShellCommand("dumpsys input_method")
+                    .contains("mInputShown=true")
+            }
+        )
+    }
 
     private fun waitUntil(timeoutMs: Long, predicate: () -> Boolean): Boolean {
         val deadline = SystemClock.uptimeMillis() + timeoutMs
