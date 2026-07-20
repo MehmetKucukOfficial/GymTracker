@@ -143,23 +143,7 @@ class ProcessDeathNavigationTest {
         device.pressHome()
         device.waitForIdle()
 
-        // Android protects the immediately previous app at a stronger OOM adjustment. Opening a
-        // second system task moves the target from "previous" to a cached/background process, so
-        // `am kill` has deterministic platform semantics on both local and hosted emulators.
-        val settingsOutput = device.executeShellCommand(
-            "am start -W -a android.settings.SETTINGS"
-        )
-        assertTrue(
-            "System Settings could not be opened to background the target task: $settingsOutput",
-            settingsOutput.contains("Status: ok")
-        )
-        device.waitForIdle()
-
-        device.executeShellCommand("am kill $PACKAGE_NAME")
-        assertTrue(
-            "Target process $originalPid was not killed while its task was backgrounded",
-            waitUntil(PROCESS_TIMEOUT_MS) { currentPid().isEmpty() }
-        )
+        killCachedTargetProcess(originalPid)
 
         val restoreOutput = device.executeShellCommand("am task lock $taskId")
         assertTrue(
@@ -171,6 +155,67 @@ class ProcessDeathNavigationTest {
         assertDestinationVisible(expectedText)
         afterRestore()
     }
+
+    private fun killCachedTargetProcess(originalPid: String) {
+        val diagnostics = mutableListOf<String>()
+
+        repeat(PACKAGE_KILL_ATTEMPTS) { attempt ->
+            val settingsOutput = device.executeShellCommand(
+                "am start -W -a android.settings.SETTINGS"
+            )
+            assertTrue(
+                "System Settings could not be opened to background the target task: " +
+                    settingsOutput,
+                settingsOutput.contains("Status: ok")
+            )
+            assertTrue(
+                "System Settings did not become the resumed activity before process kill",
+                waitUntil(SYSTEM_TASK_TIMEOUT_MS) { isSettingsResumed() }
+            )
+            device.waitForIdle()
+
+            val killOutput = device.executeShellCommand("am kill $PACKAGE_NAME").trim()
+            val killed = waitUntil(PACKAGE_KILL_TIMEOUT_MS) { currentPid().isEmpty() }
+            diagnostics +=
+                "am kill attempt=${attempt + 1}, output=$killOutput, pid=${currentPid()}"
+            if (killed) return
+
+            // Re-entering a system task gives ActivityManager another scheduling boundary before
+            // retrying. The GymTracker task is never force-stopped, so its saved task state remains
+            // eligible for the restoration assertion below.
+            device.pressHome()
+            device.waitForIdle()
+        }
+
+        // `am kill-all` uses ActivityManager's cached-process path and preserves recent tasks. It
+        // is a bounded fallback for hosted-emulator cases where a package-scoped kill races with an
+        // OOM-adjustment update. The assertions below still require the original PID to disappear,
+        // the same task ID to return, and a different target PID to be created.
+        val killAllOutput = device.executeShellCommand("am kill-all").trim()
+        val killed = waitUntil(PACKAGE_KILL_TIMEOUT_MS) { currentPid().isEmpty() }
+        diagnostics += "am kill-all output=$killAllOutput, pid=${currentPid()}"
+
+        assertTrue(
+            "Target process $originalPid was not killed while its task was backgrounded.\n" +
+                diagnostics.joinToString(separator = "\n") +
+                "\nResumed activity:\n" +
+                device.executeShellCommand("dumpsys activity activities | head -n 40"),
+            killed
+        )
+    }
+
+    private fun isSettingsResumed(): Boolean =
+        device.executeShellCommand("dumpsys activity activities")
+            .lineSequence()
+            .any { line ->
+                val resumedLine = line.trimStart()
+                (
+                    resumedLine.startsWith("topResumedActivity=") ||
+                        resumedLine.startsWith("ResumedActivity:") ||
+                        resumedLine.startsWith("Resumed:")
+                    ) &&
+                    line.contains(SYSTEM_SETTINGS_PACKAGE)
+            }
 
     private fun ensureMeasurementExists() {
         if (device.hasObject(By.text(NINETY_DAY_LABEL))) return
@@ -256,8 +301,12 @@ class ProcessDeathNavigationTest {
 
     private companion object {
         const val DESTINATION_TIMEOUT_MS = 15_000L
-        const val PROCESS_TIMEOUT_MS = 10_000L
+        const val PROCESS_TIMEOUT_MS = 20_000L
+        const val SYSTEM_TASK_TIMEOUT_MS = 10_000L
+        const val PACKAGE_KILL_TIMEOUT_MS = 5_000L
+        const val PACKAGE_KILL_ATTEMPTS = 3
         const val POLL_INTERVAL_MS = 200L
+        const val SYSTEM_SETTINGS_PACKAGE = "com.android.settings"
 
         val DATE_HEADING = Pattern.compile(
             "\\d{1,2}\\s+\\p{L}+\\s+\\d{4},\\s+\\p{L}+",
