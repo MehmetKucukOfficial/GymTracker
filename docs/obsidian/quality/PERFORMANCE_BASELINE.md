@@ -2,8 +2,8 @@
 type: quality
 status: current
 implementation_status: measured-emulator
-verified_commit: 26696b9
-updated: 2026-07-20
+verified_commit: b812bec
+updated: 2026-07-28
 source_files:
   - baselineprofile/build.gradle.kts
   - baselineprofile/src/main/java/com/gymtracker/baselineprofile/BaselineProfileGenerator.kt
@@ -12,6 +12,7 @@ source_files:
   - baselineprofile/src/main/java/com/gymtracker/baselineprofile/JourneyBenchmark.kt
   - baselineprofile/src/main/java/com/gymtracker/baselineprofile/PhotoGridBenchmark.kt
   - baselineprofile/src/main/java/com/gymtracker/baselineprofile/ProcessDeathNavigationTest.kt
+  - .github/workflows/android-ci.yml
   - app/src/release/generated/baselineProfiles/baseline-prof.txt
   - app/src/release/generated/baselineProfiles/startup-prof.txt
 tags: [gymtracker/quality, gymtracker/performance, gymtracker/release]
@@ -27,6 +28,7 @@ tags: [gymtracker/quality, gymtracker/performance, gymtracker/release]
 - Beş tekrar ve Perfetto trace üretilir. CUJ helper’ları profil üretici ve benchmark tarafından ortak kullanılır.
 - Aynı ayrı-process test modülü, performans metriğinden bağımsız `ProcessDeathNavigationTest` ile hedef uygulamanın PID değişimi + Android task restorasyonunu kabul kapısına bağlar; bu dört test macrobenchmark ölçümü değildir.
 - PR20 merge commit `625489a` otomatik master koşusu `29762392465` içinde ilk iki test hosted API 34 üzerinde geçti. PR22 paketi Nutrition tarihi ve Measurements checked period restorasyonuyla 4 teste çıktı; boş veritabanında klavye görünürlüğünü koşullu ele alan `a4f7bd9` ile yerelde 4/4 geçti.
+- CI sırası veri-fixture sözleşmesinin parçasıdır: 120 fotoğraflı gerçek reboot doğrulamasından hemen sonra grid benchmark/process-death paketi çalışır; uygulama verisini `pm clear` ile değiştiren restore process-kill kabulü benchmark’ın arkasında kalır. PR28 ilk hosted koşusu `30379216269`, bu sıra ters olduğunda kaydırılamayan tek fotoğraflı grid nedeniyle RenderThread dilimi üretemedi; `b812bec` fixture sırasını düzeltti.
 
 ## İlk API 34 emülatör baseline’ı
 

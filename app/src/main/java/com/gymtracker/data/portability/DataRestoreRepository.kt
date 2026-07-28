@@ -46,7 +46,8 @@ class DataRestoreRepository private constructor(
     private val settingsRepository: SettingsRepository,
     private val archiveReader: PortableArchiveReader,
     private val photoStorage: PhotoFileStorage,
-    private val availableBytes: (File) -> Long
+    private val availableBytes: (File) -> Long,
+    private val onReadyToCommit: suspend () -> Unit
 ) {
     @Inject
     constructor(
@@ -63,7 +64,8 @@ class DataRestoreRepository private constructor(
         settingsRepository = settingsRepository,
         archiveReader = archiveReader,
         photoStorage = photoStorage,
-        availableBytes = { directory -> StatFs(directory.path).availableBytes }
+        availableBytes = { directory -> StatFs(directory.path).availableBytes },
+        onReadyToCommit = {}
     )
 
     internal constructor(
@@ -73,7 +75,8 @@ class DataRestoreRepository private constructor(
         settingsRepository: SettingsRepository,
         archiveReader: PortableArchiveReader,
         photoStorage: PhotoFileStorage,
-        availableBytes: Long
+        availableBytes: Long,
+        onReadyToCommit: suspend () -> Unit = {}
     ) : this(
         context = context,
         database = database,
@@ -81,7 +84,8 @@ class DataRestoreRepository private constructor(
         settingsRepository = settingsRepository,
         archiveReader = archiveReader,
         photoStorage = photoStorage,
-        availableBytes = { availableBytes }
+        availableBytes = { availableBytes },
+        onReadyToCommit = onReadyToCommit
     )
 
     suspend fun restoreFrom(source: Uri): Result<DataRestoreSummary> =
@@ -157,6 +161,7 @@ class DataRestoreRepository private constructor(
                         }
                     val restoredSnapshot = staged.archive.toDatabaseSnapshot(publishedUris)
                     val restoredTheme = ThemeMode.valueOf(staged.archive.settings.themeMode)
+                    onReadyToCommit()
                     return withContext(NonCancellable) {
                         commitOrRollback(
                             restoredSnapshot = restoredSnapshot,

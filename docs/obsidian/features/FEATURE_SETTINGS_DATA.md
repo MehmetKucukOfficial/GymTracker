@@ -2,7 +2,7 @@
 type: feature
 status: current
 implementation_status: active
-verified_commit: 7e9d4c0
+verified_commit: 32c7a4c
 updated: 2026-07-28
 source_files:
   - app/src/main/java/com/gymtracker/data/settings/AppSettings.kt
@@ -13,6 +13,7 @@ source_files:
   - app/src/main/java/com/gymtracker/data/portability/PortableArchiveReader.kt
   - app/src/main/java/com/gymtracker/data/portability/PortableArchiveValidator.kt
   - app/src/main/java/com/gymtracker/data/portability/DataRestoreRepository.kt
+  - app/src/main/java/com/gymtracker/data/portability/DataPortabilityEntryPoint.kt
   - app/src/main/java/com/gymtracker/data/portability/DataDeletionRepository.kt
   - app/src/main/java/com/gymtracker/data/photos/PhotoFileStorage.kt
   - app/src/main/java/com/gymtracker/di/SettingsModule.kt
@@ -29,6 +30,8 @@ source_files:
   - app/src/androidTest/java/com/gymtracker/data/portability/DataPortabilityDaoTest.kt
   - app/src/androidTest/java/com/gymtracker/data/portability/DataExportRepositoryTest.kt
   - app/src/androidTest/java/com/gymtracker/data/portability/DataRestoreRepositoryTest.kt
+  - app/src/androidTest/java/com/gymtracker/data/portability/RestoreProcessKillAcceptanceTest.kt
+  - .github/scripts/restore-process-kill-acceptance.sh
   - app/src/androidTest/java/com/gymtracker/data/portability/DataDeletionRepositoryTest.kt
   - app/src/androidTest/java/com/gymtracker/ui/navigation/NavigationSmokeTest.kt
 tags: [gymtracker/feature, gymtracker/settings, gymtracker/data]
@@ -57,7 +60,7 @@ tags: [gymtracker/feature, gymtracker/settings, gymtracker/data]
 - Birim sistemi ancak bütün kg/cm gösterim ve girişleri dönüşüm sözleşmesine bağlandığında kullanıcıya açılacak.
 - Haftanın ilk günü ancak takvim/hafta sorgularını gerçekten etkilediğinde kullanıcıya açılacak.
 - Varsayılan dinlenme süresi ve haptic tercihleri, workout rest-timer davranışıyla aynı dilimde eklenecek.
-- Gelecek format/schema sürümleri için açık archive migrator zinciri, gerçek süreç-kesilmesi kabul fixture'ı ve geri yükleme ilerleme yüzdesi sonraki dayanıklılık dilimleridir.
+- Gelecek format/schema sürümleri için açık archive migrator zinciri ve geri yükleme ilerleme yüzdesi sonraki dayanıklılık dilimleridir.
 
 ## Kabul
 
@@ -74,6 +77,7 @@ tags: [gymtracker/feature, gymtracker/settings, gymtracker/data]
 - Geçen: PR26 tam API 34 regresyon paketi 95/95, 0 failure/error/skipped; altı kalıcı golden baseline dahil.
 - Geçen: PR26 hosted run `29783838425`; 95 app + 5 benchmark/process, reboot 1+1, dört process-death ve beş Perfetto trace, 0 failure/error/skipped; merge commit `a370f82`.
 - Geçen: PR27 English/light restore-lock golden’ı; restore sırasında export/restore/delete eylemlerinin disabled semantics ve piksel görünümü.
-- Bekleyen: gerçek süreç-kesilmesi fixture'ı ve davranışa bağlı diğer tercihler.
+- Geçen: PR28 host-orchestrated seed/kill/verify kabulü; medya yayınından sonra ve Room commit’inden önce hedef PID gerçekten öldürülür, yeni süreç eski Room/tema/mevcut fotoğrafı korur ve iki orphan medya + yarım restore cache’ini temizler.
+- Bekleyen: gerçek Android backup transport restore deneyi ve davranışa bağlı diğer tercihler.
 
 Bağlar: [[ARCH_STATE_DATA_FLOW]], [[ARCH_DATABASE]], [[ARCH_NAVIGATION]], [[DESIGN_SYSTEM_GRAPH]], [[ROADMAP_EXECUTION_GRAPH]].

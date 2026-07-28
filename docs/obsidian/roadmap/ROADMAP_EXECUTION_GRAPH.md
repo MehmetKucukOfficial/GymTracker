@@ -2,7 +2,7 @@
 type: roadmap
 status: current
 implementation_status: active
-verified_commit: 7e9d4c0
+verified_commit: 32c7a4c
 updated: 2026-07-28
 tags: [gymtracker/roadmap, gymtracker/workflow]
 ---
@@ -207,9 +207,10 @@ Kabul: hosted 37 JVM + 75 API 34 normal app instrumentation + 2 gerçek reboot f
 
 1. Tamamlandı: PR25 format v1 manuel export tam cihaz/hosted kabulü, artifact denetimi ve merge
 2. Tamamlandı: PR26 staged/atomik restore ve güçlü onaylı tüm veriyi silme tam/hosted kabulü
-3. Aktif: PR27 Photos/Load/Settings golden, loading/disabled ve erişilebilirlik yayılımı
-4. Sonraki: restore süreç-kesilmesi fixture’ı ve gerçek backup transport restore deneyi
-5. Harici: production secret + Play internal-track smoke, branch protection ve fiziksel cihaz performans kabulü
+3. Tamamlandı: PR27 Photos/Load/Settings golden, loading/disabled ve erişilebilirlik yayılımı; hosted run `30375520329`, merge commit `7a79978`
+4. Aktif: PR28 gerçek restore süreç-kesilmesi fixture’ı; code baseline `32c7a4c`, CI-order head `b812bec`; yerel ve hosted seed/kill/verify yeşil, temiz hosted benchmark tekrarı bekleniyor
+5. Sonraki: gerçek Android backup transport restore deneyi
+6. Harici: production secret + Play internal-track smoke, branch protection ve fiziksel cihaz performans kabulü
 
 ## PR 24 — Settings + architecture foundation
 
@@ -235,8 +236,15 @@ Kabul: son `ciQuality` 48/48 JVM ile yeşil; reader 6/6; restore/delete/DAO/Sett
 ## PR 27 — Photos/Load/Settings state golden + accessibility
 
 Node: [[FEATURE_PROGRESS_PHOTOS]], [[FEATURE_MUSCLE_LOAD]], [[FEATURE_SETTINGS_DATA]], [[DESIGN_SYSTEM_GRAPH]], [[TEST_MATRIX]].
-Durum: code baseline `7e9d4c0`, `codex/design-golden-expansion` yerel dalında; graph commit, güncel master merge’i ve hosted kabulü sırada.
+Durum: code baseline `7e9d4c0`; GitHub PR #21 hosted run `30375520329` artifact denetiminden geçti ve merge commit `7a79978` ile `master`a alındı. Kaynak dal korundu.
 Çıktı: fotoğraf kaydı sırasında import/silme/yükseltme mutation kilidi; harita ve renk-bağımsız Muscle Load satır semantics doğrulaması; sabit animasyon saatli Photos saving, Muscle Load content/loading ve Settings restore-lock kalıcı golden’ları; toplam golden sayısı on.
-Kabul: hedefli API 34 paket 11/11; tam `ciQuality` 48/48 JVM ile yeşil; tam API 34 regresyonu 100/100, 0 failure/error/skipped.
+Kabul: hedefli API 34 paket 11/11; tam `ciQuality` 48/48 JVM ile yeşil; tam API 34 regresyonu 100/100, hosted artifact app 100 + benchmark/process 5, reboot 1+1 ve beş trace; 0 failure/error/skipped.
+
+## PR 28 — Restore process-kill acceptance
+
+Node: [[FEATURE_SETTINGS_DATA]], [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]], [[TEST_MATRIX]].
+Durum: code baseline `32c7a4c`, CI-order head `b812bec`, `codex/restore-process-kill` dalında. Draft GitHub PR #22 açık; hosted run `30379216269` restore kabulünü geçti, fixture sırası düzeltmesinden sonraki temiz cihaz tekrarı sırada.
+Çıktı: restore medya yayınından sonra ve Room/tema commit’inden önce deterministik checkpoint; host tarafından gerçek target PID force-stop; yeni süreçte eski Room/tema/mevcut fotoğraf korunması; iki yayınlanmış orphan medya ve yarım restore cache recovery kanıtı; CI artifact’lerinde seed/trigger/verify çıktıları.
+Kabul: yerel `ciQuality` 48/48 JVM, lint 0 hata, minified release/profile; temiz API 34 normal paket 100/100; yerel ve hosted host seed 1/1 + gerçek PID kill + verify 1/1. İlk hosted cihaz işinde app 100/100 ve reboot 1+1 geçti; restore `pm clear` sonrasında kaydırılamayan tek fotoğraflı grid benchmark’ı RenderThread dilimi üretemedi. `b812bec` benchmark’ı 120 fotoğraflı reboot fixture’ının hemen arkasına aldı; tam hosted kapı tekrar doğrulanacak.
 
 Detaylı süre: [[GELISTIRME_MASTER_PLANI#18. Fazlar ve süre tahmini]]. Aktif durum: [[SESSION_HANDOFF]].

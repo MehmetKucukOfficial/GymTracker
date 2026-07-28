@@ -2,10 +2,10 @@
 type: handoff
 status: ready
 implementation_status: active
-code_baseline: 7e9d4c0
+code_baseline: b812bec
 updated: 2026-07-28
-active_phase: "Phase 8 - PR27 state golden/accessibility acceptance"
-next_pr: "Publish and merge PR27, then close local resilience gates"
+active_phase: "Phase 8 - PR28 restore process-kill acceptance"
+next_pr: "Publish and merge PR28, then run Android backup transport acceptance"
 primary_nodes:
   - FEATURE_PROGRESS_PHOTOS
   - ADR_004_PERSISTENT_PHOTO_STORAGE
@@ -22,6 +22,8 @@ tags: [gymtracker/workflow, gymtracker/session]
 
 ## Şu anki durum
 
+- PR27/GitHub PR #21 hosted run `30375520329` tamamen yeşil ve artifact denetiminden geçti: 100/100 app, 5/5 benchmark/process, reboot seed/verify 1+1 ve toplam 62.338.053 byte beş Perfetto trace. Merge commit `7a79978`; kaynak dal korundu.
+- PR28 code baseline `32c7a4c`, CI-order head `b812bec`, `codex/restore-process-kill`: restore medya yayınından sonra/Room commit’inden önce deterministik checkpoint, gerçek target PID force-stop ve yeni süreç doğrulaması tamamlandı. Yerel seed 1/1 + kill + verify 1/1, `ciQuality` 48/48 JVM ve temiz API 34 paketi 100/100 geçti. Hosted run `30379216269` içinde app 100/100, reboot 1+1 ve restore seed/kill/verify 1+1 yeşil; yalnız grid benchmark fixture sırası nedeniyle düştü ve sıra düzeltildi.
 - GitHub PR #20/PR26 hosted run `29783838425` artifact denetiminden geçti: 95/95 app, 5/5 benchmark/process, reboot seed/verify 1+1 ve 59.689.404 byte beş Perfetto trace. Merge commit `a370f82`; kaynak dal korundu.
 - PR27 code baseline `7e9d4c0`, `codex/design-golden-expansion`: fotoğraf kaydı sırasında çakışan mutation kilidi, harita/satır erişilebilir açıklamaları ve dört yeni kalıcı state golden tamamlandı. Hedefli 11/11, `ciQuality` 48/48 JVM ve tam API 34 paketi 100/100 geçti.
 - İlk PR27 tam cihaz turunda cold-boot emulator `isSleeping=true` olduğu için 42 veri testinden sonra 58 Compose Activity’si topluca durdu. Wake/keyguard/stay-on doğrulamasından sonra aynı kaynak ve APK ile 100/100 geçti; kod hatası değildi.
@@ -61,7 +63,7 @@ tags: [gymtracker/workflow, gymtracker/session]
 
 ## Sıradaki önerilen iş
 
-PR27 graph commit’ini tamamla, `origin/master`daki PR26 merge commit’ini mevcut dala `--no-ff` ile al, push/draft PR/hosted artifact kabulünü tamamla ve merge commit ile `master`a al. Ardından restore process-kill ve gerçek Android backup transport kanıtına geç.
+PR28 graph güncellemesini pushla, `b812bec` fixture sırası düzeltmesinin temiz hosted cihaz koşusunu ve artifact’lerini denetle, PR #22’yi merge commit ile `master`a al. Ardından hazır PR29 Android backup transport dalını güncel master ile birleştirip yayınla.
 
 ## Açık P0/P1
 
@@ -69,7 +71,7 @@ PR27 graph commit’ini tamamla, `origin/master`daki PR26 merge commit’ini mev
 - Kalan ekranlarda disabled/loading golden baseline yayılımı
 - Progress Photos gerçek Android backup transport restore deneyi
 - Gerçek production secret/Play internal-track smoke, branch protection ve fiziksel cihaz benchmark kabulü
-- Format v1 restore/delete gerçek süreç-kesilmesi zamanlama fixture'ı
+- PR28 tam hosted cihaz kapısının fixture-sırası düzeltmesi sonrası tekrarı
 
 ## Son doğrulama
 
@@ -89,6 +91,9 @@ PR27 graph commit’ini tamamla, `origin/master`daki PR26 merge commit’ini mev
 - Kalıcı görsel kapı: iki Progress Hub, Programs, Workout, `nutrition_over_goal_dark_tr_font200.png` ve `measurements_chart_topbar_light_en.png` olmak üzere altı baseline API 34 üzerinde pixel tolerance ile geçti.
 - PR26 hosted run `29783838425`: 95 app + 5 benchmark/process, reboot 1+1, dört process-death ve beş trace; merge commit `a370f82`.
 - PR27 yerel: `ciQuality` 48/48 JVM; hedefli 11/11; tam API 34 100/100; dört yeni baseline ile kalıcı golden toplamı on.
+- PR27 hosted run `30375520329`: app 100/100, benchmark/process 5/5, reboot 1+1, beş Perfetto trace; merge commit `7a79978`.
+- PR28 yerel: `ciQuality` 48/48 JVM, lint 0 hata; temiz API 34 100/100; host seed 1/1 → PID `18003` pre-commit kill → yeni süreç verify 1/1.
+- PR28 hosted run `30379216269`: quality başarılı; app 100/100, reboot seed/verify 1+1 ve restore seed 1/1 → PID `2227` kill → yeni süreç verify 1/1 başarılı. `PhotoGridBenchmark`, restore fixture’ı 120 fotoğraflı veriyi temizlediği için RenderThread dilimi bulamadı; `b812bec` benchmark’ı restore-kill önüne taşıdı.
 
 ## Handoff güncelleme şablonu
 
@@ -101,6 +106,41 @@ Graph notes updated:
 Next concrete action:
 Blockers:
 ```
+
+## 2026-07-28 - PR28 restore process-kill acceptance
+
+Completed:
+- Added an internal Hilt entry point so the host fixture uses the target process’s production Room, DataStore, archive and managed-media singletons.
+- Added a deterministic restore checkpoint after managed media publication and before Room/theme commit.
+- Added seed, blocked-trigger and new-process verify phases plus a host script that records and force-stops the real target PID.
+- Proved the interrupted restore keeps the old Room snapshot, light theme and current managed photo; reconciliation removes two newly published orphan files and the next restore clears the interrupted cache.
+- Audited and merged PR27/GitHub PR #21 with merge commit `7a79978`.
+- Audited PR28 hosted run `30379216269`: the new restore process-kill acceptance passed end to end. Moved the benchmark before the data-clearing restore fixture so it keeps the 120-photo reboot dataset.
+
+Files changed:
+- `DataRestoreRepository.kt`, `DataPortabilityEntryPoint.kt`.
+- `RestoreProcessKillAcceptanceTest.kt`.
+- `.github/scripts/restore-process-kill-acceptance.sh`, `.github/workflows/android-ci.yml`.
+- Settings/ADR/test/risk/roadmap/atlas/impact/start/handoff graph nodes.
+
+Tests run/results:
+- Host script: seed 1/1, target PID `18003` killed at the pre-commit checkpoint, new-process verify 1/1.
+- Clean full API 34 package: 100/100, 0 failure/error/skipped. A prior post-fixture run saw the two retained current-photo files as extra orphans; clearing app data reproduced the CI ordering and passed.
+- `ciQuality`: success; 48/48 JVM, lint 0 error, debug, minified APK/AAB, R8 mapping and embedded profile.
+- PR27 hosted artifact audit: 100 app + 5 benchmark/process, reboot 1+1 and five traces, all green.
+- PR28 hosted artifact audit: app 100/100, reboot 1+1, restore seed 1/1, target PID `2227` killed, new-process verify 1/1. Full device job retry remains because the first run benchmarked after the fixture had cleared the 120-photo dataset.
+
+Risks changed:
+- R18 improves to mitigated++++ locally and hosted: the remaining atomicity timing gap has a real OS process-kill proof. The full hosted device job still needs a green rerun after the independent benchmark-order correction.
+
+Next concrete action:
+- Push graph notes, audit the clean hosted rerun, then merge PR28 with a merge commit.
+- Rebase-free merge the updated master into the already prepared PR29 Android backup transport branch, publish it and audit its hosted transport artifacts.
+
+Blockers:
+- Branch protection API returns HTTP 403 because this private repository requires GitHub Pro or public visibility.
+- No production release secrets are configured; Play internal-track smoke remains external.
+- Only an emulator is attached; physical-device performance acceptance remains external.
 
 ## 2026-07-28 - PR27 state golden and accessibility expansion
 

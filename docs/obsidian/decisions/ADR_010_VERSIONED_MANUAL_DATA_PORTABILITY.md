@@ -2,8 +2,8 @@
 type: adr
 status: accepted
 implementation_status: current
-verified_commit: 4590168
-updated: 2026-07-20
+verified_commit: 32c7a4c
+updated: 2026-07-28
 source_files:
   - app/src/main/java/com/gymtracker/data/portability/DataPortabilityDao.kt
   - app/src/main/java/com/gymtracker/data/portability/PortableArchive.kt
@@ -12,6 +12,7 @@ source_files:
   - app/src/main/java/com/gymtracker/data/portability/PortableArchiveReader.kt
   - app/src/main/java/com/gymtracker/data/portability/PortableArchiveValidator.kt
   - app/src/main/java/com/gymtracker/data/portability/DataRestoreRepository.kt
+  - app/src/main/java/com/gymtracker/data/portability/DataPortabilityEntryPoint.kt
   - app/src/main/java/com/gymtracker/data/portability/DataDeletionRepository.kt
   - app/src/main/java/com/gymtracker/data/photos/PhotoFileStorage.kt
   - app/src/main/java/com/gymtracker/ui/screens/settings/SettingsViewModel.kt
@@ -20,6 +21,8 @@ source_files:
   - app/src/androidTest/java/com/gymtracker/data/portability/DataPortabilityDaoTest.kt
   - app/src/androidTest/java/com/gymtracker/data/portability/DataExportRepositoryTest.kt
   - app/src/androidTest/java/com/gymtracker/data/portability/DataRestoreRepositoryTest.kt
+  - app/src/androidTest/java/com/gymtracker/data/portability/RestoreProcessKillAcceptanceTest.kt
+  - .github/scripts/restore-process-kill-acceptance.sh
   - app/src/androidTest/java/com/gymtracker/data/portability/DataDeletionRepositoryTest.kt
 tags: [gymtracker/decision, gymtracker/data, gymtracker/portability, gymtracker/privacy]
 ---
@@ -43,6 +46,7 @@ GymTracker local-first çalışır. Room verisi ile uygulama tarafından yöneti
 9. Yönetilen medya yeni benzersiz dosyalara yayınlandıktan sonra on bir tablo tek `replaceAll` Room transaction'ında değiştirilir. Tema yazımı başarısız olursa eski DB/tema geri yazılır ve yeni dosyalar silinir; rollback de başarısızsa ayrı kritik hata üretilir. Eski medya yalnız kalıcı başarıdan sonra temizlenir.
 10. Export, restore ve silme tek uygulama-geneli mutex altında seri çalışır. Ayrılmış cache dizinindeki süreç-kesilmesi artıkları bir sonraki işlem başında temizlenir; canlı DB'ye parça parça import yapılmaz.
 11. “Tüm veriyi sil” geri yüklemeden ayrı ve yerelleştirilmiş kesin sözcük yazmayı gerektiren güçlü onaylı işlemdir. Kullanıcı verisi temizlenir, yerleşik program kataloğu aynı Room transaction'ında varsayılana döner, tema `SYSTEM` yapılır ve yönetilen/artık medya temizlenir. DB/ayar başarısızlığında eski snapshot telafi edici rollback ile geri yüklenir.
+12. Host-orchestrated kabul fixture’ı restore’u medya yayınından sonra fakat Room/tema commit’inden önce durdurur. Host hedef PID’yi `am force-stop` ile öldürür; yeni süreç eski snapshot/tema/mevcut medya korunmasını, yarım cache temizliğini ve yayınlanmış orphan medyanın reconciliation ile kaldırılmasını kanıtlar.
 
 ## Sonuçlar
 
@@ -58,6 +62,7 @@ GymTracker local-first çalışır. Room verisi ile uygulama tarafından yöneti
 - `DataExportRepositoryTest`: gerçek seçili dosyaya okunabilir ZIP kopyası, tema/veri içeriği, geçici dosya temizliği ve düşük alanda hedefin bozulmaması.
 - `PortableArchiveReaderTest`: strict manifest, güvenli path, ilişki doğrulama, medya çıkarma/CRC ve managed/legacy DB eşlemesi.
 - `DataRestoreRepositoryTest`: gerçek export→mutate→restore, bozuk ZIP'te değişiklik yapmama, yeni yönetilen dosyalara yayın ve eski dosya temizliği.
+- `RestoreProcessKillAcceptanceTest` + `restore-process-kill-acceptance.sh`: seed 1/1, gerçek pre-commit PID kill ve yeni süreç verify 1/1; eski veri/tema/medya korunması, iki orphan dosya ve yarım cache temizliği.
 - `DataDeletionRepositoryTest`: kullanıcı tabloları/tema/yönetilen medya temizliği ve varsayılan program kataloğunun tutarlı yeniden kurulması.
 - `DataPortabilityDaoTest`: geçersiz incoming FK yazımında transaction'ın eski veriyi geri getirmesi.
 - PR25 yerel kabulü 42 JVM + 85 cihaz; PR26 hedefli restore/delete/DAO/Settings/localization paketi 16/16. PR26 tam ve hosted kapıları kayda geçmeden nihai kabul iddiası yapılmaz.
