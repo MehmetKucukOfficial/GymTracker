@@ -2,8 +2,8 @@
 type: feature
 status: current
 implementation_status: active
-verified_commit: 4590168
-updated: 2026-07-20
+verified_commit: 7e9d4c0
+updated: 2026-07-28
 source_files:
   - app/src/main/java/com/gymtracker/data/settings/AppSettings.kt
   - app/src/main/java/com/gymtracker/data/portability/DataPortabilityDao.kt
@@ -23,6 +23,7 @@ source_files:
   - app/src/main/java/com/gymtracker/ui/screens/home/HomeScreen.kt
   - app/src/test/java/com/gymtracker/data/settings/AppSettingsTest.kt
   - app/src/androidTest/java/com/gymtracker/ui/screens/settings/SettingsScreenTest.kt
+  - app/src/androidTest/java/com/gymtracker/ui/golden/StateCoverageGoldenTest.kt
   - app/src/androidTest/java/com/gymtracker/data/settings/SettingsRepositoryTest.kt
   - app/src/test/java/com/gymtracker/data/portability/PortableArchiveWriterTest.kt
   - app/src/androidTest/java/com/gymtracker/data/portability/DataPortabilityDaoTest.kt
@@ -71,6 +72,8 @@ tags: [gymtracker/feature, gymtracker/settings, gymtracker/data]
 - Geçen: temiz reboot sonrası hedefli Progress Hub golden 2/2 ve tam API 34 regresyon paketi 85/85, 0 failure/error/skipped.
 - Geçen: PR26 hedefli restore/delete/DAO/Settings/localization paketi 16/16; gerçek export→mutate→restore, yönetilen ana/thumbnail yeniden yayınlama, bozuk arşivde mevcut veriyi koruma, FK hatasında Room rollback, güçlü onay sözcüğü ve tüm-veri temizliği kanıtları.
 - Geçen: PR26 tam API 34 regresyon paketi 95/95, 0 failure/error/skipped; altı kalıcı golden baseline dahil.
-- Bekleyen: PR26 hosted kabulü, gerçek süreç-kesilmesi fixture'ı ve davranışa bağlı diğer tercihler.
+- Geçen: PR26 hosted run `29783838425`; 95 app + 5 benchmark/process, reboot 1+1, dört process-death ve beş Perfetto trace, 0 failure/error/skipped; merge commit `a370f82`.
+- Geçen: PR27 English/light restore-lock golden’ı; restore sırasında export/restore/delete eylemlerinin disabled semantics ve piksel görünümü.
+- Bekleyen: gerçek süreç-kesilmesi fixture'ı ve davranışa bağlı diğer tercihler.
 
 Bağlar: [[ARCH_STATE_DATA_FLOW]], [[ARCH_DATABASE]], [[ARCH_NAVIGATION]], [[DESIGN_SYSTEM_GRAPH]], [[ROADMAP_EXECUTION_GRAPH]].

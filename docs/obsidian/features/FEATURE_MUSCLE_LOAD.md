@@ -2,8 +2,8 @@
 type: feature
 status: current
 implementation_status: current
-verified_commit: 43b523a
-updated: 2026-07-20
+verified_commit: 7e9d4c0
+updated: 2026-07-28
 source_files:
   - app/src/main/java/com/gymtracker/ui/screens/fatigue/FatigueScreen.kt
   - app/src/main/java/com/gymtracker/ui/screens/fatigue/FatigueViewModel.kt
@@ -14,6 +14,8 @@ source_files:
   - app/src/main/java/com/gymtracker/data/dao/MeasurementDao.kt
   - app/src/main/java/com/gymtracker/data/home/HomeDashboardPeriod.kt
   - app/src/main/java/com/gymtracker/domain/MuscleGroup.kt
+  - app/src/androidTest/java/com/gymtracker/ui/screens/fatigue/MuscleLoadScreenTest.kt
+  - app/src/androidTest/java/com/gymtracker/ui/golden/StateCoverageGoldenTest.kt
 related_data: [WorkoutSet, WorkoutSession]
 tags: [gymtracker/feature, gymtracker/feature/workload]
 ---
@@ -45,7 +47,7 @@ Son yedi takvim günündeki yalnız `COMPLETED` seansların tamamlanmış setler
 - Load query/calculator hâlâ egzersiz adıyla eşleşir; persisted `exerciseId` projeksiyona taşınmalıdır.
 - RPE/RIR ve kişisel haftalık hacim baseline’ı yoktur.
 - Vücut ağırlığı kalibrasyonu uygulanmıştır; hareket türüne özel bodyweight oranı ve ek ağırlığın birleşik hesabı ileride kalibre edilmelidir.
-- Kalıcı screenshot golden, TalkBack cihaz turu ve daha geniş metodoloji kalibrasyonu bekler.
+- TalkBack cihaz turu ve daha geniş metodoloji kalibrasyonu bekler. English/light içerik ile Turkish dark/%200 loading kalıcı golden’ları PR27’de eklendi.
 
 ## Hedef durum
 
@@ -53,6 +55,6 @@ Son yedi takvim günündeki yalnız `COMPLETED` seansların tamamlanmış setler
 
 ## Testler
 
-Uygulandı: completed/incomplete/active query sınırı, activation dağılımı, recency, kişisel bodyweight/fallback/invalid ölçüm, en yeni geçerli ölçüm query’si, unknown exercise, range clamp, Flow reactivity, deterministik yerel-midnight/zone-change akışı ve kalibrasyon kaynağını gösteren dark/%200 font erişilebilir UI. Kalan: hareket katsayısı, TalkBack cihaz turu ve mask hit koordinat testi.
+Uygulandı: completed/incomplete/active query sınırı, activation dağılımı, recency, kişisel bodyweight/fallback/invalid ölçüm, en yeni geçerli ölçüm query’si, unknown exercise, range clamp, Flow reactivity, deterministik yerel-midnight/zone-change akışı; harita ve renk-bağımsız satır content-description doğrulaması; English/light içerik ve Turkish dark/%200 loading golden’ları. Kalan: hareket katsayısı, TalkBack cihaz turu ve mask hit koordinat testi.
 
 Bağlar: [[FEATURE_WORKOUT]], [[ARCH_STATE_DATA_FLOW]], [[DESIGN_SYSTEM_GRAPH]].

@@ -2,8 +2,8 @@
 type: quality
 status: current
 implementation_status: mixed
-verified_commit: 4590168
-updated: 2026-07-20
+verified_commit: 7e9d4c0
+updated: 2026-07-28
 tags: [gymtracker/quality, gymtracker/testing]
 ---
 
@@ -36,7 +36,8 @@ tags: [gymtracker/quality, gymtracker/testing]
 - `GtListDetailLayoutTest` 839/840/1200 dp liste–detay sınırını; Programs/Workout Compose testleri expanded seçim, kararlı-ID açık eylemi ve Programs saved-state restoration davranışını doğrular.
 - `ProgressHubScreenTest` %200 fontta birleşik button semantics/erişilebilirliği; `ProgressHubGoldenTest` English light ve Turkish dark/%200 pixel baseline’larını doğrular.
 - `AdaptiveListDetailGoldenTest` 1000×700 English/light Programs ve Turkish/dark/%130 Workout liste–özet pixel baseline’larını doğrular.
-- `GtFeedbackComponentsTest`, `%200` fontta ortak top bar başlık/support metni, tek yerelleştirilmiş geri eylemi ve ortak Snackbar mesaj/undo semantics’ini doğrular. `CriticalStateGoldenTest`, Turkish dark/%200 Nutrition over-goal ile English/light Measurements chart + top bar baselinelarını doğrular; kalıcı golden toplamı altıdır.
+- `GtFeedbackComponentsTest`, `%200` fontta ortak top bar başlık/support metni, tek yerelleştirilmiş geri eylemi ve ortak Snackbar mesaj/undo semantics’ini doğrular. `CriticalStateGoldenTest`, Turkish dark/%200 Nutrition over-goal ile English/light Measurements chart + top bar baselinelarını doğrular.
+- `StateCoverageGoldenTest`, sabit Compose saatiyle Turkish dark/%200 Photos saving, English/light Muscle Load content, Turkish dark/%200 Muscle Load loading ve English/light Settings restore-lock baselinelarını doğrular. `ProgressPhotoScreenTest` kayıt sırasında import/silme/yükseltme çakışma kilidini; `MuscleLoadScreenTest` harita ve renk-bağımsız satır açıklamalarını doğrular. Kalıcı golden toplamı ondur.
 - `ProgressPhotoRulesTest`, `ProgressPhotoRepositoryTest`, `PhotoBackupPolicyTest` ve `ProgressPhotoScreenTest` fotoğraf input aralığı, import/rollback/limit/low-space, orphan/missing/restore reconciliation, backup dışlamaları, v0 yeniden seçimde kimlik/metadata koruma, v1 eski dosya temizliği, update rollback, 500 satırlı lazy grid erişimi ve light/dark/%200 font yükseltme eylemlerini doğrular.
 - `MuscleLoadCalculatorTest`, `WorkoutDaoTest`, `MutationContractTest` ve `MuscleLoadScreenTest` recency/personal-bodyweight/fallback/invalid ölçüm/unknown/cap kurallarını, completed-only + latest-valid-weight reaktif query’lerini ve kalibrasyon kaynağı gösteren renk bağımsız adaptive UI’ı doğrular.
 - `ExerciseIdentityTest`, `ProgramSeedInitializerTest`, `ProgramRepositoryTest`, `WorkoutRepositoryTest` ve `ProgramsScreenTest`; unique/locale-independent ID, 5/23/108 seed, locked guard, atomic plan copy, incomplete-set finish engeli ve adaptive UI’yı doğrular.
@@ -67,9 +68,11 @@ tags: [gymtracker/quality, gymtracker/testing]
 - PR25 yerel export dilimi: 42/42 JVM, hedefli 19/19 API 34 cihaz testi ve tam `ciQuality` başarılı; 385/385 TR/EN string eşitliği.
 - PR25 tam yerel API 34 paketi: ilk turda `ProgressHubGoldenTest` ekran yakalama hazır olma koşulu 2 saniyede zaman aşımına uğradı, piksel karşılaştırması başlamadı. Gerçek emulator reboot sonrası hedefli golden 2/2 ve tam tekrar 85/85, 0 failure/error/skipped ile geçti.
 - PR25 hosted run `29780305582`: quality + cihaz yeşil; indirilen artifact 85 app + 5 benchmark/process, reboot seed/verify 1+1, dört process-death ve 58.450.894 byte beş Perfetto trace içerir. Merge commit `1c3e193`.
-- PR26 hedefli restore/delete/DAO/Settings/localization paketi: 16/16, 0 failure/error/skipped. JVM okuyucu paketi strict staging/CRC/tek-aktif invariant dahil 6/6; PR26 tam ve hosted kapıları bekleniyor.
+- PR26 hedefli restore/delete/DAO/Settings/localization paketi: 16/16, 0 failure/error/skipped. JVM okuyucu paketi strict staging/CRC/tek-aktif invariant dahil 6/6.
 - PR26 tam yerel API 34 paketi: 95/95, 0 failure/error/skipped, XML süresi 733,6 saniye; Room/Compose/navigation ve altı kalıcı golden birlikte geçti.
 - PR26 son sertleştirme kapısı: `ciQuality` 2m08s, 48/48 JVM; hedefli güncel restore 3/3. English/light Settings restore/delete ve disabled exact-phrase dialog'u emülatörde görsel kontrolden geçti.
+- PR26 hosted run `29783838425`: quality + cihaz işleri yeşil; indirilen artifact 95 app + 5 benchmark/process, reboot seed/verify 1+1, dört process-death ve 59.689.404 byte beş Perfetto trace içerir. Merge commit `a370f82`.
+- PR27 code baseline `7e9d4c0`: hedefli Photos/Muscle Load/golden paketi 11/11; tam `ciQuality` 48/48 JVM ile yeşil; uyanık Pixel 6 Pro API 34 üzerinde tam cihaz paketi 100/100, 0 failure/error/skipped. Cold-boot ilk turunda cihaz `isSleeping=true` olduğu için Compose Activity’leri durdu; wake/keyguard/stay-on doğrulamasından sonraki aynı kaynak tekrarı tamamen geçti.
 
 ## Feature matrisi
 
@@ -79,10 +82,10 @@ tags: [gymtracker/quality, gymtracker/testing]
 | Workout | state/validation + 839/840 layout | v3→v7, transaction/cascade/single-active/read-only/planned set | active/history/planned completion, expanded list-detail, golden, light/dark, %200 font | external positive-ID deep link + recreation |
 | Nutrition | totals/DST/parser/goal/snapshot scale + malformed restore | day query/update/delete/same-ID undo | over-goal/empty/edit action/ortak Snackbar/dark/%200/English + golden | selected-date gerçek process-death |
 | Measurements | validation/trend/period | v3→v8, date index/range/update/delete/same-ID undo | latest/history/chart/period/empty/ortak top bar+Snackbar/dark/%200/English + golden | 90-gün checked-state gerçek process-death |
-| Photos | input/limit/media bounds/48 MB reserve/backup policy | v3→v9 + v8→v9/import/EXIF/thumbnail/delete/reconcile/metadata-only restore/legacy-upgrade rollback | thumbnail grid/500-row lazy access/v0 reselect/v1 optimize/viewer/ortak top bar+Snackbar/dark/%200 | alt rota gerçek process-death + gerçek host reboot; backup transport/fiziksel perf bekliyor |
+| Photos | input/limit/media bounds/48 MB reserve/backup policy | v3→v9 + v8→v9/import/EXIF/thumbnail/delete/reconcile/metadata-only restore/legacy-upgrade rollback | thumbnail grid/500-row lazy access/v0 reselect/v1 optimize/viewer/kayıt sırasında mutation kilidi/ortak top bar+Snackbar/dark/%200/saving golden | alt rota gerçek process-death + gerçek host reboot; backup transport/fiziksel perf bekliyor |
 | Programs | stable ID/content + 839/840 layout | idempotent 5/23/108 seed, v6→v7 JSON migration, atomic plan copy | list/detail/locked/start, ortak top bar+Snackbar, expanded selection/restoration, golden, dark/%200 | positive-ID detail Activity recreation + gerçek process-death |
 | Muscle load | activation/decay/personal bodyweight/fallback/unknown + midnight/zone | completed-only set + latest-valid-weight Flow | map/list/calibration/methodology/dark/%200 | TalkBack bekliyor |
-| Settings/data | tema çözümü + Preferences fallback + format v1 mapping/writer/strict reader/validator | DataStore round-trip + 11 tablo snapshot/replace rollback + SAF/temp + restore/media + tüm-veri silme | tek seçim, export/restore/delete karşılıklı engel, exact silme onayı, loading/success/error, dark/%200/English | Home child route + Activity recreation; gerçek restore process-kill bekliyor |
+| Settings/data | tema çözümü + Preferences fallback + format v1 mapping/writer/strict reader/validator | DataStore round-trip + 11 tablo snapshot/replace rollback + SAF/temp + restore/media + tüm-veri silme | tek seçim, export/restore/delete karşılıklı engel, exact silme onayı, loading/success/error, restore-lock golden, dark/%200/English | Home child route + Activity recreation; gerçek restore process-kill bekliyor |
 
 ## Room ve migration
 

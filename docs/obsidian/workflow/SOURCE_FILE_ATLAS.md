@@ -2,8 +2,8 @@
 type: atlas
 status: current
 implementation_status: active
-verified_commit: 4590168
-updated: 2026-07-20
+verified_commit: 7e9d4c0
+updated: 2026-07-28
 tags: [gymtracker/workflow, gymtracker/source-map]
 ---
 
@@ -104,6 +104,7 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | `ui/screens/workout/WorkoutScreenTest.kt` | aktif/geçmiş, expanded selection/ID action, read-only, light/dark ve %200 font |
 | `ui/components/GtFeedbackComponentsTest.kt` | `%200` top bar başlık/geri semantics + ortak Snackbar mesaj/undo |
 | `ui/golden/CriticalStateGoldenTest.kt` | Nutrition over-goal ve Measurements chart/top bar kalıcı golden baselineları |
+| `ui/golden/StateCoverageGoldenTest.kt` | Sabit animasyon saatli Photos saving, Muscle Load content/loading ve Settings restore-lock kalıcı golden baselineları |
 | `ui/navigation/NavigationSmokeTest.kt` | ortak top bar back + sistem back + route/detail/recreation |
 | `ui/screens/settings/SettingsScreenTest.kt`, `data/settings/AppSettingsTest.kt`, `data/settings/SettingsRepositoryTest.kt` | tema çözümü/fallback, gerçek DataStore round-trip, tek seçim, büyük-font erişimi ve recreation kalıcılığı |
 | `baselineprofile/ProcessDeathNavigationTest.kt` | farklı PID’de route/task + Nutrition tarihi + Measurements checked-period restorasyonu |
@@ -138,7 +139,7 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | `data/photos/PhotoFileStorage.kt` | 48 MB free-space preflight + bounded decode + EXIF + 2048 ana/512 thumbnail + atomik publish/reconciliation + canonical-kök export okuması |
 | `ui/screens/progress/ProgressScreen.kt` | ortak child top bar/Snackbar + picker/adaptive thumbnail grid/ana viewer/v0 reselect + v1 optimize UI |
 | `data/photos/PhotoBackupPolicyTest.kt` | legacy cloud + modern cloud/device-transfer XML dışlama sözleşmesi |
-| `ui/screens/progress/ProgressPhotoScreenTest.kt` | light/dark/%200 yükseltme UX’i + 500-row lazy-grid erişimi |
+| `ui/screens/progress/ProgressPhotoScreenTest.kt` | light/dark/%200 yükseltme UX’i + kayıt sırasında mutation kilidi + 500-row lazy-grid erişimi |
 
 ## Programs
 
@@ -153,13 +154,14 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 |---|---|
 | `ui/screens/fatigue/FatigueViewModel.kt` | completed-set + latest-weight Flow + takvim rollover → calibrated load state |
 | `ui/screens/fatigue/FatigueScreen.kt` | ortak child top bar + front/back map + calibration source + methodology + accessible list |
+| `ui/screens/fatigue/MuscleLoadScreenTest.kt` | map ve renk-bağımsız satır content-description + büyük-font erişimi |
 
 ## Kaynaklar
 
 - `res/drawable-nodpi/body_*.png`: 2 × 470×836 body image
 - `res/drawable-nodpi/mask_*.png`: 38 kullanılan maske
 - `res/values/strings.xml`, `res/values-en/strings.xml`: uygulama geneli eş anahtarlı Türkçe/English string ve plural katalogları
-- `androidTest/assets/goldens/`, `ui/golden/*`: API 34 Progress Hub + Programs/Workout + Nutrition over-goal + Measurements chart/top bar kalıcı pixel-golden baseline ve karşılaştırıcı
+- `androidTest/assets/goldens/`, `ui/golden/*`: API 34 Progress Hub + Programs/Workout + Nutrition over-goal + Measurements chart/top bar + Photos saving + Muscle Load content/loading + Settings restore-lock olmak üzere on kalıcı pixel-golden baseline ve karşılaştırıcı
 - `res/values/themes.xml`, `res/values-night/themes.xml`: light/dark launch/platform theme
 - `res/xml/backup_rules.xml`, `data_extraction_rules.xml`: progress fotoğraflarını backup/transfer dışında tutar
 

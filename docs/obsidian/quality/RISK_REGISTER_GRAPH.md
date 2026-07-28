@@ -2,8 +2,8 @@
 type: risk-register
 status: current
 implementation_status: current
-verified_commit: 4590168
-updated: 2026-07-20
+verified_commit: 7e9d4c0
+updated: 2026-07-28
 tags: [gymtracker/risk, gymtracker/quality]
 ---
 
@@ -25,9 +25,9 @@ tags: [gymtracker/risk, gymtracker/quality]
 | R12 | P2 | resolved-core (v7) | Program aktif okuma modeli ilişkisel; JSON yalnız kayıpsız legacy fallback ve bozuk payload UI’da güvenli boş state | [[ARCH_DATABASE]] | [[ADR_007_RELATIONAL_PROGRAM_PLANS]] |
 | R13 | P2 | resolved++++ | 5 hedefli compact bottom bar, 600 dp+ rail, 840 dp+ Workout/Programs liste–detay ve doğrulanmış dış deep-link URI’leri aynı route sahipliği/pozitif-ID/save-restore sözleşmesini kullanıyor; ayrı süreçte PID/task yanında Nutrition tarihi ve Measurements checked period restorasyonu da kapsanır | [[ARCH_NAVIGATION]] | [[ADR_002_FIVE_TARGET_NAVIGATION]] |
 | R14 | P2 | resolved-core | Permission azaltıldı; hassas progress fotoğrafları legacy/modern cloud backup ve device transfer dışında; üç dışlama XML parser testleriyle doğrulanır | [[ARCH_BUILD_DI]] | permission + extraction rules |
-| R15 | P2 | mitigated+++ | Uygulama geneli 385/385 TR/EN string kaynağı, adaptive shell, 840 dp+ Workout/Programs list-detail, ortak büyük-font top bar/Snackbar, Settings export loading/success/error, selected semantics ve altı kalıcı golden aktif; Photos/Load/Settings golden ve genel disabled/loading yayılımı açık | [[DESIGN_SYSTEM_GRAPH]] | design DoD |
+| R15 | P2 | mitigated++++ | Uygulama geneli 415/415 TR/EN string kaynağı, adaptive shell, 840 dp+ Workout/Programs list-detail, ortak büyük-font top bar/Snackbar, selected semantics ve on kalıcı golden aktif. Photos saving, Muscle Load content/loading ve Settings restore-lock durumları light/dark, EN/TR ve %200 örnekleriyle korunur; genel disabled/loading yayılımı diğer ekranlarda açık | [[DESIGN_SYSTEM_GRAPH]] | design DoD |
 | R16 | P1 | mitigated-config | Protected environment, fail-fast secrets, geçici keystore, APK/AAB imza doğrulaması ve artifact kapısı tanımlı; gerçek production secret + Play internal-track smoke’u açık | [[ADR_009_SECRET_BACKED_RELEASES]] | production environment + release smoke |
 | R17 | P1 | partial+ | Baseline/Startup Profile ile Home/Workout ve 120-thumbnail grid macrobenchmark CUJ’ları üretildi; grid JSON + beş Perfetto trace CI artifact sözleşmesine eklendi. Emülatör yalnız karşılaştırma baseline’ı, fiziksel referans cihaz kabulü yapılmadı | [[PERFORMANCE_BASELINE]] | physical release benchmark |
-| R18 | P1 | mitigated-core | Manuel format v1 export, exact schema v9 strict staged restore, ilişki/enum/ID/path/CRC/tekil+toplam boyut kapıları, yeni medya yayınlama, atomik Room replace, DB/tema/dosya telafi rollback'i, süreç-artığı cache temizliği ve kesin sözcüklü tüm-veri silme aktiftir. Hedefli API 34 paket 16/16; tam/hosted kabul ve gerçek süreç-kesilmesi zamanlama fixture'ı açık | [[FEATURE_SETTINGS_DATA]] | [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]] + full hosted/process-kill acceptance |
+| R18 | P1 | mitigated-core+ | Manuel format v1 export, exact schema v9 strict staged restore, ilişki/enum/ID/path/CRC/tekil+toplam boyut kapıları, yeni medya yayınlama, atomik Room replace, DB/tema/dosya telafi rollback'i, süreç-artığı cache temizliği ve kesin sözcüklü tüm-veri silme aktiftir. PR26 hosted artifact’i 95 app + 5 benchmark/process, reboot 1+1 ve beş trace ile kabul edildi; yalnız gerçek restore süreç-kesilmesi zamanlama fixture'ı açık | [[FEATURE_SETTINGS_DATA]] | [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]] + process-kill acceptance |
 
 Aktif risk durumu [[SESSION_HANDOFF]] içinde tutulur; çözülen risk silinmez, `resolved` ve commit ile işaretlenir.
