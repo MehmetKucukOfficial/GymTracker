@@ -3,8 +3,8 @@ aliases: [GymTracker Graph Start, Başlangıç]
 type: moc
 status: current
 implementation_status: mixed
-verified_commit: 4590168
-updated: 2026-07-20
+verified_commit: 7e9d4c0
+updated: 2026-07-28
 tags: [gymtracker/moc, gymtracker/graph]
 ---
 
@@ -21,9 +21,9 @@ tags: [gymtracker/moc, gymtracker/graph]
 - Local-first; backend ve gerçek ödeme yok
 - 5 ana navigation hedefi, 3 İlerleme alt hedefi, ID tabanlı workout/program detayları
 - 82 benzersiz egzersiz, 108 hazır program egzersiz referansı
-- `ciQuality` debug + minified release APK/AAB üretir; PR25 dalında 42 JVM, hedefli 19 export cihaz testi; PR24 hosted kapısında 80 app + 2 gerçek reboot fazı + 4 gerçek process-death + 1 grid macrobenchmark geçiyor; lint 0 hata
-- Format v1 manuel ZIP export, strict staged restore/rollback ve güçlü onaylı tüm-veri silme on bir Room tablosu, tema ve yönetilen fotoğraf sözleşmesini kapsar; tam/hosted PR26 kabulü sıradadır
-- Workout ve Programs compact’ta ID rotası, 840 dp+ genişlikte ortak liste–özet kullanır; altı kalıcı golden baseline vardır
+- `ciQuality` debug + minified release APK/AAB üretir; PR27 yerel kapısında 48 JVM ve 100 API 34 cihaz testi geçer; lint 0 hata
+- Format v1 manuel ZIP export, strict staged restore/rollback ve güçlü onaylı tüm-veri silme on bir Room tablosu, tema ve yönetilen fotoğraf sözleşmesini kapsar; PR26 hosted kabulü tamamlandı
+- Workout ve Programs compact’ta ID rotası, 840 dp+ genişlikte ortak liste–özet kullanır; on kalıcı golden baseline vardır
 - Destructive migration, yeni fotoğraf URI kaybı, seed race ve temel navigation/state riskleri kapatıldı veya azaltıldı
 
 ## Ana haritalar
@@ -70,12 +70,14 @@ tags: [gymtracker/moc, gymtracker/graph]
 
 ## Grafın güncellik durumu
 
-- Master code baseline: `80c79b5`; GitHub PR #1–#18 merge commit ile sırayla birleştirildi ve kaynak dallar korundu
+- Master code baseline: `a370f82`; GitHub PR #1–#20 merge commit ile sırayla birleştirildi ve kaynak dallar korundu
 - PR21 hosted koşusu `29764819516` tamamen yeşil; artifact XML 71 app + 2 process-death testi gösteriyor
 - PR22 hosted retry `29769324578` tamamen yeşil; artifact XML 71 app + 4 process-death testi gösteriyor ve GitHub PR #16 merge commit `79a80f4` ile birleştirildi
 - PR23 hosted koşusu `29771389567` tamamen yeşil; artifact XML 75 app + 5 benchmark/process testi, reboot seed/verify 1/1 + 1/1, beş benchmark tekrarı ve beş Perfetto trace gösteriyor; merge commit `ce20615`
 - PR24 hosted koşusu `29775858318` tamamen yeşil; artifact XML 80 app + 5 benchmark/process, reboot 1+1 ve beş trace; merge commit `80c79b5`
-- PR25/GitHub PR #19 hosted run `29780305582` artifact denetiminden geçti ve merge commit `1c3e193` ile `master`a alındı; aktif çalışma PR26 `codex/data-restore`
-- Dokümanlar: PR24 master ve PR25 manuel veri dışa aktarma sözleşmesiyle senkron
-- Son tam doğrulama: 2026-07-20
-- Aktif önerilen iş: PR25 hosted artifact kabulünden sonra merge commit ile birleştir; PR26 restore/delete tam kalite + cihaz + hosted artifact kapısını tamamla, sonra PR27 design/golden/accessibility yayılımına geç
+- PR25/GitHub PR #19 hosted run `29780305582` artifact denetiminden geçti ve merge commit `1c3e193` ile `master`a alındı
+- PR26/GitHub PR #20 hosted run `29783838425` artifact denetiminden geçti ve merge commit `a370f82` ile `master`a alındı; kaynak dal korundu
+- Aktif çalışma PR27 `codex/design-golden-expansion`; code baseline `7e9d4c0`, yerel 48 JVM + 100 API 34 testi ve on golden yeşil
+- Dokümanlar: PR26 master ve PR27 tasarım/golden/accessibility dilimiyle senkron
+- Son tam doğrulama: 2026-07-28
+- Aktif önerilen iş: PR27 graph commit’ini tamamla, güncel master’ı merge commit ile bütünleştir, hosted kabul/artifact denetimi sonrası merge et

@@ -2,8 +2,8 @@
 type: design
 status: current
 implementation_status: current
-verified_commit: 4590168
-updated: 2026-07-20
+verified_commit: 7e9d4c0
+updated: 2026-07-28
 source_files:
   - app/src/main/java/com/gymtracker/ui/theme/Theme.kt
   - app/src/main/java/com/gymtracker/ui/theme/DesignTokens.kt
@@ -17,6 +17,11 @@ source_files:
   - app/src/main/java/com/gymtracker/ui/screens/fatigue/FatigueScreen.kt
   - app/src/main/java/com/gymtracker/ui/screens/programs/ProgramsScreen.kt
   - app/src/main/java/com/gymtracker/ui/screens/settings/SettingsScreen.kt
+  - app/src/androidTest/java/com/gymtracker/ui/golden/StateCoverageGoldenTest.kt
+  - app/src/androidTest/assets/goldens/photos_saving_dark_tr_font200.png
+  - app/src/androidTest/assets/goldens/muscle_load_content_light_en.png
+  - app/src/androidTest/assets/goldens/muscle_load_loading_dark_tr_font200.png
+  - app/src/androidTest/assets/goldens/settings_restore_lock_light_en.png
   - app/src/main/res/values/themes.xml
   - app/src/main/res/values-night/themes.xml
 tags: [gymtracker/design, gymtracker/architecture]
@@ -73,10 +78,10 @@ Detaylı değerler: [[GELISTIRME_MASTER_PLANI#5. Görsel tasarım yönü]].
 
 ## Kalite sözleşmesi ve kanıt
 
-Her bileşen: normal/disabled/loading/error, light/dark, büyük font preview, 48dp touch, semantics, screenshot testi. Primary renk error yerine kullanılmaz; renk tek bilgi kanalı değildir. PR14 Progress Hub için iki baseline ekledi; PR17 English/light Programs ve Turkish/dark/%130 Workout geniş ekran baseline’larını ekledi; PR21 Turkish dark/%200 Nutrition over-goal ve English/light Measurements chart + top bar baselinelarıyla kalıcı golden sayısını altıya çıkardı. Tüm ekranlara golden yayılımı ile disabled/loading varyantları henüz tamamlanmadı.
+Her bileşen: normal/disabled/loading/error, light/dark, büyük font preview, 48dp touch, semantics, screenshot testi. Primary renk error yerine kullanılmaz; renk tek bilgi kanalı değildir. PR14 Progress Hub için iki baseline ekledi; PR17 English/light Programs ve Turkish/dark/%130 Workout geniş ekran baseline’larını ekledi; PR21 Turkish dark/%200 Nutrition over-goal ve English/light Measurements chart + top bar baselinelarıyla sayıyı altıya çıkardı. PR27 Turkish dark/%200 Photos saving, English/light Muscle Load content, Turkish dark/%200 Muscle Load loading ve English/light Settings restore-lock baselinelarıyla kalıcı golden sayısını ona çıkardı. Loading animasyonları sabit Compose saatiyle deterministiktir; genel disabled/loading yayılımı diğer ekranlarda sürer.
 
 Görsel kanıtlar (build artifact): önceki PR görselleri; PR12 `pr12-nutrition-light.png`, `pr12-measurements-light.png`, `pr12-nutrition-dark-font200.png`, `pr12-measurements-dark-font200.png`, `pr12-measurements-chart-dark-font200.png`.
 
 ## Uygulama sırası
 
-Home, active/read-only/planned Workout, Nutrition/Measurements, Progress/Photos/Load ve Programs çekirdek ekranları; uygulama geneli ikinci locale, adaptive shell, Workout/Programs list-detail ve ortak top app bar/feedback tamamlandı → sıradaki tasarım işi kalan Photos/Load state golden’ları, ortak scaffold ve disabled/loading varyantlarıdır. Ekran hedefleri: [[SCREEN_BLUEPRINT_GRAPH]].
+Home, active/read-only/planned Workout, Nutrition/Measurements, Progress/Photos/Load, Programs ve Settings çekirdek ekranları; uygulama geneli ikinci locale, adaptive shell, Workout/Programs list-detail, ortak top app bar/feedback ve Photos/Load/Settings kritik state golden’ları tamamlandı → sıradaki tasarım işi ortak adaptive scaffold, kalan ekranların disabled/loading varyantları ve fiziksel TalkBack kabulüdür. Ekran hedefleri: [[SCREEN_BLUEPRINT_GRAPH]].

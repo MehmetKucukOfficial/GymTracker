@@ -3,8 +3,10 @@ package com.gymtracker.ui.screens.progress
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -49,6 +51,36 @@ class ProgressPhotoScreenTest {
         composeRule.onNodeWithText(text(R.string.progress_photos_empty_title)).performScrollTo().assertIsDisplayed()
         composeRule.onNodeWithText(text(R.string.progress_photos_first_action)).performScrollTo().performClick()
         assertEquals(1, clicks.get())
+    }
+
+    @Test
+    fun savingStateAnnouncesProgressAndBlocksConflictingActions() {
+        composeRule.setContent {
+            GymTrackerTheme(darkTheme = false) {
+                ProgressPhotoContent(
+                    photos = listOf(
+                        ProgressPhoto(
+                            id = 1,
+                            date = 1_000,
+                            photoUri = "content://legacy/photo",
+                            angle = PhotoAngle.FRONT,
+                            storageVersion = 0
+                        )
+                    ),
+                    uiState = ProgressPhotoUiState(isSaving = true),
+                    onAddPhoto = {},
+                    onDeletePhoto = {}
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag("progress-photo-saving").assertIsDisplayed()
+        composeRule.onNodeWithText(text(R.string.progress_photos_saving)).assertIsDisplayed()
+        composeRule.onNodeWithText(text(R.string.progress_photos_first_action)).assertDoesNotExist()
+        composeRule.onNodeWithContentDescription(
+            text(R.string.progress_photos_delete_description, formattedDate(1_000))
+        ).assertIsNotEnabled()
+        composeRule.onNodeWithTag("progress-photo-upgrade-1").assertIsNotEnabled()
     }
 
     @Test
@@ -152,4 +184,11 @@ class ProgressPhotoScreenTest {
 
     private fun text(id: Int): String =
         InstrumentationRegistry.getInstrumentation().targetContext.getString(id)
+
+    private fun text(id: Int, vararg args: Any): String =
+        InstrumentationRegistry.getInstrumentation().targetContext.getString(id, *args)
+
+    private fun formattedDate(epochMillis: Long): String =
+        java.text.DateFormat.getDateInstance(java.text.DateFormat.MEDIUM)
+            .format(java.util.Date(epochMillis))
 }

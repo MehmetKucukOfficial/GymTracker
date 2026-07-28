@@ -2,10 +2,10 @@
 type: handoff
 status: ready
 implementation_status: active
-code_baseline: 4590168
-updated: 2026-07-20
-active_phase: "Phase 8 - PR25 hosted acceptance + PR26 staged restore/delete"
-next_pr: "Merge PR25, complete PR26 full/hosted acceptance, then PR27 design expansion"
+code_baseline: 7e9d4c0
+updated: 2026-07-28
+active_phase: "Phase 8 - PR27 state golden/accessibility acceptance"
+next_pr: "Publish and merge PR27, then close local resilience gates"
 primary_nodes:
   - FEATURE_PROGRESS_PHOTOS
   - ADR_004_PERSISTENT_PHOTO_STORAGE
@@ -22,14 +22,17 @@ tags: [gymtracker/workflow, gymtracker/session]
 
 ## Şu anki durum
 
-- GitHub PR #1–#18 merge commit stratejisiyle sırayla `master`a alındı; son master code baseline `80c79b5` ve first-parent soy ağacı korunuyor.
+- GitHub PR #20/PR26 hosted run `29783838425` artifact denetiminden geçti: 95/95 app, 5/5 benchmark/process, reboot seed/verify 1+1 ve 59.689.404 byte beş Perfetto trace. Merge commit `a370f82`; kaynak dal korundu.
+- PR27 code baseline `7e9d4c0`, `codex/design-golden-expansion`: fotoğraf kaydı sırasında çakışan mutation kilidi, harita/satır erişilebilir açıklamaları ve dört yeni kalıcı state golden tamamlandı. Hedefli 11/11, `ciQuality` 48/48 JVM ve tam API 34 paketi 100/100 geçti.
+- İlk PR27 tam cihaz turunda cold-boot emulator `isSleeping=true` olduğu için 42 veri testinden sonra 58 Compose Activity’si topluca durdu. Wake/keyguard/stay-on doğrulamasından sonra aynı kaynak ve APK ile 100/100 geçti; kod hatası değildi.
+- GitHub PR #1–#20 merge commit stratejisiyle sırayla `master`a alındı; son master baseline `a370f82` ve first-parent soy ağacı korunuyor.
 - PR21/GitHub PR #15 hosted koşusu `29764819516` tamamen yeşil; indirilen artifact XML 71/71 app ve 2/2 gerçek process-death testi gösteriyor.
 - PR22 code baseline `43b523a`, graph baseline `e8f8ca5`, kararlılık head’i `a4f7bd9`: hosted retry `29769324578` 71/71 app + 4/4 process-death ile yeşil ve GitHub PR #16 merge commit `79a80f4` ile `master`a alındı.
 - PR23 code baseline `26696b9`, final head `5411372`: GitHub PR #17 hosted run `29771389567` tamamen yeşil; artifact XML 75 app + 5 benchmark/process testi, reboot seed/verify 1/1 + 1/1, beş benchmark tekrarı ve beş Perfetto trace doğrulandı. Merge commit `ce20615`; kaynak dal korundu.
 - PR24 code baseline `cc2f4fa`, quality head `4653a79`, process-death hardening `c32476e`, integration head `4906402`, `codex/settings-foundation` yerel dalında: singleton Preferences DataStore, typed tema repository/state, gerçek system/light/dark tüketimi, Home→Settings child rotası, ortak back ve local-first bilgi yüzeyi hazır.
 - PR24 final head `6168a9e`: GitHub PR #18 hosted run `29775858318` tamamen yeşil; artifact XML 80 app + 5 benchmark/process, reboot 1+1, dört process-death ve beş trace. Merge commit `80c79b5`; kaynak dal korundu.
 - PR25 code baseline `e6ae602`, final head `59862eb`: GitHub PR #19 hosted run `29780305582` artifact denetiminden geçti ve merge commit `1c3e193` ile `master`a alındı; kaynak dal korundu.
-- PR26 `codex/data-restore`: exact v1/schema v9 strict reader/validator, giriş/byte/CRC kapıları, yeni yönetilen medya yayınlama, atomik Room replace + DB/tema/dosya rollback'i, ortak operation mutex'i/stale cache cleanup ve exact sözcüklü tüm-veri silme uygulandı. Hedefli restore/delete/DAO/Settings/localization paketi 16/16.
+- PR26 `codex/data-restore`: exact v1/schema v9 strict reader/validator, giriş/byte/CRC kapıları, yeni yönetilen medya yayınlama, atomik Room replace + DB/tema/dosya rollback'i, ortak operation mutex'i/stale cache cleanup ve exact sözcüklü tüm-veri silme uygulandı; GitHub PR #20 olarak kabul edilip merge edildi.
 - PR22 sonrası otomatik master koşusunda bir paket-kill OOM-adjustment yarışı görüldü; PR24 harness’i sistem Settings görevinin resumed olmasını doğrular, bounded retry/task-korumalı fallback uygular. Eski PID + aynı task + yeni PID kanıtı korunarak üç ardışık yerel tur/12 test geçti.
 - Uygulama baseline: `f9d6d75`; PR8 `codex/workout-lifecycle` dalında draft PR #1 olarak yayınlandı.
 - PR9 baseline: `341bf79`; `codex/nutrition-measurements` dalı PR8’i hedefleyen stacked draft PR #2 olarak yayınlandı.
@@ -51,20 +54,20 @@ tags: [gymtracker/workflow, gymtracker/session]
 - Muscle Load completed-set Flow’unu latest-valid measurement Flow’uyla birleştirir; recency/personal-bodyweight/fallback/unknown sözleşmesi, kalibrasyon kaynağı, metodoloji ve erişilebilir liste aktiftir.
 - Programs locked/ownership/target kurallarını repository’de doğrular; program günü atomik ACTIVE workout’a planlanan set olarak kopyalanır, tamamlanmayan set Muscle Load’a girmez ve finish’i kilitler.
 - Light/dark tasarım sistemi token temeli ve ortak Home bileşenleri aktif; Home loading/content/error, retry, midnight period tick ve adaptive kolon kullanıyor.
-- Uygulama geneli Türkçe/English string kaynak kataloğu 385/385 eşit; muscle adları ve program para biçimi locale-aware.
-- Test temeli aktif: PR25’te 42 JVM + hedefli 19 export/storage/settings API 34 testi; PR24 hosted kapısında 80 app + 2 gerçek reboot fazı + 4 ayrı gerçek process-death + 1 büyük-grid macrobenchmark geçiyor; altı kalıcı golden baseline var.
+- Uygulama geneli Türkçe/English string kaynak kataloğu 415/415 eşit; muscle adları, portability durumları ve program para biçimi locale-aware.
+- Test temeli aktif: PR27’de 48 JVM + 100 API 34 uygulama testi geçiyor; hosted kapı gerçek reboot, 4 ayrı process-death ve 5 iterasyonlu büyük-grid macrobenchmark çalıştırıyor; on kalıcı golden baseline var.
 - Debug build başarılı; lint 0 error; assemble başarılı.
 - `ciQuality` JVM/lint/debug ile R8/resource-shrunk unsigned APK, AAB ve mapping üretir; GitHub Actions quality + API 34 device/golden workflow’u kaynakta.
 
 ## Sıradaki önerilen iş
 
-PR25 hosted JVM/app/reboot/benchmark/process-death artifact’ını denetle ve merge commit ile `master`a al. PR26’yı bu merge tabanıyla birleştir; tam `ciQuality` + API 34 + hosted artifact kabulünden sonra merge commit ile al ve PR27 Photos/Load/Settings golden/accessibility yayılımına geç.
+PR27 graph commit’ini tamamla, `origin/master`daki PR26 merge commit’ini mevcut dala `--no-ff` ile al, push/draft PR/hosted artifact kabulünü tamamla ve merge commit ile `master`a al. Ardından restore process-kill ve gerçek Android backup transport kanıtına geç.
 
 ## Açık P0/P1
 
 - GitHub branch protection içinde quality + API 34 check’lerini zorunlu yapma
-- Photos/Load ile disabled/loading golden baseline’larını genişletme
-- Progress Photos gerçek Android backup transport restore deneyi ve Photos/Load golden genişletmesi
+- Kalan ekranlarda disabled/loading golden baseline yayılımı
+- Progress Photos gerçek Android backup transport restore deneyi
 - Gerçek production secret/Play internal-track smoke, branch protection ve fiziksel cihaz benchmark kabulü
 - Format v1 restore/delete gerçek süreç-kesilmesi zamanlama fixture'ı
 
@@ -84,6 +87,8 @@ PR25 hosted JVM/app/reboot/benchmark/process-death artifact’ını denetle ve m
 - PR23 hosted run `29771389567`: quality + geniş cihaz işi yeşil; artifact XML 75 app + 5 benchmark/process, reboot 1/1 + 1/1, beş tekrar/beş trace; merge commit `ce20615`.
 - PR24 hosted run `29775858318`: quality + geniş cihaz işi yeşil; artifact XML 80 app + 5 benchmark/process, reboot 1/1 + 1/1, dört process-death ve beş trace; merge commit `80c79b5`.
 - Kalıcı görsel kapı: iki Progress Hub, Programs, Workout, `nutrition_over_goal_dark_tr_font200.png` ve `measurements_chart_topbar_light_en.png` olmak üzere altı baseline API 34 üzerinde pixel tolerance ile geçti.
+- PR26 hosted run `29783838425`: 95 app + 5 benchmark/process, reboot 1+1, dört process-death ve beş trace; merge commit `a370f82`.
+- PR27 yerel: `ciQuality` 48/48 JVM; hedefli 11/11; tam API 34 100/100; dört yeni baseline ile kalıcı golden toplamı on.
 
 ## Handoff güncelleme şablonu
 
@@ -96,6 +101,37 @@ Graph notes updated:
 Next concrete action:
 Blockers:
 ```
+
+## 2026-07-28 - PR27 state golden and accessibility expansion
+
+Completed:
+- Blocked new photo import, delete and legacy upgrade mutations while a photo write is in progress; disabled state is exposed through semantics.
+- Added deterministic, fixed-clock permanent baselines for Turkish dark/%200 Photos saving, English/light Muscle Load content, Turkish dark/%200 Muscle Load loading and English/light Settings restore-lock.
+- Added explicit Muscle Load map/row content-description assertions and photo saving-state conflict assertions.
+- Audited and merged PR26/GitHub PR #20 with merge commit `a370f82`.
+
+Files changed:
+- `ProgressScreen.kt`, `ProgressPhotoScreenTest.kt`, `MuscleLoadScreenTest.kt`.
+- `StateCoverageGoldenTest.kt` and four API 34 golden PNG assets.
+- Progress Photos, Muscle Load, Settings, design, blueprint, test, risk, roadmap, atlas, impact, start and handoff graph nodes.
+
+Tests run/results:
+- Targeted Photos/Muscle Load/golden API 34 package: 11/11.
+- `ciQuality`: success in 2m59s; 48/48 JVM, lint, debug, minified APK/AAB, R8 mapping and embedded profile.
+- Full API 34 package: 100/100, 0 failure/error/skipped on an awake Pixel 6 Pro API 34.
+- The first cold-boot full run passed 42 data tests, then the sleeping display stopped all 58 Compose activities. Logcat proved `isSleeping=true`; after wake/keyguard/stay-on setup the unchanged package passed 100/100.
+- Manual inspection: all four golden candidates are readable, unclipped and visually consistent; the fixed animation frame prevents indeterminate-progress pixel drift.
+
+Risks changed:
+- R15 improves to mitigated++++ with ten permanent baselines and explicit Photos/Load/Settings critical-state coverage.
+- R18 improves to mitigated-core+ after PR26 hosted artifact acceptance; timed restore process-kill remains.
+
+Next concrete action:
+- Commit this graph update, merge `origin/master` into PR27 with a merge commit, publish draft PR, audit hosted artifacts and merge.
+- Then implement the deterministic restore process-kill fixture and run the real Android backup transport experiment where the emulator transport supports it.
+
+Blockers:
+- No PR27 code blocker. Production signing/Play, branch protection and physical-device performance remain external.
 
 ## 2026-07-20 - PR26 Staged restore and strong-confirm deletion
 

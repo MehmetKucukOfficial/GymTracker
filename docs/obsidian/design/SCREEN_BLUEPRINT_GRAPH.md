@@ -2,8 +2,8 @@
 type: design
 status: current
 implementation_status: mixed
-verified_commit: e1359bb
-updated: 2026-07-20
+verified_commit: 7e9d4c0
+updated: 2026-07-28
 tags: [gymtracker/design, gymtracker/feature]
 ---
 
@@ -27,7 +27,7 @@ Uygulandı: locale-aware date pager; calorie budget; adaptive macro progress; d�
 
 ## İlerleme merkezi
 
-Uygulandı: token tabanlı Overview kartları; Measurements latest/edit/delete-undo + 7/30/90/tümü gerçek kilo grafiği + özel tarih; adaptive photo grid + scrollable angle filter + viewer; completed-set kaynaklı kas haritası + renk bağımsız erişilebilir liste/metodoloji. Üç child rota ortak büyük-font uyumlu top bar, tek geri semantics’i ve sistem back sözleşmesini kullanır; Measurements English/light chart + top bar golden’ı kalıcıdır. Expanded list-detail, çoklu ölçüm metriği ve kalıcı karşılaştırma seçimi sonraki aşamadır. Kaynaklar: [[FEATURE_MEASUREMENTS]], [[FEATURE_PROGRESS_PHOTOS]], [[FEATURE_MUSCLE_LOAD]].
+Uygulandı: token tabanlı Overview kartları; Measurements latest/edit/delete-undo + 7/30/90/tümü gerçek kilo grafiği + özel tarih; adaptive photo grid + scrollable angle filter + viewer; completed-set kaynaklı kas haritası + renk bağımsız erişilebilir liste/metodoloji. Üç child rota ortak büyük-font uyumlu top bar, tek geri semantics’i ve sistem back sözleşmesini kullanır. Measurements English/light chart, Photos Turkish dark/%200 saving, Muscle Load English/light content ve Turkish dark/%200 loading golden’ları kalıcıdır; fotoğraf mutation’ları kayıt sırasında kilitlidir. Expanded list-detail, çoklu ölçüm metriği ve kalıcı karşılaştırma seçimi sonraki aşamadır. Kaynaklar: [[FEATURE_MEASUREMENTS]], [[FEATURE_PROGRESS_PHOTOS]], [[FEATURE_MUSCLE_LOAD]].
 
 ## Responsive kural
 

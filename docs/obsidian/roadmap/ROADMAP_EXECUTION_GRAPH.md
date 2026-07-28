@@ -2,8 +2,8 @@
 type: roadmap
 status: current
 implementation_status: active
-verified_commit: 4590168
-updated: 2026-07-20
+verified_commit: 7e9d4c0
+updated: 2026-07-28
 tags: [gymtracker/roadmap, gymtracker/workflow]
 ---
 
@@ -205,10 +205,11 @@ Kabul: hosted 37 JVM + 75 API 34 normal app instrumentation + 2 gerçek reboot f
 
 ## Sonraki dikey dilim
 
-1. PR25 format v1 manuel export tam cihaz/hosted kabulü, artifact denetimi ve merge
-2. PR26 staged/atomik restore ve güçlü onaylı tüm veriyi silme tam/hosted kabulü
-3. PR27 Photos/Load/Settings golden, loading/disabled ve erişilebilirlik yayılımı
-4. Production secret + Play internal-track smoke, branch protection, gerçek backup transport restore ve fiziksel cihaz performans kabulü
+1. Tamamlandı: PR25 format v1 manuel export tam cihaz/hosted kabulü, artifact denetimi ve merge
+2. Tamamlandı: PR26 staged/atomik restore ve güçlü onaylı tüm veriyi silme tam/hosted kabulü
+3. Aktif: PR27 Photos/Load/Settings golden, loading/disabled ve erişilebilirlik yayılımı
+4. Sonraki: restore süreç-kesilmesi fixture’ı ve gerçek backup transport restore deneyi
+5. Harici: production secret + Play internal-track smoke, branch protection ve fiziksel cihaz performans kabulü
 
 ## PR 24 — Settings + architecture foundation
 
@@ -227,8 +228,15 @@ Kabul: hosted 42 JVM + 85 app + 5 benchmark/process, reboot seed/verify 1+1, dö
 ## PR 26 — Staged restore + strong-confirm deletion
 
 Node: [[FEATURE_SETTINGS_DATA]], [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]], [[ARCH_DATABASE]], [[TEST_MATRIX]].
-Durum: `codex/data-restore` dalında uygulama tamamlanıyor; PR25 hosted/merge tabanı ve PR26 tam kabul kapısı bekleniyor.
+Durum: code baseline `4590168`, graph baseline `78e8b34`, integration head `c1886cb`; GitHub PR #20 hosted run `29783838425` artifact denetiminden geçti ve merge commit `a370f82` ile `master`a alındı. Kaynak dal korundu.
 Çıktı: exact format v1/schema v9 strict JSON + enum/değer/ID/FK/path doğrulaması; giriş/tekil/toplam açılmış boyut ve CRC/uzunluk kapısı; yeni benzersiz yönetilen medya; tek transaction Room replace; DB/tema/dosya telafi rollback'i; ortak portability mutex'i ve stale cache cleanup; exact yerelleştirilmiş sözcüklü tüm-veri silme, varsayılan program katalog reset'i ve medya temizliği.
-Kabul: son `ciQuality` 48/48 JVM ile yeşil; reader 6/6; restore/delete/DAO/Settings/localization hedefli API 34 paketi 16/16; güncel restore 3/3; tam API 34 regresyonu 95/95. Hosted artifact ve gerçek süreç-kesilmesi fixture sonucu ayrıca kaydedilecek.
+Kabul: son `ciQuality` 48/48 JVM ile yeşil; reader 6/6; restore/delete/DAO/Settings/localization hedefli API 34 paketi 16/16; güncel restore 3/3; tam yerel ve hosted API 34 regresyonu 95/95. Hosted artifact 5 benchmark/process, reboot 1+1 ve 59.689.404 byte beş trace ile doğrulandı. Gerçek süreç-kesilmesi fixture sonucu ayrıca kaydedilecek.
+
+## PR 27 — Photos/Load/Settings state golden + accessibility
+
+Node: [[FEATURE_PROGRESS_PHOTOS]], [[FEATURE_MUSCLE_LOAD]], [[FEATURE_SETTINGS_DATA]], [[DESIGN_SYSTEM_GRAPH]], [[TEST_MATRIX]].
+Durum: code baseline `7e9d4c0`, `codex/design-golden-expansion` yerel dalında; graph commit, güncel master merge’i ve hosted kabulü sırada.
+Çıktı: fotoğraf kaydı sırasında import/silme/yükseltme mutation kilidi; harita ve renk-bağımsız Muscle Load satır semantics doğrulaması; sabit animasyon saatli Photos saving, Muscle Load content/loading ve Settings restore-lock kalıcı golden’ları; toplam golden sayısı on.
+Kabul: hedefli API 34 paket 11/11; tam `ciQuality` 48/48 JVM ile yeşil; tam API 34 regresyonu 100/100, 0 failure/error/skipped.
 
 Detaylı süre: [[GELISTIRME_MASTER_PLANI#18. Fazlar ve süre tahmini]]. Aktif durum: [[SESSION_HANDOFF]].

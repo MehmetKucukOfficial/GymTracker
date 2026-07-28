@@ -2,8 +2,8 @@
 type: feature
 status: current
 implementation_status: current
-verified_commit: 26696b9
-updated: 2026-07-20
+verified_commit: 7e9d4c0
+updated: 2026-07-28
 source_files:
   - app/src/main/java/com/gymtracker/ui/screens/progress/ProgressScreen.kt
   - app/src/main/java/com/gymtracker/ui/screens/progress/ProgressViewModel.kt
@@ -12,6 +12,8 @@ source_files:
   - app/src/main/java/com/gymtracker/data/photos/PhotoFileStorage.kt
   - app/src/main/java/com/gymtracker/data/photos/ProgressPhotoRepository.kt
   - app/src/main/java/com/gymtracker/data/photos/ProgressPhotoRules.kt
+  - app/src/androidTest/java/com/gymtracker/ui/screens/progress/ProgressPhotoScreenTest.kt
+  - app/src/androidTest/java/com/gymtracker/ui/golden/StateCoverageGoldenTest.kt
   - app/src/main/res/xml/backup_rules.xml
   - app/src/main/res/xml/data_extraction_rules.xml
   - app/src/main/AndroidManifest.xml
@@ -31,6 +33,8 @@ ViewModel açılışta DB ile yönetilen klasörü uzlaştırır: kaydı olmayan
 
 PR18, aynı kayıt kimliğini ve kullanıcının tarih/açı/kilo/not metadata’sını koruyan yükseltme akışını ekler. v0 kayıt kullanıcıya sistem seçicisinden doğru fotoğrafı yeniden seçtirir; v1 kayıt mevcut app-owned dosyayı doğrudan v2 EXIF/resize/thumbnail hattından geçirir. Yeni dosyalar DB güncellemesinden önce hazırlanır, update başarısızsa birlikte geri alınır; eski yönetilen dosyalar yalnız kalıcı satır değişiminden sonra temizlenir.
 
+PR27, kayıt/optimizasyon sürerken yeni import, silme ve yükseltme mutation’larını kullanıcı ve semantics katmanında kilitler. Turkish dark/%200 kayıt durumu kalıcı pixel-golden ile korunur; animasyon saati sabitlenerek yükleme göstergesi deterministik karşılaştırılır.
+
 ## P0 risk durumu
 
 Yeni importlar için geçici URI, kontrolsüz büyük decode ve alan tükenirken yarım yazma riski kapatıldı: PR13 kayıtları `storageVersion=2`, normalize app-owned ana/thumbnail `file://` URI’ları ve dimension metadata kullanır. v5/v8 kayıtları veri kaybetmeden v0/v1 olarak korunur. PR18 ile kırık v0 sağlayıcı kaydı yeniden seçimle, v1 app-owned kayıt ise tek eylemle v2’ye yükseltilebilir. Cihaz içi fotoğraflar privacy/quota gerekçesiyle cloud backup ve device transfer dışında bırakılmıştır; XML politika testleri cloud backup ile device transfer kapsamını ayrı ayrı doğrular. Gerçek host reboot kabulü 120 yönetilen ana/thumbnail çiftinin ve Room metadata’sının boot sayacı değiştikten sonra tutarlı kaldığını kanıtlar.
@@ -39,7 +43,7 @@ Yeni importlar için geçici URI, kontrolsüz büyük decode ve alan tükenirken
 
 - Kamera ve medya izinleri kaldırıldı; sistem seçici akışı ek izin istemiyor.
 - Import dialog URI’si gerçek OS process death sırasında korunmaz.
-- Kalıcı Photos screenshot-golden ve gerçek Android backup transport restore deneyi bekler. Metadata-only restore davranışı, XML politikası ve dosyası olmayan managed satır reconciliation testiyle deterministiktir.
+- Gerçek Android backup transport restore deneyi bekler. Metadata-only restore davranışı, XML politikası ve dosyası olmayan managed satır reconciliation testiyle deterministiktir.
 - Emülatör büyük-grid metriği yalnız ön-baseline’dır; fiziksel release cihaz kabulü [[PERFORMANCE_BASELINE]] içinde açıktır.
 
 ## Uygulanan karar
@@ -48,7 +52,7 @@ Yeni importlar için geçici URI, kontrolsüz büyük decode ve alan tükenirken
 
 ## Zorunlu testler
 
-- Geçen: başarılı import/EXIF dönüşümü/2048 ana görsel/512 thumbnail/dimension metadata, storage yeniden oluşturma, iki dosyalı delete ve DB rollback, 25 MB/48 MB rezerv/bozuk decode temizliği, orphan/missing-main/missing-thumbnail ve metadata-only restore reconciliation, v3→v9 ve v8→v9 satır koruma, v0 yeniden seçim, v1 yeniden optimizasyon, update rollback, kimlik/metadata koruma, light/dark/%200 font yükseltme eylemleri, 500 satırlı lazy-grid erişimi, gerçek host reboot sonrası 120 dosya çifti ve 120-row FrameTiming macrobenchmark.
-- Bekleyen: gerçek Android backup transport restore deneyi, kalıcı Photos golden ve fiziksel cihaz performans kabulü.
+- Geçen: başarılı import/EXIF dönüşümü/2048 ana görsel/512 thumbnail/dimension metadata, storage yeniden oluşturma, iki dosyalı delete ve DB rollback, 25 MB/48 MB rezerv/bozuk decode temizliği, orphan/missing-main/missing-thumbnail ve metadata-only restore reconciliation, v3→v9 ve v8→v9 satır koruma, v0 yeniden seçim, v1 yeniden optimizasyon, update rollback, kimlik/metadata koruma, light/dark/%200 font yükseltme eylemleri, kayıt sırasında çakışan mutation kilidi, Turkish dark/%200 kalıcı saving golden, 500 satırlı lazy-grid erişimi, gerçek host reboot sonrası 120 dosya çifti ve 120-row FrameTiming macrobenchmark.
+- Bekleyen: gerçek Android backup transport restore deneyi ve fiziksel cihaz performans kabulü.
 
 Bağlar: [[ARCH_DATABASE]], [[RISK_REGISTER_GRAPH#R2 — Fotoğraf URI kaybı]], [[SCREEN_BLUEPRINT_GRAPH#Fotoğraflar]].
