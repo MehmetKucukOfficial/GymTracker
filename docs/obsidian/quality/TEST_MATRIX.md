@@ -2,7 +2,7 @@
 type: quality
 status: current
 implementation_status: mixed
-verified_commit: 729ecc6
+verified_commit: c376aa1
 updated: 2026-07-28
 tags: [gymtracker/quality, gymtracker/testing]
 ---

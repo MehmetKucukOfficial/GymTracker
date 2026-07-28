@@ -3,7 +3,7 @@ aliases: [GymTracker Graph Start, Başlangıç]
 type: moc
 status: current
 implementation_status: mixed
-verified_commit: 729ecc6
+verified_commit: c376aa1
 updated: 2026-07-28
 tags: [gymtracker/moc, gymtracker/graph]
 ---
@@ -70,7 +70,7 @@ tags: [gymtracker/moc, gymtracker/graph]
 
 ## Grafın güncellik durumu
 
-- Master code baseline: `7a79978`; GitHub PR #1–#21 merge commit ile sırayla birleştirildi ve kaynak dallar korundu
+- Master code baseline: `6083210`; GitHub PR #1–#22 merge commit ile sırayla birleştirildi ve kaynak dallar korundu
 - PR21 hosted koşusu `29764819516` tamamen yeşil; artifact XML 71 app + 2 process-death testi gösteriyor
 - PR22 hosted retry `29769324578` tamamen yeşil; artifact XML 71 app + 4 process-death testi gösteriyor ve GitHub PR #16 merge commit `79a80f4` ile birleştirildi
 - PR23 hosted koşusu `29771389567` tamamen yeşil; artifact XML 75 app + 5 benchmark/process testi, reboot seed/verify 1/1 + 1/1, beş benchmark tekrarı ve beş Perfetto trace gösteriyor; merge commit `ce20615`
@@ -78,8 +78,8 @@ tags: [gymtracker/moc, gymtracker/graph]
 - PR25/GitHub PR #19 hosted run `29780305582` artifact denetiminden geçti ve merge commit `1c3e193` ile `master`a alındı
 - PR26/GitHub PR #20 hosted run `29783838425` artifact denetiminden geçti ve merge commit `a370f82` ile `master`a alındı; kaynak dal korundu
 - PR27/GitHub PR #21 hosted run `30375520329` tamamen yeşil; artifact XML 100 app + 5 benchmark/process, reboot 1+1 ve beş trace gösteriyor; merge commit `7a79978`
-- Hosted kabulde PR28/GitHub PR #22 `codex/restore-process-kill`; code baseline `32c7a4c`
-- Yerelde PR29 `codex/android-backup-transport`; code baseline `729ecc6`, gerçek local transport backup/clear/restore/reconciliation ve tam kalite kapıları yeşil
-- Dokümanlar: PR27 master, PR28 process-kill ve PR29 backup transport dilimleriyle senkron
+- PR28/GitHub PR #22 hosted run `30384849616` tamamen yeşil; artifact XML 100 app + 5 benchmark/process, reboot 1+1, restore seed/kill/verify ve beş trace gösteriyor; merge commit `6083210`
+- Yerelde PR29 `codex/android-backup-transport`; code baseline `729ecc6`, integration head `c376aa1`; gerçek local transport backup/clear/restore/reconciliation ve tam kalite kapıları yeşil
+- Dokümanlar: PR28 master kabulü ve PR29 backup transport bütünleştirmesiyle senkron
 - Son tam doğrulama: 2026-07-28
-- Aktif önerilen iş: PR28 hosted artifact kabulü ve merge’ini tamamla; ardından PR29 graph commit’ini güncel master ile merge commit üzerinden bütünleştirip yayınla
+- Aktif önerilen iş: birleşik PR29 ağacında tam kalite kapısını çalıştır, dalı yayınla, hosted transport artifact’lerini denetle ve merge commit ile birleştir

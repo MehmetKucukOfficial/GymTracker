@@ -2,7 +2,7 @@
 type: quality
 status: current
 implementation_status: measured-emulator
-verified_commit: b812bec
+verified_commit: c376aa1
 updated: 2026-07-28
 source_files:
   - baselineprofile/build.gradle.kts
