@@ -2,7 +2,7 @@
 type: adr
 status: accepted
 implementation_status: current
-verified_commit: 32c7a4c
+verified_commit: 729ecc6
 updated: 2026-07-28
 source_files:
   - app/src/main/java/com/gymtracker/data/portability/DataPortabilityDao.kt

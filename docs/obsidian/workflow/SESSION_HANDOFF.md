@@ -2,10 +2,10 @@
 type: handoff
 status: ready
 implementation_status: active
-code_baseline: 32c7a4c
+code_baseline: 729ecc6
 updated: 2026-07-28
-active_phase: "Phase 8 - PR28 restore process-kill acceptance"
-next_pr: "Publish and merge PR28, then run Android backup transport acceptance"
+active_phase: "Phase 8 - PR28 hosted acceptance + PR29 local backup transport"
+next_pr: "Merge PR28, then publish and merge PR29"
 primary_nodes:
   - FEATURE_PROGRESS_PHOTOS
   - ADR_004_PERSISTENT_PHOTO_STORAGE
@@ -24,6 +24,7 @@ tags: [gymtracker/workflow, gymtracker/session]
 
 - PR27/GitHub PR #21 hosted run `30375520329` tamamen yeşil ve artifact denetiminden geçti: 100/100 app, 5/5 benchmark/process, reboot seed/verify 1+1 ve toplam 62.338.053 byte beş Perfetto trace. Merge commit `7a79978`; kaynak dal korundu.
 - PR28 code baseline `32c7a4c`, `codex/restore-process-kill`: restore medya yayınından sonra/Room commit’inden önce deterministik checkpoint, gerçek target PID force-stop ve yeni süreç doğrulaması tamamlandı. Yerel seed 1/1 + kill + verify 1/1, `ciQuality` 48/48 JVM ve temiz API 34 paketi 100/100 geçti.
+- PR29 code baseline `729ecc6`, `codex/android-backup-transport`: Android local transport seed/backup/`pm clear`/restore/reconciliation kabulü tamamlandı. `backupnow` 310.784 byte/package success, token `1`, `restoreFinished: 0`, verify 1/1; 48 JVM ve temiz 100 API 34 testi geçti.
 - GitHub PR #20/PR26 hosted run `29783838425` artifact denetiminden geçti: 95/95 app, 5/5 benchmark/process, reboot seed/verify 1+1 ve 59.689.404 byte beş Perfetto trace. Merge commit `a370f82`; kaynak dal korundu.
 - PR27 code baseline `7e9d4c0`, `codex/design-golden-expansion`: fotoğraf kaydı sırasında çakışan mutation kilidi, harita/satır erişilebilir açıklamaları ve dört yeni kalıcı state golden tamamlandı. Hedefli 11/11, `ciQuality` 48/48 JVM ve tam API 34 paketi 100/100 geçti.
 - İlk PR27 tam cihaz turunda cold-boot emulator `isSleeping=true` olduğu için 42 veri testinden sonra 58 Compose Activity’si topluca durdu. Wake/keyguard/stay-on doğrulamasından sonra aynı kaynak ve APK ile 100/100 geçti; kod hatası değildi.
@@ -63,13 +64,12 @@ tags: [gymtracker/workflow, gymtracker/session]
 
 ## Sıradaki önerilen iş
 
-PR28 graph commit’ini tamamla, `origin/master`daki PR27 merge commit’ini mevcut dala `--no-ff` ile al, push/draft PR/hosted artifact kabulünü tamamla ve merge commit ile `master`a al. Ardından gerçek Android backup transport seed/backup/clear/restore/reconciliation kanıtına geç.
+PR28/GitHub PR #22 hosted artifact kabulünü tamamla ve merge commit ile `master`a al. Ardından PR29 graph commit’ini tamamla, güncel master’ı `--no-ff` ile bütünleştir, push/draft PR/hosted artifact kabulü ve merge’i tamamla.
 
 ## Açık P0/P1
 
 - GitHub branch protection içinde quality + API 34 check’lerini zorunlu yapma
 - Kalan ekranlarda disabled/loading golden baseline yayılımı
-- Progress Photos gerçek Android backup transport restore deneyi
 - Gerçek production secret/Play internal-track smoke, branch protection ve fiziksel cihaz benchmark kabulü
 - PR28 hosted restore süreç-kesilmesi kabulü
 
@@ -93,6 +93,7 @@ PR28 graph commit’ini tamamla, `origin/master`daki PR27 merge commit’ini mev
 - PR27 yerel: `ciQuality` 48/48 JVM; hedefli 11/11; tam API 34 100/100; dört yeni baseline ile kalıcı golden toplamı on.
 - PR27 hosted run `30375520329`: app 100/100, benchmark/process 5/5, reboot 1+1, beş Perfetto trace; merge commit `7a79978`.
 - PR28 yerel: `ciQuality` 48/48 JVM, lint 0 hata; temiz API 34 100/100; host seed 1/1 → PID `18003` pre-commit kill → yeni süreç verify 1/1.
+- PR29 yerel: Android local transport seed 1/1; package backup success/310.784 byte; token `1`; `pm clear`; `restoreFinished: 0`; verify 1/1; `ciQuality` 48/48 JVM ve temiz API 34 100/100.
 
 ## Handoff güncelleme şablonu
 
@@ -105,6 +106,35 @@ Graph notes updated:
 Next concrete action:
 Blockers:
 ```
+
+## 2026-07-28 - PR29 Android backup transport acceptance
+
+Completed:
+- Added a host-only production-singleton fixture that seeds a Room workout, dark DataStore theme and one managed main/thumbnail photo pair.
+- Added a real Android local transport flow: enable/select/wipe, `backupnow`, restore-set token discovery, `pm clear`, filtered package restore and new-process verification.
+- Proved Room and theme return while `progress_photos/` bytes stay excluded; the restored managed metadata row is then removed by normal reconciliation.
+- Added the transport script to the hosted API 34 device job and existing device artifact collection.
+
+Files changed:
+- `AndroidBackupTransportAcceptanceTest.kt`, `DataPortabilityEntryPoint.kt`.
+- `.github/scripts/android-backup-transport-acceptance.sh`, `.github/workflows/android-ci.yml`.
+- Photos/Settings/ADR/test/risk/roadmap/atlas/impact/start/handoff graph nodes.
+
+Tests run/results:
+- Real local transport: seed 1/1; package backup success, 310.784 byte; restore token `1`; `restoreFinished: 0`; verify 1/1.
+- Clean full API 34 normal package: 100/100, 0 failure/error/skipped.
+- `ciQuality`: success; 48/48 JVM, lint 0 error, debug, minified APK/AAB, R8 mapping and embedded profile.
+
+Risks changed:
+- R2 improves to mitigated++++: the XML-only backup claim now has a real Android transport restore proof in addition to structural rules and metadata reconciliation tests.
+
+Next concrete action:
+- Wait for PR28 hosted artifact acceptance, mark ready and merge with a merge commit.
+- Commit PR29 graph notes, merge the updated master into PR29, publish, audit hosted backup logs and merge.
+
+Blockers:
+- Production cloud-provider/device-to-device diversity remains a distribution smoke concern, but local Android transport semantics are now proven.
+- Production signing/Play, branch protection and physical-device performance remain external.
 
 ## 2026-07-28 - PR28 restore process-kill acceptance
 

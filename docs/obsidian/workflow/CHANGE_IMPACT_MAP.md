@@ -2,7 +2,7 @@
 type: workflow
 status: current
 implementation_status: active
-verified_commit: 32c7a4c
+verified_commit: 729ecc6
 updated: 2026-07-28
 tags: [gymtracker/workflow, gymtracker/impact]
 ---
@@ -121,5 +121,6 @@ Graf: [[FEATURE_SETTINGS_DATA]], [[ARCH_STATE_DATA_FLOW]], [[ARCH_NAVIGATION]], 
 
 Oku: `DataPortabilityDao`, ortak operation lock, `PortableArchive`, writer/reader/validator/export/restore/delete repository'leri, `DataPortabilityEntryPoint`, `AppDatabase`, bütün entity/enum/foreign-key ilişkileri, `PhotoFileStorage`, `ProgramSeedInitializer`, `SettingsRepository`, Settings Screen/ViewModel, backup kuralları, `.github/scripts/restore-process-kill-acceptance.sh` ve [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]].
 Test: bütün tablolar ve kararlı sıra; tek transaction snapshot; format/schema sürüm reddi; enum/sonlu sayı/ilişki doğrulaması; yönetilen ana/thumbnail byte'ı; legacy metadata-only; `file://` sızıntısı/traversal; eksik medya; düşük alan; yarım hedef/stale cache cleanup; TR/EN, `%200` font ve üçlü eylem engeli. Restore için staging, giriş/tekil/toplam byte sınırı, uzunluk + CRC, conflict/replace, Room rollback, dosya rollback, host seed→pre-commit gerçek PID kill→yeni süreç verify ve mevcut veriyi kaybetmeme zorunludur. Silme için exact yerelleştirilmiş onay, varsayılan seed politikası, ayar reset'i ve artık medya kanıtlanır.
+Android backup XML veya restore politikası değişirse ayrıca `.github/scripts/android-backup-transport-acceptance.sh` ile production APK seed→`backupnow`→`pm clear`→restore-set token→verify çalıştırılır; Room/tema geri gelmeli, `progress_photos/` byte’ları gelmemeli ve eksik managed metadata reconciliation ile kaldırılmalıdır.
 Şema değişirse export DTO/migrator ve restore uyumluluğu aynı PR içinde güncellenir. Destructive migration veya canlı DB'ye parça parça restore kullanılmaz.
 Graf: [[FEATURE_SETTINGS_DATA]], [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]], [[ARCH_DATABASE]], [[ARCH_STATE_DATA_FLOW]], [[TEST_MATRIX]].

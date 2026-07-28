@@ -2,7 +2,7 @@
 type: feature
 status: current
 implementation_status: current
-verified_commit: 7e9d4c0
+verified_commit: 729ecc6
 updated: 2026-07-28
 source_files:
   - app/src/main/java/com/gymtracker/ui/screens/progress/ProgressScreen.kt
@@ -14,6 +14,8 @@ source_files:
   - app/src/main/java/com/gymtracker/data/photos/ProgressPhotoRules.kt
   - app/src/androidTest/java/com/gymtracker/ui/screens/progress/ProgressPhotoScreenTest.kt
   - app/src/androidTest/java/com/gymtracker/ui/golden/StateCoverageGoldenTest.kt
+  - app/src/androidTest/java/com/gymtracker/data/portability/AndroidBackupTransportAcceptanceTest.kt
+  - .github/scripts/android-backup-transport-acceptance.sh
   - app/src/main/res/xml/backup_rules.xml
   - app/src/main/res/xml/data_extraction_rules.xml
   - app/src/main/AndroidManifest.xml
@@ -37,13 +39,13 @@ PR27, kayıt/optimizasyon sürerken yeni import, silme ve yükseltme mutation’
 
 ## P0 risk durumu
 
-Yeni importlar için geçici URI, kontrolsüz büyük decode ve alan tükenirken yarım yazma riski kapatıldı: PR13 kayıtları `storageVersion=2`, normalize app-owned ana/thumbnail `file://` URI’ları ve dimension metadata kullanır. v5/v8 kayıtları veri kaybetmeden v0/v1 olarak korunur. PR18 ile kırık v0 sağlayıcı kaydı yeniden seçimle, v1 app-owned kayıt ise tek eylemle v2’ye yükseltilebilir. Cihaz içi fotoğraflar privacy/quota gerekçesiyle cloud backup ve device transfer dışında bırakılmıştır; XML politika testleri cloud backup ile device transfer kapsamını ayrı ayrı doğrular. Gerçek host reboot kabulü 120 yönetilen ana/thumbnail çiftinin ve Room metadata’sının boot sayacı değiştikten sonra tutarlı kaldığını kanıtlar.
+Yeni importlar için geçici URI, kontrolsüz büyük decode ve alan tükenirken yarım yazma riski kapatıldı: PR13 kayıtları `storageVersion=2`, normalize app-owned ana/thumbnail `file://` URI’ları ve dimension metadata kullanır. v5/v8 kayıtları veri kaybetmeden v0/v1 olarak korunur. PR18 ile kırık v0 sağlayıcı kaydı yeniden seçimle, v1 app-owned kayıt ise tek eylemle v2’ye yükseltilebilir. Cihaz içi fotoğraflar privacy/quota gerekçesiyle cloud backup ve device transfer dışında bırakılmıştır; XML politika testleri cloud backup ile device transfer kapsamını ayrı ayrı doğrular. Gerçek host reboot kabulü 120 yönetilen ana/thumbnail çiftinin ve Room metadata’sının boot sayacı değiştikten sonra tutarlı kaldığını kanıtlar. PR29 gerçek Android local transport turu Room verisi ile koyu temayı yedekleyip `pm clear` sonrasında geri getirir; dışlanan ana/thumbnail byte’larının dönmediğini ve eksik managed metadata satırının reconciliation ile kaldırıldığını kanıtlar.
 
 ## Diğer sorunlar
 
 - Kamera ve medya izinleri kaldırıldı; sistem seçici akışı ek izin istemiyor.
 - Import dialog URI’si gerçek OS process death sırasında korunmaz.
-- Gerçek Android backup transport restore deneyi bekler. Metadata-only restore davranışı, XML politikası ve dosyası olmayan managed satır reconciliation testiyle deterministiktir.
+- Android local backup transport restore kabulü otomatiktir. Üretim cloud sağlayıcısı/cihazdan-cihaza transport çeşitliliği platform dağıtım smoke’unda izlenir.
 - Emülatör büyük-grid metriği yalnız ön-baseline’dır; fiziksel release cihaz kabulü [[PERFORMANCE_BASELINE]] içinde açıktır.
 
 ## Uygulanan karar
@@ -53,6 +55,7 @@ Yeni importlar için geçici URI, kontrolsüz büyük decode ve alan tükenirken
 ## Zorunlu testler
 
 - Geçen: başarılı import/EXIF dönüşümü/2048 ana görsel/512 thumbnail/dimension metadata, storage yeniden oluşturma, iki dosyalı delete ve DB rollback, 25 MB/48 MB rezerv/bozuk decode temizliği, orphan/missing-main/missing-thumbnail ve metadata-only restore reconciliation, v3→v9 ve v8→v9 satır koruma, v0 yeniden seçim, v1 yeniden optimizasyon, update rollback, kimlik/metadata koruma, light/dark/%200 font yükseltme eylemleri, kayıt sırasında çakışan mutation kilidi, Turkish dark/%200 kalıcı saving golden, 500 satırlı lazy-grid erişimi, gerçek host reboot sonrası 120 dosya çifti ve 120-row FrameTiming macrobenchmark.
-- Bekleyen: gerçek Android backup transport restore deneyi ve fiziksel cihaz performans kabulü.
+- Geçen: gerçek Android local backup transport seed/backup/`pm clear`/restore/reconciliation kabulü.
+- Bekleyen: fiziksel cihaz performans kabulü.
 
 Bağlar: [[ARCH_DATABASE]], [[RISK_REGISTER_GRAPH#R2 — Fotoğraf URI kaybı]], [[SCREEN_BLUEPRINT_GRAPH#Fotoğraflar]].

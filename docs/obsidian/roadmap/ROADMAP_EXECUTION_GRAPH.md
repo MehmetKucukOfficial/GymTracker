@@ -2,7 +2,7 @@
 type: roadmap
 status: current
 implementation_status: active
-verified_commit: 32c7a4c
+verified_commit: 729ecc6
 updated: 2026-07-28
 tags: [gymtracker/roadmap, gymtracker/workflow]
 ---
@@ -208,8 +208,8 @@ Kabul: hosted 37 JVM + 75 API 34 normal app instrumentation + 2 gerçek reboot f
 1. Tamamlandı: PR25 format v1 manuel export tam cihaz/hosted kabulü, artifact denetimi ve merge
 2. Tamamlandı: PR26 staged/atomik restore ve güçlü onaylı tüm veriyi silme tam/hosted kabulü
 3. Tamamlandı: PR27 Photos/Load/Settings golden, loading/disabled ve erişilebilirlik yayılımı; hosted run `30375520329`, merge commit `7a79978`
-4. Aktif: PR28 gerçek restore süreç-kesilmesi fixture’ı; code baseline `32c7a4c`, yerel seed/kill/verify ve tam kalite kapıları yeşil
-5. Sonraki: gerçek Android backup transport restore deneyi
+4. Hosted kabulde: PR28 gerçek restore süreç-kesilmesi fixture’ı; code baseline `32c7a4c`, yerel seed/kill/verify ve tam kalite kapıları yeşil, GitHub PR #22 açık
+5. Yerelde tamamlandı: PR29 gerçek Android local backup transport restore deneyi; code baseline `729ecc6`, PR28 merge/kabulü sonrası yayınlanacak
 6. Harici: production secret + Play internal-track smoke, branch protection ve fiziksel cihaz performans kabulü
 
 ## PR 24 — Settings + architecture foundation
@@ -246,5 +246,12 @@ Node: [[FEATURE_SETTINGS_DATA]], [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]], 
 Durum: code baseline `32c7a4c`, `codex/restore-process-kill` dalında; graph commit, master merge ve hosted kabul sırada.
 Çıktı: restore medya yayınından sonra ve Room/tema commit’inden önce deterministik checkpoint; host tarafından gerçek target PID force-stop; yeni süreçte eski Room/tema/mevcut fotoğraf korunması; iki yayınlanmış orphan medya ve yarım restore cache recovery kanıtı; CI artifact’lerinde seed/trigger/verify çıktıları.
 Kabul: yerel `ciQuality` 48/48 JVM, lint 0 hata, minified release/profile; temiz API 34 normal paket 100/100; host seed 1/1 + gerçek PID kill + verify 1/1.
+
+## PR 29 — Android backup transport acceptance
+
+Node: [[FEATURE_PROGRESS_PHOTOS]], [[FEATURE_SETTINGS_DATA]], [[ADR_004_PERSISTENT_PHOTO_STORAGE]], [[TEST_MATRIX]].
+Durum: code baseline `729ecc6`, `codex/android-backup-transport` dalında; PR28 hosted kabul/merge sonrasında graph commit ve yayın sırası bekleniyor.
+Çıktı: gerçek Android `BackupManager` local transport seçimi; production APK’da Room + DataStore + yönetilen fotoğraf seed’i; `backupnow`; restore-set token; `pm clear`; transport restore; dışlanan `progress_photos/` byte’larının dönmediği ve managed metadata reconciliation’ının çalıştığı yeni süreç kanıtı.
+Kabul: seed 1/1; package backup success ve 310.784 byte; token `1`; `restoreFinished: 0`; verify 1/1; yerel `ciQuality` 48/48 JVM, lint 0 hata ve temiz normal API 34 paket 100/100.
 
 Detaylı süre: [[GELISTIRME_MASTER_PLANI#18. Fazlar ve süre tahmini]]. Aktif durum: [[SESSION_HANDOFF]].
