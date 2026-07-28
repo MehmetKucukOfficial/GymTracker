@@ -2,7 +2,7 @@
 type: atlas
 status: current
 implementation_status: active
-verified_commit: 32c7a4c
+verified_commit: 729ecc6
 updated: 2026-07-28
 tags: [gymtracker/workflow, gymtracker/source-map]
 ---
@@ -13,9 +13,10 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 
 | Dosya | Sorumluluk | Bağ |
 |---|---|---|
-| `.github/workflows/android-ci.yml` | PR/`master` quality + API 34 app/golden + gerçek photo reboot + restore process-kill + grid benchmark + ayrı-process task-restoration CI ve artifact’ler | [[ARCH_BUILD_DI]], [[TEST_MATRIX]] |
+| `.github/workflows/android-ci.yml` | PR/`master` quality + API 34 app/golden + gerçek photo reboot + restore process-kill + Android backup transport + grid benchmark + ayrı-process task-restoration CI ve artifact’ler | [[ARCH_BUILD_DI]], [[TEST_MATRIX]] |
 | `.github/scripts/photo-reboot-acceptance.sh` | 120-row photo fixture seed → gerçek `adb reboot`/boot-complete → dosya/metadata verify iki-faz host orkestrasyonu | [[FEATURE_PROGRESS_PHOTOS]], [[TEST_MATRIX]] |
 | `.github/scripts/restore-process-kill-acceptance.sh` | restore seed → medya sonrası/pre-commit checkpoint → gerçek target PID kill → yeni süreç veri/tema/medya/cache verify host orkestrasyonu | [[FEATURE_SETTINGS_DATA]], [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]], [[TEST_MATRIX]] |
+| `.github/scripts/android-backup-transport-acceptance.sh` | local transport → seed → backupnow → pm clear → restore-set token → Room/tema/excluded-medya reconciliation verify | [[FEATURE_PROGRESS_PHOTOS]], [[FEATURE_SETTINGS_DATA]], [[ADR_004_PERSISTENT_PHOTO_STORAGE]], [[TEST_MATRIX]] |
 | `.github/workflows/android-release.yml` | protected production secret’larıyla signed APK/AAB üretim ve doğrulama | [[ADR_009_SECRET_BACKED_RELEASES]] |
 | `build.gradle.kts` | root plugin alias + tek `ciQuality` kapısı | [[ARCH_BUILD_DI]] |
 | `settings.gradle.kts` | repositories + `:app` + `:baselineprofile` | [[ARCH_BUILD_DI]] |
@@ -116,6 +117,7 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | `data/portability/DataPortabilityDaoTest.kt`, `DataExportRepositoryTest.kt` | 11 tablo snapshot/replace rollback, gerçek seçili dosyaya ZIP, düşük alan ve temp/target bütünlüğü |
 | `data/portability/PortableArchiveReaderTest.kt`, `DataRestoreRepositoryTest.kt`, `DataDeletionRepositoryTest.kt` | strict staging/CRC, export→restore + medya swap, bozuk arşivde koruma ve tüm-veri temizliği |
 | `data/portability/RestoreProcessKillAcceptanceTest.kt` | üç fazlı seed/pre-commit block/new-process verify; gerçek kill sonrası eski state ve artifact recovery |
+| `data/portability/AndroidBackupTransportAcceptanceTest.kt` | gerçek BackupManager local transport için Room/tema restore ve dışlanan fotoğraf-medya reconciliation seed/verify |
 
 ## Nutrition
 

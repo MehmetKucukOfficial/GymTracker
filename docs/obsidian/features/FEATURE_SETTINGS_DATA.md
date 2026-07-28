@@ -2,7 +2,7 @@
 type: feature
 status: current
 implementation_status: active
-verified_commit: 32c7a4c
+verified_commit: 74b6d82
 updated: 2026-07-28
 source_files:
   - app/src/main/java/com/gymtracker/data/settings/AppSettings.kt
@@ -31,7 +31,9 @@ source_files:
   - app/src/androidTest/java/com/gymtracker/data/portability/DataExportRepositoryTest.kt
   - app/src/androidTest/java/com/gymtracker/data/portability/DataRestoreRepositoryTest.kt
   - app/src/androidTest/java/com/gymtracker/data/portability/RestoreProcessKillAcceptanceTest.kt
+  - app/src/androidTest/java/com/gymtracker/data/portability/AndroidBackupTransportAcceptanceTest.kt
   - .github/scripts/restore-process-kill-acceptance.sh
+  - .github/scripts/android-backup-transport-acceptance.sh
   - app/src/androidTest/java/com/gymtracker/data/portability/DataDeletionRepositoryTest.kt
   - app/src/androidTest/java/com/gymtracker/ui/navigation/NavigationSmokeTest.kt
 tags: [gymtracker/feature, gymtracker/settings, gymtracker/data]
@@ -77,7 +79,8 @@ tags: [gymtracker/feature, gymtracker/settings, gymtracker/data]
 - Geçen: PR26 tam API 34 regresyon paketi 95/95, 0 failure/error/skipped; altı kalıcı golden baseline dahil.
 - Geçen: PR26 hosted run `29783838425`; 95 app + 5 benchmark/process, reboot 1+1, dört process-death ve beş Perfetto trace, 0 failure/error/skipped; merge commit `a370f82`.
 - Geçen: PR27 English/light restore-lock golden’ı; restore sırasında export/restore/delete eylemlerinin disabled semantics ve piksel görünümü.
-- Geçen: PR28 host-orchestrated seed/kill/verify kabulü; medya yayınından sonra ve Room commit’inden önce hedef PID gerçekten öldürülür, yeni süreç eski Room/tema/mevcut fotoğrafı korur ve iki orphan medya + yarım restore cache’ini temizler.
-- Bekleyen: gerçek Android backup transport restore deneyi ve davranışa bağlı diğer tercihler.
+- Geçen: PR28 hosted run `30384849616`; medya yayınından sonra ve Room commit’inden önce hedef PID gerçekten öldürülür, yeni süreç eski Room/tema/mevcut fotoğrafı korur ve iki orphan medya + yarım restore cache’ini temizler.
+- Geçen: PR29 hosted run `30389433873`; gerçek Android local backup transport Room/tema restore ve dışlanan fotoğraf-medya reconciliation kabulü.
+- Bekleyen: davranışa bağlı diğer tercihler.
 
 Bağlar: [[ARCH_STATE_DATA_FLOW]], [[ARCH_DATABASE]], [[ARCH_NAVIGATION]], [[DESIGN_SYSTEM_GRAPH]], [[ROADMAP_EXECUTION_GRAPH]].

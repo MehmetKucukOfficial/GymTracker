@@ -4,8 +4,8 @@ adr: 4
 status: accepted
 implementation_status: current
 date: 2026-07-14
-verified_commit: 26696b9
-updated: 2026-07-20
+verified_commit: 74b6d82
+updated: 2026-07-28
 tags: [gymtracker/decision, gymtracker/photos, gymtracker/risk/p0]
 ---
 
@@ -40,6 +40,7 @@ PR23 kararı: import veya optimizasyon başlamadan önce app-owned dizinin kulla
 - Legacy yükseltmede DB satırı yeni dosyalara geçmeden eski kaynak silinmez; başarısız update yeni dosyaları bırakmaz.
 - Internal fotoğrafların Android backup kapsamı açık karardır: `backup_rules.xml` ile legacy cloud backup, `data_extraction_rules.xml` ile cloud backup ve device transfer dışındadır.
 - CI host’u 120 yönetilen kayıt üretir, Android’i gerçekten reboot eder, `BOOT_COUNT` artışını ve bütün ana/thumbnail dosyaları ile metadata tutarlılığını doğrular; ardından aynı veri setinde thumbnail grid macrobenchmark çalıştırır.
+- Android local backup transport kabulü üretim APK’sını gerçek `BackupManager` ile yedekler, uygulama verisini temizler ve restore-set token’ından geri yükler. Room/tema geri gelir; `progress_photos/` byte’ları gelmez ve açılış reconciliation sözleşmesi eksik managed metadata’yı kaldırır.
 
 ## Kabul
 
@@ -52,7 +53,8 @@ PR23 kararı: import veya optimizasyon başlamadan önce app-owned dizinin kulla
 - [x] EXIF orientation normalize edilir; bounded ana görsel + thumbnail ve dimension metadata üretilir.
 - [x] Bozuk decode, iki dosyalı DB rollback ve missing-thumbnail onarımı testlidir.
 - [x] Gerçek process death, host reboot, düşük alan ve metadata-only restore/reconciliation testleri.
-- [ ] Gerçek Android backup transport restore deneyi ve fiziksel cihaz performans kabulü.
+- [x] Gerçek Android local backup transport restore ve eksik-medya reconciliation deneyi; hosted run `30389433873` artifact denetiminden geçti.
+- [ ] Fiziksel cihaz performans kabulü.
 - [x] Legacy v0 yeniden seçim ve v1 isteğe bağlı yeniden optimizasyon UX’i.
 
 Bağlar: [[FEATURE_PROGRESS_PHOTOS]], [[ARCH_DATABASE]], [[TEST_MATRIX]].

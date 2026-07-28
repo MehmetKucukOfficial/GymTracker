@@ -3,7 +3,7 @@ aliases: [GymTracker Graph Start, Başlangıç]
 type: moc
 status: current
 implementation_status: mixed
-verified_commit: 32c7a4c
+verified_commit: 74b6d82
 updated: 2026-07-28
 tags: [gymtracker/moc, gymtracker/graph]
 ---
@@ -21,7 +21,7 @@ tags: [gymtracker/moc, gymtracker/graph]
 - Local-first; backend ve gerçek ödeme yok
 - 5 ana navigation hedefi, 3 İlerleme alt hedefi, ID tabanlı workout/program detayları
 - 82 benzersiz egzersiz, 108 hazır program egzersiz referansı
-- `ciQuality` debug + minified release APK/AAB üretir; PR28 yerel kapısında 48 JVM, 100 API 34 normal test ve gerçek restore process-kill host kabulü geçer; lint 0 hata
+- `ciQuality` debug + minified release APK/AAB üretir; PR29 yerel kapısında 48 JVM, 100 API 34 normal test, gerçek restore process-kill ve Android backup transport host kabulleri geçer; lint 0 hata
 - Format v1 manuel ZIP export, strict staged restore/rollback ve güçlü onaylı tüm-veri silme on bir Room tablosu, tema ve yönetilen fotoğraf sözleşmesini kapsar; PR26 hosted kabulü tamamlandı
 - Workout ve Programs compact’ta ID rotası, 840 dp+ genişlikte ortak liste–özet kullanır; on kalıcı golden baseline vardır
 - Destructive migration, yeni fotoğraf URI kaybı, seed race ve temel navigation/state riskleri kapatıldı veya azaltıldı
@@ -70,7 +70,7 @@ tags: [gymtracker/moc, gymtracker/graph]
 
 ## Grafın güncellik durumu
 
-- Master code baseline: `7a79978`; GitHub PR #1–#21 merge commit ile sırayla birleştirildi ve kaynak dallar korundu
+- Master code baseline: `6083210`; GitHub PR #1–#22 merge commit ile sırayla birleştirildi ve kaynak dallar korundu
 - PR21 hosted koşusu `29764819516` tamamen yeşil; artifact XML 71 app + 2 process-death testi gösteriyor
 - PR22 hosted retry `29769324578` tamamen yeşil; artifact XML 71 app + 4 process-death testi gösteriyor ve GitHub PR #16 merge commit `79a80f4` ile birleştirildi
 - PR23 hosted koşusu `29771389567` tamamen yeşil; artifact XML 75 app + 5 benchmark/process testi, reboot seed/verify 1/1 + 1/1, beş benchmark tekrarı ve beş Perfetto trace gösteriyor; merge commit `ce20615`
@@ -78,7 +78,8 @@ tags: [gymtracker/moc, gymtracker/graph]
 - PR25/GitHub PR #19 hosted run `29780305582` artifact denetiminden geçti ve merge commit `1c3e193` ile `master`a alındı
 - PR26/GitHub PR #20 hosted run `29783838425` artifact denetiminden geçti ve merge commit `a370f82` ile `master`a alındı; kaynak dal korundu
 - PR27/GitHub PR #21 hosted run `30375520329` tamamen yeşil; artifact XML 100 app + 5 benchmark/process, reboot 1+1 ve beş trace gösteriyor; merge commit `7a79978`
-- Aktif çalışma PR28 `codex/restore-process-kill`; code baseline `32c7a4c`, yerel 48 JVM + 100 API 34 testi ve host seed/kill/verify kabulü yeşil
-- Dokümanlar: PR27 master ve PR28 restore process-kill dilimiyle senkron
+- PR28/GitHub PR #22 hosted run `30384849616` tamamen yeşil; artifact XML 100 app + 5 benchmark/process, reboot 1+1, restore seed/kill/verify ve beş trace gösteriyor; merge commit `6083210`
+- PR29/GitHub PR #23 hosted run `30389433873` tamamen yeşil; artifact XML 100 app + 5 benchmark/process, reboot 1+1, restore-kill, Android transport seed/backup/restore/verify ve beş trace gösteriyor; final head `74b6d82`
+- Dokümanlar: PR28 master kabulü ve PR29 hosted backup transport kabulüyle senkron
 - Son tam doğrulama: 2026-07-28
-- Aktif önerilen iş: PR28 graph commit’ini tamamla, güncel master’ı merge commit ile bütünleştir, hosted kabul/artifact denetimi sonrası gerçek Android backup transport deneyine geç
+- Aktif önerilen iş: PR29/GitHub PR #23’ü ready yap ve kaynak dalı koruyarak merge commit ile birleştir

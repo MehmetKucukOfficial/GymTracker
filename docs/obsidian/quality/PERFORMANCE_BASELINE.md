@@ -2,7 +2,7 @@
 type: quality
 status: current
 implementation_status: measured-emulator
-verified_commit: b812bec
+verified_commit: c376aa1
 updated: 2026-07-28
 source_files:
   - baselineprofile/build.gradle.kts
@@ -28,7 +28,7 @@ tags: [gymtracker/quality, gymtracker/performance, gymtracker/release]
 - Beş tekrar ve Perfetto trace üretilir. CUJ helper’ları profil üretici ve benchmark tarafından ortak kullanılır.
 - Aynı ayrı-process test modülü, performans metriğinden bağımsız `ProcessDeathNavigationTest` ile hedef uygulamanın PID değişimi + Android task restorasyonunu kabul kapısına bağlar; bu dört test macrobenchmark ölçümü değildir.
 - PR20 merge commit `625489a` otomatik master koşusu `29762392465` içinde ilk iki test hosted API 34 üzerinde geçti. PR22 paketi Nutrition tarihi ve Measurements checked period restorasyonuyla 4 teste çıktı; boş veritabanında klavye görünürlüğünü koşullu ele alan `a4f7bd9` ile yerelde 4/4 geçti.
-- CI sırası veri-fixture sözleşmesinin parçasıdır: 120 fotoğraflı gerçek reboot doğrulamasından hemen sonra grid benchmark/process-death paketi çalışır; uygulama verisini `pm clear` ile değiştiren restore process-kill kabulü benchmark’ın arkasında kalır. PR28 ilk hosted koşusu `30379216269`, bu sıra ters olduğunda kaydırılamayan tek fotoğraflı grid nedeniyle RenderThread dilimi üretemedi; `b812bec` fixture sırasını düzeltti.
+- CI sırası veri-fixture sözleşmesinin parçasıdır: 120 fotoğraflı gerçek reboot doğrulamasından hemen sonra grid benchmark/process-death paketi çalışır; uygulama verisini `pm clear` ile değiştiren restore process-kill kabulü benchmark’ın arkasında kalır. PR28 ilk hosted koşusu `30379216269`, bu sıra ters olduğunda kaydırılamayan tek fotoğraflı grid nedeniyle RenderThread dilimi üretemedi; `b812bec` fixture sırasını düzeltti. Temiz hosted run `30384849616` grid benchmark’ını beş iterasyon/beş Perfetto trace ile geçti.
 
 ## İlk API 34 emülatör baseline’ı
 

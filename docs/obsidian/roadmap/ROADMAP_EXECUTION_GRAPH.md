@@ -2,7 +2,7 @@
 type: roadmap
 status: current
 implementation_status: active
-verified_commit: 32c7a4c
+verified_commit: 74b6d82
 updated: 2026-07-28
 tags: [gymtracker/roadmap, gymtracker/workflow]
 ---
@@ -208,8 +208,8 @@ Kabul: hosted 37 JVM + 75 API 34 normal app instrumentation + 2 gerçek reboot f
 1. Tamamlandı: PR25 format v1 manuel export tam cihaz/hosted kabulü, artifact denetimi ve merge
 2. Tamamlandı: PR26 staged/atomik restore ve güçlü onaylı tüm veriyi silme tam/hosted kabulü
 3. Tamamlandı: PR27 Photos/Load/Settings golden, loading/disabled ve erişilebilirlik yayılımı; hosted run `30375520329`, merge commit `7a79978`
-4. Aktif: PR28 gerçek restore süreç-kesilmesi fixture’ı; code baseline `32c7a4c`, CI-order head `b812bec`; yerel ve hosted seed/kill/verify yeşil, temiz hosted benchmark tekrarı bekleniyor
-5. Sonraki: gerçek Android backup transport restore deneyi
+4. Tamamlandı: PR28 gerçek restore süreç-kesilmesi fixture’ı; hosted run `30384849616` artifact denetiminden geçti, GitHub PR #22 merge commit `6083210` ile birleşti
+5. Hosted kabul tamamlandı: PR29 gerçek Android local backup transport restore deneyi; final head `74b6d82`, run `30389433873`; GitHub PR #23 merge sırada
 6. Harici: production secret + Play internal-track smoke, branch protection ve fiziksel cihaz performans kabulü
 
 ## PR 24 — Settings + architecture foundation
@@ -243,8 +243,15 @@ Kabul: hedefli API 34 paket 11/11; tam `ciQuality` 48/48 JVM ile yeşil; tam API
 ## PR 28 — Restore process-kill acceptance
 
 Node: [[FEATURE_SETTINGS_DATA]], [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]], [[TEST_MATRIX]].
-Durum: code baseline `32c7a4c`, CI-order head `b812bec`, `codex/restore-process-kill` dalında. Draft GitHub PR #22 açık; hosted run `30379216269` restore kabulünü geçti, fixture sırası düzeltmesinden sonraki temiz cihaz tekrarı sırada.
+Durum: code baseline `32c7a4c`, CI-order head `b812bec`, final head `1e90848`; hosted run `30384849616` artifact denetiminden geçti ve GitHub PR #22 merge commit `6083210` ile `master`a alındı. Kaynak dal korundu.
 Çıktı: restore medya yayınından sonra ve Room/tema commit’inden önce deterministik checkpoint; host tarafından gerçek target PID force-stop; yeni süreçte eski Room/tema/mevcut fotoğraf korunması; iki yayınlanmış orphan medya ve yarım restore cache recovery kanıtı; CI artifact’lerinde seed/trigger/verify çıktıları.
-Kabul: yerel `ciQuality` 48/48 JVM, lint 0 hata, minified release/profile; temiz API 34 normal paket 100/100; yerel ve hosted host seed 1/1 + gerçek PID kill + verify 1/1. İlk hosted cihaz işinde app 100/100 ve reboot 1+1 geçti; restore `pm clear` sonrasında kaydırılamayan tek fotoğraflı grid benchmark’ı RenderThread dilimi üretemedi. `b812bec` benchmark’ı 120 fotoğraflı reboot fixture’ının hemen arkasına aldı; tam hosted kapı tekrar doğrulanacak.
+Kabul: yerel `ciQuality` 48/48 JVM, lint 0 hata, minified release/profile; temiz API 34 normal paket 100/100; yerel host seed/kill/verify başarılı. Hosted artifact: app 100/100, reboot 1+1, benchmark/process 5/5, restore seed 1/1 + PID `3724` kill + verify 1/1 ve 47.463.823 byte beş Perfetto trace; 0 failure/error/skipped.
+
+## PR 29 — Android backup transport acceptance
+
+Node: [[FEATURE_PROGRESS_PHOTOS]], [[FEATURE_SETTINGS_DATA]], [[ADR_004_PERSISTENT_PHOTO_STORAGE]], [[TEST_MATRIX]].
+Durum: code baseline `729ecc6`, integration head `c376aa1`, final head `74b6d82`, `codex/android-backup-transport` dalında. GitHub PR #23 hosted run `30389433873` artifact denetiminden geçti; ready + merge commit sırada.
+Çıktı: gerçek Android `BackupManager` local transport seçimi; production APK’da Room + DataStore + yönetilen fotoğraf seed’i; `backupnow`; restore-set token; `pm clear`; transport restore; dışlanan `progress_photos/` byte’larının dönmediği ve managed metadata reconciliation’ının çalıştığı yeni süreç kanıtı.
+Kabul: hosted quality 8m31s ve cihaz 24m45s; app 100/100, benchmark/process 5/5, reboot 1+1, restore-kill seed/PID/verify, Android transport seed 1/1 + package backup success/310.784 byte + token `1` + `restoreFinished: 0` + verify 1/1; beş Perfetto trace/toplam 50.783.405 byte; 0 failure/error/skipped.
 
 Detaylı süre: [[GELISTIRME_MASTER_PLANI#18. Fazlar ve süre tahmini]]. Aktif durum: [[SESSION_HANDOFF]].

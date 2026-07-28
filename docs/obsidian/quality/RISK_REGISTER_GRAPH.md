@@ -2,7 +2,7 @@
 type: risk-register
 status: current
 implementation_status: current
-verified_commit: 32c7a4c
+verified_commit: 74b6d82
 updated: 2026-07-28
 tags: [gymtracker/risk, gymtracker/quality]
 ---
@@ -12,7 +12,7 @@ tags: [gymtracker/risk, gymtracker/quality]
 | ID | Seviye | Durum | Risk | Etkilenen düğüm | Çözüm kapısı |
 |---|---|---|---|---|---|
 | R1 | P0 | resolved (v3+) | Destructive migration veri siler | [[ARCH_DATABASE]] | [[ADR_003_EXPLICIT_ROOM_MIGRATIONS]] |
-| R2 | P0 | mitigated+++ | Yeni fotoğraf URI’si, bounded decode/EXIF/thumbnail, iki dosyalı rollback, 48 MB low-space preflight, XML backup politikası, metadata-only restore reconciliation, gerçek 120-row host reboot ve kimlik koruyan legacy v0/v1 yükseltme çözüldü; gerçek Android backup transport restore deneyi açık | [[FEATURE_PROGRESS_PHOTOS]] | [[ADR_004_PERSISTENT_PHOTO_STORAGE]] |
+| R2 | P0 | mitigated++++ | Yeni fotoğraf URI’si, bounded decode/EXIF/thumbnail, iki dosyalı rollback, 48 MB low-space preflight, XML backup politikası, metadata-only restore reconciliation, gerçek 120-row host reboot ve kimlik koruyan legacy v0/v1 yükseltme çözüldü. PR29 hosted run `30389433873` gerçek Android local transport turunda Room/tema restore’unu, fotoğraf byte’larının dışlanmasını ve eksik managed metadata reconciliation’ını kanıtlar; fiziksel cihaz performansı ayrı operasyonal kapıdır | [[FEATURE_PROGRESS_PHOTOS]] | [[ADR_004_PERSISTENT_PHOTO_STORAGE]] |
 | R3 | P0/P1 | resolved-core++++ | Linux wrapper, tek `ciQuality`, minified release ve KVM hızlandırmalı geniş API 34 app/reboot/benchmark/process-death akışı PR24 hosted koşusu `29775858318` üzerinde yeşil; artifact XML 80+5, reboot 1+1 ve beş Perfetto trace doğrulandı. Paket-kill harness'i resumed-task kontrolü/bounded retry/task-korumalı fallback ile geçti. Branch-protection özel depo/hesap planı nedeniyle yönetim takibi | [[ARCH_BUILD_DI]] | hosted CI + yönetim takibi |
 | R4 | P1 | resolved | Program seed duplicate/yarım | [[FEATURE_PROGRAMS]] | unique + transaction test |
 | R5 | P1 | resolved | Home reaktif loading/content/error akışı ile Kas Yükü ortak injectable Clock kullanır; yerel gece yarısı ve runtime zone-change yeniden hesaplaması deterministik testlidir | [[FEATURE_HOME]] | shared period Flow + Clock/ZoneId test |
@@ -28,6 +28,6 @@ tags: [gymtracker/risk, gymtracker/quality]
 | R15 | P2 | mitigated++++ | Uygulama geneli 415/415 TR/EN string kaynağı, adaptive shell, 840 dp+ Workout/Programs list-detail, ortak büyük-font top bar/Snackbar, selected semantics ve on kalıcı golden aktif. Photos saving, Muscle Load content/loading ve Settings restore-lock durumları light/dark, EN/TR ve %200 örnekleriyle korunur; genel disabled/loading yayılımı diğer ekranlarda açık | [[DESIGN_SYSTEM_GRAPH]] | design DoD |
 | R16 | P1 | mitigated-config | Protected environment, fail-fast secrets, geçici keystore, APK/AAB imza doğrulaması ve artifact kapısı tanımlı; gerçek production secret + Play internal-track smoke’u açık | [[ADR_009_SECRET_BACKED_RELEASES]] | production environment + release smoke |
 | R17 | P1 | partial+ | Baseline/Startup Profile ile Home/Workout ve 120-thumbnail grid macrobenchmark CUJ’ları üretildi; grid JSON + beş Perfetto trace CI artifact sözleşmesine eklendi. Emülatör yalnız karşılaştırma baseline’ı, fiziksel referans cihaz kabulü yapılmadı | [[PERFORMANCE_BASELINE]] | physical release benchmark |
-| R18 | P1 | mitigated++++ | Manuel format v1 export, exact schema v9 strict staged restore, ilişki/enum/ID/path/CRC/tekil+toplam boyut kapıları, yeni medya yayınlama, atomik Room replace, DB/tema/dosya telafi rollback'i, süreç-artığı cache temizliği ve kesin sözcüklü tüm-veri silme aktiftir. PR28 yerel host kabulü restore’u medya yayınından sonra/Room commit’inden önce gerçek PID kill ile keser; yeni süreç eski veri/tema/mevcut medyayı korur, iki orphan dosya ve yarım cache’i temizler. Hosted PR28 kabulü bekleniyor | [[FEATURE_SETTINGS_DATA]] | [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]] + process-kill acceptance |
+| R18 | P1 | mitigated++++ | Manuel format v1 export, exact schema v9 strict staged restore, ilişki/enum/ID/path/CRC/tekil+toplam boyut kapıları, yeni medya yayınlama, atomik Room replace, DB/tema/dosya telafi rollback'i, süreç-artığı cache temizliği ve kesin sözcüklü tüm-veri silme aktiftir. PR28 hosted run `30384849616` restore’u medya yayınından sonra/Room commit’inden önce gerçek PID kill ile keser; yeni süreç eski veri/tema/mevcut medyayı korur, iki orphan dosya ve yarım cache’i temizler | [[FEATURE_SETTINGS_DATA]] | [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]] + process-kill acceptance |
 
 Aktif risk durumu [[SESSION_HANDOFF]] içinde tutulur; çözülen risk silinmez, `resolved` ve commit ile işaretlenir.

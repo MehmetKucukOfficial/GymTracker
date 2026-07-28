@@ -2,7 +2,7 @@
 type: quality
 status: current
 implementation_status: mixed
-verified_commit: b812bec
+verified_commit: 74b6d82
 updated: 2026-07-28
 tags: [gymtracker/quality, gymtracker/testing]
 ---
@@ -74,7 +74,9 @@ tags: [gymtracker/quality, gymtracker/testing]
 - PR26 hosted run `29783838425`: quality + cihaz işleri yeşil; indirilen artifact 95 app + 5 benchmark/process, reboot seed/verify 1+1, dört process-death ve 59.689.404 byte beş Perfetto trace içerir. Merge commit `a370f82`.
 - PR27 code baseline `7e9d4c0`: hedefli Photos/Muscle Load/golden paketi 11/11; tam `ciQuality` 48/48 JVM ile yeşil; uyanık Pixel 6 Pro API 34 üzerinde tam cihaz paketi 100/100, 0 failure/error/skipped. Cold-boot ilk turunda cihaz `isSleeping=true` olduğu için Compose Activity’leri durdu; wake/keyguard/stay-on doğrulamasından sonraki aynı kaynak tekrarı tamamen geçti.
 - PR27 hosted run `30375520329`: 100/100 app, 5/5 benchmark/process, reboot seed/verify 1+1 ve toplam 62.338.053 byte beş Perfetto trace; merge commit `7a79978`.
-- PR28 code baseline `32c7a4c`, CI-order head `b812bec`: `ciQuality` 48/48 JVM ve lint 0 hata; temiz API 34 regresyonu 100/100; host seed 1/1 → pre-commit gerçek PID kill → yeni süreç verify 1/1. Hosted run `30379216269` içinde app 100/100, reboot 1+1 ve restore seed/kill/verify 1+1 geçti; yalnız benchmark, restore fixture’ının `pm clear` işleminden sonra tek fotoğraflı grid üzerinde kaldığı için RenderThread dilimi üretemedi. Benchmark restore-kill önüne taşındı; temiz hosted tekrar bekleniyor.
+- PR28 code baseline `32c7a4c`, CI-order head `b812bec`, final head `1e90848`: yerel `ciQuality` 48/48 JVM, temiz API 34 regresyonu 100/100 ve host seed/kill/verify başarılı. Hosted run `30384849616` artifact denetiminde app 100/100, reboot 1+1, benchmark/process 5/5, restore seed 1/1 → PID `3724` kill → verify 1/1 ve toplam 47.463.823 byte beş Perfetto trace doğrulandı. GitHub PR #22 merge commit `6083210` ile birleşti; kaynak dal korundu.
+- PR29 code baseline `729ecc6`: Android local transport seed 1/1; `backupnow` 310.784 byte ve package success; restore set token `1`; `pm clear`; `restoreFinished: 0`; verify 1/1. Room oturumu/koyu tema geri gelir, dışlanan ana/thumbnail byte’ları gelmez ve eksik managed metadata reconciliation ile kaldırılır. `ciQuality` 48/48 JVM, lint 0 hata; temiz normal API 34 paket 100/100.
+- PR29 final head `74b6d82`, hosted run `30389433873`: quality 8m31s, API 34 cihaz 24m45s; app 100/100, benchmark/process 5/5, reboot 1+1, restore-kill seed/PID `3752`/verify, Android transport seed 1/1 + package success/310.784 byte + token `1` + `restoreFinished: 0` + verify 1/1 ve toplam 50.783.405 byte beş Perfetto trace; 0 failure/error/skipped.
 
 ## Feature matrisi
 
@@ -84,10 +86,10 @@ tags: [gymtracker/quality, gymtracker/testing]
 | Workout | state/validation + 839/840 layout | v3→v7, transaction/cascade/single-active/read-only/planned set | active/history/planned completion, expanded list-detail, golden, light/dark, %200 font | external positive-ID deep link + recreation |
 | Nutrition | totals/DST/parser/goal/snapshot scale + malformed restore | day query/update/delete/same-ID undo | over-goal/empty/edit action/ortak Snackbar/dark/%200/English + golden | selected-date gerçek process-death |
 | Measurements | validation/trend/period | v3→v8, date index/range/update/delete/same-ID undo | latest/history/chart/period/empty/ortak top bar+Snackbar/dark/%200/English + golden | 90-gün checked-state gerçek process-death |
-| Photos | input/limit/media bounds/48 MB reserve/backup policy | v3→v9 + v8→v9/import/EXIF/thumbnail/delete/reconcile/metadata-only restore/legacy-upgrade rollback | thumbnail grid/500-row lazy access/v0 reselect/v1 optimize/viewer/kayıt sırasında mutation kilidi/ortak top bar+Snackbar/dark/%200/saving golden | alt rota gerçek process-death + gerçek host reboot; backup transport/fiziksel perf bekliyor |
+| Photos | input/limit/media bounds/48 MB reserve/backup policy | v3→v9 + v8→v9/import/EXIF/thumbnail/delete/reconcile/metadata-only restore/legacy-upgrade rollback | thumbnail grid/500-row lazy access/v0 reselect/v1 optimize/viewer/kayıt sırasında mutation kilidi/ortak top bar+Snackbar/dark/%200/saving golden | alt rota gerçek process-death + gerçek host reboot + local backup transport; fiziksel perf bekliyor |
 | Programs | stable ID/content + 839/840 layout | idempotent 5/23/108 seed, v6→v7 JSON migration, atomic plan copy | list/detail/locked/start, ortak top bar+Snackbar, expanded selection/restoration, golden, dark/%200 | positive-ID detail Activity recreation + gerçek process-death |
 | Muscle load | activation/decay/personal bodyweight/fallback/unknown + midnight/zone | completed-only set + latest-valid-weight Flow | map/list/calibration/methodology/dark/%200 | TalkBack bekliyor |
-| Settings/data | tema çözümü + Preferences fallback + format v1 mapping/writer/strict reader/validator | DataStore round-trip + 11 tablo snapshot/replace rollback + SAF/temp + restore/media + tüm-veri silme | tek seçim, export/restore/delete karşılıklı engel, exact silme onayı, loading/success/error, restore-lock golden, dark/%200/English | Home child route + Activity recreation + gerçek pre-commit restore process-kill; backup transport bekliyor |
+| Settings/data | tema çözümü + Preferences fallback + format v1 mapping/writer/strict reader/validator | DataStore round-trip + 11 tablo snapshot/replace rollback + SAF/temp + restore/media + tüm-veri silme | tek seçim, export/restore/delete karşılıklı engel, exact silme onayı, loading/success/error, restore-lock golden, dark/%200/English | Home child route + Activity recreation + gerçek pre-commit restore process-kill + local backup transport |
 
 ## Room ve migration
 
