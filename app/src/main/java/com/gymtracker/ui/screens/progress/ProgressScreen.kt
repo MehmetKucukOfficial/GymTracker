@@ -70,6 +70,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.disabled
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
@@ -129,7 +130,14 @@ fun ProgressScreen(
         },
         snackbarHost = { GtSnackbarHost(snackbarHostState) },
         floatingActionButton = {
-            FloatingActionButton(onClick = { addPhotoLauncher.launch("image/*") }) {
+            FloatingActionButton(
+                onClick = {
+                    if (!uiState.isSaving) addPhotoLauncher.launch("image/*")
+                },
+                modifier = Modifier.semantics {
+                    if (uiState.isSaving) disabled()
+                }
+            ) {
                 Icon(Icons.Default.Add, contentDescription = stringResource(R.string.progress_photos_add))
             }
         }
@@ -233,8 +241,12 @@ fun ProgressPhotoContent(
                     if (photos.isEmpty()) R.string.progress_photos_empty_body
                     else R.string.progress_photos_filter_empty_body
                 ),
-                actionLabel = if (photos.isEmpty()) stringResource(R.string.progress_photos_first_action) else null,
-                onAction = if (photos.isEmpty()) onAddPhoto else null
+                actionLabel = if (photos.isEmpty() && !uiState.isSaving) {
+                    stringResource(R.string.progress_photos_first_action)
+                } else {
+                    null
+                },
+                onAction = if (photos.isEmpty() && !uiState.isSaving) onAddPhoto else null
             )
         } else {
             LazyVerticalGrid(
@@ -255,7 +267,7 @@ fun ProgressPhotoContent(
                             if (photo.storageVersion == 0) onReselectPhoto(photo)
                             else onReoptimizePhoto(photo)
                         },
-                        upgradeEnabled = !uiState.isSaving
+                        actionsEnabled = !uiState.isSaving
                     )
                 }
             }
@@ -324,7 +336,7 @@ private fun PhotoGridItem(
     onOpen: () -> Unit,
     onDelete: () -> Unit,
     onUpgrade: () -> Unit,
-    upgradeEnabled: Boolean
+    actionsEnabled: Boolean
 ) {
     var loadFailed by remember(photo.photoUri) { mutableStateOf(false) }
     val date = remember(photo.date) { DateFormat.getDateInstance(DateFormat.MEDIUM).format(Date(photo.date)) }
@@ -373,6 +385,7 @@ private fun PhotoGridItem(
             }
             IconButton(
                 onClick = onDelete,
+                enabled = actionsEnabled,
                 modifier = Modifier.align(Alignment.TopEnd)
             ) {
                 Icon(
@@ -431,7 +444,7 @@ private fun PhotoGridItem(
             if (photo.storageVersion < 2) {
                 TextButton(
                     onClick = onUpgrade,
-                    enabled = upgradeEnabled,
+                    enabled = actionsEnabled,
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag("progress-photo-upgrade-${photo.id}")

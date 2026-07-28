@@ -78,6 +78,9 @@ class MuscleLoadScreenTest {
 
         composeRule.onNodeWithText(text(R.string.muscle_load_completed_sets, 1)).assertIsDisplayed()
         composeRule.onNodeWithText(text(R.string.muscle_load_personal_calibration, 82.5f)).assertIsDisplayed()
+        composeRule.onNodeWithContentDescription(
+            text(R.string.muscle_load_map_front_description)
+        ).assertIsDisplayed()
         composeRule.onNodeWithContentDescription(text(R.string.muscle_load_methodology_action)).performClick()
         composeRule.onNodeWithText(text(R.string.muscle_load_methodology_title)).assertIsDisplayed()
         composeRule.onNodeWithText(text(R.string.action_ok)).performClick()
@@ -85,6 +88,14 @@ class MuscleLoadScreenTest {
             .performScrollToNode(hasText(text(R.string.muscle_chest_mid)))
         composeRule.onNodeWithText(text(R.string.muscle_chest_mid)).assertIsDisplayed()
         composeRule.onNodeWithText(text(R.string.muscle_load_score, 0.45f)).assertIsDisplayed()
+        composeRule.onNodeWithContentDescription(
+            text(
+                R.string.muscle_load_row_description,
+                text(R.string.muscle_chest_mid),
+                text(R.string.muscle_load_medium),
+                0.45f
+            )
+        ).assertIsDisplayed()
     }
 
     private fun text(id: Int, vararg args: Any): String =
