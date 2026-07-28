@@ -2,6 +2,7 @@ package com.gymtracker.data.portability
 
 import com.gymtracker.data.database.AppDatabase
 import com.gymtracker.data.photos.PhotoFileStorage
+import com.gymtracker.data.photos.ProgressPhotoRepository
 import com.gymtracker.data.settings.SettingsRepository
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
@@ -21,4 +22,5 @@ internal interface DataPortabilityEntryPoint {
     fun dataExportRepository(): DataExportRepository
     fun archiveReader(): PortableArchiveReader
     fun photoFileStorage(): PhotoFileStorage
+    fun progressPhotoRepository(): ProgressPhotoRepository
 }
