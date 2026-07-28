@@ -91,9 +91,9 @@ jobs:
           script: |
             ./gradlew connectedDebugAndroidTest --no-daemon --max-workers=2 --stacktrace
             bash .github/scripts/photo-reboot-acceptance.sh
+            ./gradlew :baselineprofile:connectedBenchmarkReleaseAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.gymtracker.baselineprofile.PhotoGridBenchmark,com.gymtracker.baselineprofile.ProcessDeathNavigationTest -Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.suppressErrors=EMULATOR --no-daemon --max-workers=2 --stacktrace
             bash .github/scripts/restore-process-kill-acceptance.sh
             bash .github/scripts/android-backup-transport-acceptance.sh
-            ./gradlew :baselineprofile:connectedBenchmarkReleaseAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.gymtracker.baselineprofile.PhotoGridBenchmark,com.gymtracker.baselineprofile.ProcessDeathNavigationTest -Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.suppressErrors=EMULATOR --no-daemon --max-workers=2 --stacktrace
 
       - name: Upload device-test reports
         if: always()

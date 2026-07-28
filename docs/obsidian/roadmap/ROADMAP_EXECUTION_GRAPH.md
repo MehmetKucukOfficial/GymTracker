@@ -208,8 +208,8 @@ Kabul: hosted 37 JVM + 75 API 34 normal app instrumentation + 2 gerçek reboot f
 1. Tamamlandı: PR25 format v1 manuel export tam cihaz/hosted kabulü, artifact denetimi ve merge
 2. Tamamlandı: PR26 staged/atomik restore ve güçlü onaylı tüm veriyi silme tam/hosted kabulü
 3. Tamamlandı: PR27 Photos/Load/Settings golden, loading/disabled ve erişilebilirlik yayılımı; hosted run `30375520329`, merge commit `7a79978`
-4. Hosted kabulde: PR28 gerçek restore süreç-kesilmesi fixture’ı; code baseline `32c7a4c`, yerel seed/kill/verify ve tam kalite kapıları yeşil, GitHub PR #22 açık
-5. Yerelde tamamlandı: PR29 gerçek Android local backup transport restore deneyi; code baseline `729ecc6`, PR28 merge/kabulü sonrası yayınlanacak
+4. Tamamlandı: PR28 gerçek restore süreç-kesilmesi fixture’ı; hosted run `30384849616` artifact denetiminden geçti, GitHub PR #22 merge commit `6083210` ile birleşti
+5. Yerelde tamamlandı: PR29 gerçek Android local backup transport restore deneyi; code baseline `729ecc6`, güncel master bütünleştirmesi sonrası yayınlanacak
 6. Harici: production secret + Play internal-track smoke, branch protection ve fiziksel cihaz performans kabulü
 
 ## PR 24 — Settings + architecture foundation
@@ -243,14 +243,14 @@ Kabul: hedefli API 34 paket 11/11; tam `ciQuality` 48/48 JVM ile yeşil; tam API
 ## PR 28 — Restore process-kill acceptance
 
 Node: [[FEATURE_SETTINGS_DATA]], [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]], [[TEST_MATRIX]].
-Durum: code baseline `32c7a4c`, `codex/restore-process-kill` dalında; graph commit, master merge ve hosted kabul sırada.
+Durum: code baseline `32c7a4c`, CI-order head `b812bec`, final head `1e90848`; hosted run `30384849616` artifact denetiminden geçti ve GitHub PR #22 merge commit `6083210` ile `master`a alındı. Kaynak dal korundu.
 Çıktı: restore medya yayınından sonra ve Room/tema commit’inden önce deterministik checkpoint; host tarafından gerçek target PID force-stop; yeni süreçte eski Room/tema/mevcut fotoğraf korunması; iki yayınlanmış orphan medya ve yarım restore cache recovery kanıtı; CI artifact’lerinde seed/trigger/verify çıktıları.
-Kabul: yerel `ciQuality` 48/48 JVM, lint 0 hata, minified release/profile; temiz API 34 normal paket 100/100; host seed 1/1 + gerçek PID kill + verify 1/1.
+Kabul: yerel `ciQuality` 48/48 JVM, lint 0 hata, minified release/profile; temiz API 34 normal paket 100/100; yerel host seed/kill/verify başarılı. Hosted artifact: app 100/100, reboot 1+1, benchmark/process 5/5, restore seed 1/1 + PID `3724` kill + verify 1/1 ve 47.463.823 byte beş Perfetto trace; 0 failure/error/skipped.
 
 ## PR 29 — Android backup transport acceptance
 
 Node: [[FEATURE_PROGRESS_PHOTOS]], [[FEATURE_SETTINGS_DATA]], [[ADR_004_PERSISTENT_PHOTO_STORAGE]], [[TEST_MATRIX]].
-Durum: code baseline `729ecc6`, `codex/android-backup-transport` dalında; PR28 hosted kabul/merge sonrasında graph commit ve yayın sırası bekleniyor.
+Durum: code baseline `729ecc6`, `codex/android-backup-transport` dalında; PR28 merge commit `6083210` `--no-ff` ile bütünleştiriliyor. Graph closeout, push/draft PR ve hosted kabul sırada.
 Çıktı: gerçek Android `BackupManager` local transport seçimi; production APK’da Room + DataStore + yönetilen fotoğraf seed’i; `backupnow`; restore-set token; `pm clear`; transport restore; dışlanan `progress_photos/` byte’larının dönmediği ve managed metadata reconciliation’ının çalıştığı yeni süreç kanıtı.
 Kabul: seed 1/1; package backup success ve 310.784 byte; token `1`; `restoreFinished: 0`; verify 1/1; yerel `ciQuality` 48/48 JVM, lint 0 hata ve temiz normal API 34 paket 100/100.
 
