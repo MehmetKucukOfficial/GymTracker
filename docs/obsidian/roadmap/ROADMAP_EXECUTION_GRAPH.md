@@ -208,7 +208,7 @@ Kabul: hosted 37 JVM + 75 API 34 normal app instrumentation + 2 gerçek reboot f
 1. Tamamlandı: PR25 format v1 manuel export tam cihaz/hosted kabulü, artifact denetimi ve merge
 2. Tamamlandı: PR26 staged/atomik restore ve güçlü onaylı tüm veriyi silme tam/hosted kabulü
 3. Tamamlandı: PR27 Photos/Load/Settings golden, loading/disabled ve erişilebilirlik yayılımı; hosted run `30375520329`, merge commit `7a79978`
-4. Aktif: PR28 gerçek restore süreç-kesilmesi fixture’ı; code baseline `32c7a4c`, yerel seed/kill/verify ve tam kalite kapıları yeşil
+4. Aktif: PR28 gerçek restore süreç-kesilmesi fixture’ı; code baseline `32c7a4c`, CI-order head `b812bec`; yerel ve hosted seed/kill/verify yeşil, temiz hosted benchmark tekrarı bekleniyor
 5. Sonraki: gerçek Android backup transport restore deneyi
 6. Harici: production secret + Play internal-track smoke, branch protection ve fiziksel cihaz performans kabulü
 
@@ -243,8 +243,8 @@ Kabul: hedefli API 34 paket 11/11; tam `ciQuality` 48/48 JVM ile yeşil; tam API
 ## PR 28 — Restore process-kill acceptance
 
 Node: [[FEATURE_SETTINGS_DATA]], [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]], [[TEST_MATRIX]].
-Durum: code baseline `32c7a4c`, `codex/restore-process-kill` dalında; graph commit, master merge ve hosted kabul sırada.
+Durum: code baseline `32c7a4c`, CI-order head `b812bec`, `codex/restore-process-kill` dalında. Draft GitHub PR #22 açık; hosted run `30379216269` restore kabulünü geçti, fixture sırası düzeltmesinden sonraki temiz cihaz tekrarı sırada.
 Çıktı: restore medya yayınından sonra ve Room/tema commit’inden önce deterministik checkpoint; host tarafından gerçek target PID force-stop; yeni süreçte eski Room/tema/mevcut fotoğraf korunması; iki yayınlanmış orphan medya ve yarım restore cache recovery kanıtı; CI artifact’lerinde seed/trigger/verify çıktıları.
-Kabul: yerel `ciQuality` 48/48 JVM, lint 0 hata, minified release/profile; temiz API 34 normal paket 100/100; host seed 1/1 + gerçek PID kill + verify 1/1.
+Kabul: yerel `ciQuality` 48/48 JVM, lint 0 hata, minified release/profile; temiz API 34 normal paket 100/100; yerel ve hosted host seed 1/1 + gerçek PID kill + verify 1/1. İlk hosted cihaz işinde app 100/100 ve reboot 1+1 geçti; restore `pm clear` sonrasında kaydırılamayan tek fotoğraflı grid benchmark’ı RenderThread dilimi üretemedi. `b812bec` benchmark’ı 120 fotoğraflı reboot fixture’ının hemen arkasına aldı; tam hosted kapı tekrar doğrulanacak.
 
 Detaylı süre: [[GELISTIRME_MASTER_PLANI#18. Fazlar ve süre tahmini]]. Aktif durum: [[SESSION_HANDOFF]].
