@@ -148,4 +148,31 @@ class DataPortabilityDaoTest {
         assertEquals(listOf(1), snapshot.nutritionGoals.map { it.id })
         assertEquals(listOf("programs"), snapshot.seedMetadata.map { it.seedKey })
     }
+
+    @Test
+    fun replaceAll_rollsBackDeletesWhenIncomingSnapshotViolatesForeignKeys() = runTest {
+        val original = WorkoutSession(id = 10, name = "Current data")
+        database.workoutDao().insertSession(original)
+        val dao = database.dataPortabilityDao()
+        val current = database.withTransaction { dao.readSnapshot() }
+        val invalid = current.copy(
+            workoutSessions = emptyList(),
+            workoutSets = listOf(
+                WorkoutSet(
+                    id = 30,
+                    sessionId = 999,
+                    exerciseName = "Missing session",
+                    setNumber = 1,
+                    reps = 5,
+                    weightKg = 100f
+                )
+            )
+        )
+
+        val failure = runCatching { dao.replaceAll(invalid) }.exceptionOrNull()
+
+        assertEquals(true, failure != null)
+        assertEquals(listOf(original), dao.workoutSessions())
+        assertEquals(emptyList<WorkoutSet>(), dao.workoutSets())
+    }
 }

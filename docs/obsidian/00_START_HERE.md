@@ -3,7 +3,7 @@ aliases: [GymTracker Graph Start, Başlangıç]
 type: moc
 status: current
 implementation_status: mixed
-verified_commit: 81cb7fe
+verified_commit: 4590168
 updated: 2026-07-20
 tags: [gymtracker/moc, gymtracker/graph]
 ---
@@ -22,7 +22,7 @@ tags: [gymtracker/moc, gymtracker/graph]
 - 5 ana navigation hedefi, 3 İlerleme alt hedefi, ID tabanlı workout/program detayları
 - 82 benzersiz egzersiz, 108 hazır program egzersiz referansı
 - `ciQuality` debug + minified release APK/AAB üretir; PR25 dalında 42 JVM, hedefli 19 export cihaz testi; PR24 hosted kapısında 80 app + 2 gerçek reboot fazı + 4 gerçek process-death + 1 grid macrobenchmark geçiyor; lint 0 hata
-- Format v1 manuel ZIP export on bir Room tablosunu, tema tercihini ve yönetilen fotoğrafları taşır; staged restore ve tüm veriyi silme sıradadır
+- Format v1 manuel ZIP export, strict staged restore/rollback ve güçlü onaylı tüm-veri silme on bir Room tablosu, tema ve yönetilen fotoğraf sözleşmesini kapsar; tam/hosted PR26 kabulü sıradadır
 - Workout ve Programs compact’ta ID rotası, 840 dp+ genişlikte ortak liste–özet kullanır; altı kalıcı golden baseline vardır
 - Destructive migration, yeni fotoğraf URI kaybı, seed race ve temel navigation/state riskleri kapatıldı veya azaltıldı
 
@@ -75,7 +75,7 @@ tags: [gymtracker/moc, gymtracker/graph]
 - PR22 hosted retry `29769324578` tamamen yeşil; artifact XML 71 app + 4 process-death testi gösteriyor ve GitHub PR #16 merge commit `79a80f4` ile birleştirildi
 - PR23 hosted koşusu `29771389567` tamamen yeşil; artifact XML 75 app + 5 benchmark/process testi, reboot seed/verify 1/1 + 1/1, beş benchmark tekrarı ve beş Perfetto trace gösteriyor; merge commit `ce20615`
 - PR24 hosted koşusu `29775858318` tamamen yeşil; artifact XML 80 app + 5 benchmark/process, reboot 1+1 ve beş trace; merge commit `80c79b5`
-- Aktif PR25 integration head `81cb7fe` (`codex/data-export`); format v1 manuel export, tam `ciQuality`, 42 JVM, hedefli 19/19 ve tam 85/85 API 34 testi geçti
+- PR25/GitHub PR #19 hosted run `29780305582` artifact denetiminden geçti ve merge commit `1c3e193` ile `master`a alındı; aktif çalışma PR26 `codex/data-restore`
 - Dokümanlar: PR24 master ve PR25 manuel veri dışa aktarma sözleşmesiyle senkron
 - Son tam doğrulama: 2026-07-20
-- Aktif önerilen iş: PR25 tam 85-test cihaz kabulünü çalıştır, hosted artifact kabulünden sonra merge commit ile birleştir; ardından staged restore dilimine geç
+- Aktif önerilen iş: PR25 hosted artifact kabulünden sonra merge commit ile birleştir; PR26 restore/delete tam kalite + cihaz + hosted artifact kapısını tamamla, sonra PR27 design/golden/accessibility yayılımına geç

@@ -2,7 +2,7 @@
 type: atlas
 status: current
 implementation_status: active
-verified_commit: 81cb7fe
+verified_commit: 4590168
 updated: 2026-07-20
 tags: [gymtracker/workflow, gymtracker/source-map]
 ---
@@ -49,9 +49,12 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | `data/measurements/MeasurementRepository.kt` | all/period Flow ve measurement mutation sınırı | Measurements |
 | `data/photos/ProgressPhotoRepository.kt` | storage v2 medya import/delete/reconciliation + v0/v1 atomik yükseltme sınırı | Photos |
 | `data/settings/AppSettings.kt`, `di/SettingsModule.kt` | typed theme preference + singleton Preferences DataStore | [[FEATURE_SETTINGS_DATA]] |
-| `data/portability/DataPortabilityDao.kt` | on bir Room tablosunun tek-transaction, kararlı-sıralı export snapshot sorguları | [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]] |
+| `data/portability/DataPortabilityDao.kt`, `DataPortabilityOperationLock.kt` | on bir Room tablosunun kararlı snapshot'ı, child-first/parent-first atomik replace'i ve export/restore/delete ortak mutex'i | [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]] |
 | `data/portability/PortableArchive.kt`, `PortableArchiveWriter.kt` | format/schema sürümlü typed JSON + güvenli ZIP/media sözleşmesi | [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]] |
 | `data/portability/DataExportRepository.kt` | alan preflight → cache'te tam arşiv → SAF hedefe kopya + cleanup | [[FEATURE_SETTINGS_DATA]] |
+| `data/portability/PortableArchiveReader.kt`, `PortableArchiveValidator.kt` | strict format/schema/JSON/enum/ID/FK/path + giriş/byte/CRC staging kapıları ve entity eşlemesi | [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]] |
+| `data/portability/DataRestoreRepository.kt` | staging → benzersiz medya yayınlama → Room/tema commit veya telafi rollback'i → eski medya cleanup | [[FEATURE_SETTINGS_DATA]] |
+| `data/portability/DataDeletionRepository.kt` | kullanıcı verisi + ayar + medya temizliği, varsayılan program reset'i ve rollback | [[FEATURE_SETTINGS_DATA]] |
 
 ## Domain
 
@@ -75,7 +78,7 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | `ui/theme/Theme.kt` | light/dark Material renk şeması + fatigue color | [[DESIGN_SYSTEM_GRAPH]] |
 | `ui/theme/DesignTokens.kt` | type/spacing/shape/size tokenları | [[DESIGN_SYSTEM_GRAPH]] |
 | `ui/components/GymTrackerComponents.kt` | metric/action/state ortak UI + 840 dp liste-only/list-detail iskeleti + büyük-font uyumlu top bar + ortak Snackbar host | [[DESIGN_SYSTEM_GRAPH]], [[ARCH_NAVIGATION]] |
-| `ui/screens/settings/SettingsScreen.kt`, `SettingsViewModel.kt` | gerçek tema tüketen Settings route/content + tek-uçuş typed export state/SAF eylemi | [[FEATURE_SETTINGS_DATA]] |
+| `ui/screens/settings/SettingsScreen.kt`, `SettingsViewModel.kt` | tema + karşılıklı engelli typed export/restore/delete state'leri, SAF ve güçlü silme onayı | [[FEATURE_SETTINGS_DATA]] |
 
 ## Home
 
@@ -107,7 +110,8 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | `data/photos/PhotoRebootAcceptanceTest.kt` | 120 managed main/thumbnail + boot-count seed/verify fazları ve reboot sonrası reconciliation |
 | `baselineprofile/PhotoGridBenchmark.kt` | reboot fixture’ı üzerinde beş iterasyon thumbnail grid FrameTiming + Perfetto |
 | `data/portability/PortableArchiveWriterTest.kt` | format v1, typed JSON, medya byte'ları, metadata-only legacy ve path-sızıntısı/eksik-medya kapısı |
-| `data/portability/DataPortabilityDaoTest.kt`, `DataExportRepositoryTest.kt` | 11 tablo snapshot sırası, gerçek seçili dosyaya ZIP, düşük alan ve temp/target bütünlüğü |
+| `data/portability/DataPortabilityDaoTest.kt`, `DataExportRepositoryTest.kt` | 11 tablo snapshot/replace rollback, gerçek seçili dosyaya ZIP, düşük alan ve temp/target bütünlüğü |
+| `data/portability/PortableArchiveReaderTest.kt`, `DataRestoreRepositoryTest.kt`, `DataDeletionRepositoryTest.kt` | strict staging/CRC, export→restore + medya swap, bozuk arşivde koruma ve tüm-veri temizliği |
 
 ## Nutrition
 

@@ -406,6 +406,36 @@
     <string name="settings_export_error_missing_photo">Yönetilen bir fotoğraf dosyası bulunamadı. Fotoğraflar ekranını açıp depolamayı uzlaştırdıktan sonra yeniden dene.</string>
     <string name="settings_export_error_generic">Yedek oluşturulamadı. Hedef konumu ve kullanılabilir alanı kontrol edip yeniden dene.</string>
     <string name="settings_export_filename" translatable="false">GymTracker-backup.zip</string>
+    <string name="settings_restore_title">Yedeği geri yükle</string>
+    <string name="settings_restore_body">Sürüm ve bütünlük kontrolleri geçen bir GymTracker yedeğiyle mevcut uygulama verilerini değiştirir. İşlem başlamadan önce seçilen arşiv tamamen hazırlanır.</string>
+    <string name="settings_restore_action">Yedek seç</string>
+    <string name="settings_restore_in_progress">Yedek geri yükleniyor</string>
+    <string name="settings_restore_do_not_close">Veriler doğrulanıyor ve atomik olarak değiştiriliyor. İşlem tamamlanana kadar uygulamayı kapatma.</string>
+    <string name="settings_restore_confirm_title">Mevcut veriler değiştirilsin mi?</string>
+    <string name="settings_restore_confirm_body">Seçilen yedek doğrulanırsa mevcut antrenman, beslenme, ölçüm, program, ayar ve fotoğraf kayıtlarının yerini alacak. Bu işlem geri alınamaz.</string>
+    <string name="settings_restore_confirm_action">Doğrula ve geri yükle</string>
+    <string name="settings_restore_success">%1$d kayıt ve %2$d yönetilen fotoğraf geri yüklendi.</string>
+    <string name="settings_restore_legacy_warning">%1$d eski fotoğraf yalnız metadata olarak geri yüklendi; görseli yeniden seçmen gerekebilir.</string>
+    <string name="settings_restore_cleanup_warning">Bazı eski fotoğraf dosyaları temizlenemedi. Fotoğraflar ekranını açarak depolama uzlaştırmasını çalıştır.</string>
+    <string name="settings_restore_error_storage">Yedeği güvenle hazırlamak için cihazda yeterli boş alan yok.</string>
+    <string name="settings_restore_error_invalid">Bu dosya geçerli veya desteklenen bir GymTracker yedeği değil. Mevcut veriler değiştirilmedi.</string>
+    <string name="settings_restore_error_rollback">Geri yükleme tamamlanamadı ve otomatik geri alma da başarısız oldu. Uygulamayı kapatıp yeniden açmadan önce yeni bir yedek oluşturma.</string>
+    <string name="settings_restore_error_generic">Yedek geri yüklenemedi. Dosyayı ve kullanılabilir alanı kontrol edip yeniden dene; mevcut veriler korunmaya çalışıldı.</string>
+    <string name="settings_delete_title">Tüm veriyi sil</string>
+    <string name="settings_delete_body">Antrenmanları, beslenme kayıtlarını, ölçümleri, program erişim/ilerleme durumunu, fotoğraf kayıtlarını, yönetilen fotoğraf dosyalarını ve ayarları bu cihazdan kalıcı olarak kaldırır. Uygulamayla gelen program kataloğu varsayılana döner.</string>
+    <string name="settings_delete_action">Tüm veriyi sil</string>
+    <string name="settings_delete_in_progress">Veriler siliniyor</string>
+    <string name="settings_delete_do_not_close">Veritabanı ve ayarlar temizleniyor. İşlem tamamlanana kadar uygulamayı kapatma.</string>
+    <string name="settings_delete_confirm_title">Tüm veriler kalıcı olarak silinsin mi?</string>
+    <string name="settings_delete_confirm_body">Bu işlem geri alınamaz. Devam etmeden önce saklamak istediğin veriler için güncel ve doğrulanmış bir yedek oluştur.</string>
+    <string name="settings_delete_confirm_instruction">Onaylamak için %1$s yaz.</string>
+    <string name="settings_delete_confirm_field">Onay metni</string>
+    <string name="settings_delete_confirm_action">Kalıcı olarak sil</string>
+    <string name="settings_delete_confirmation_phrase">SİL</string>
+    <string name="settings_delete_success">%1$d kayıt ve %2$d yönetilen fotoğraf dosyası silindi. Ayarlar sistem varsayılanına döndürüldü.</string>
+    <string name="settings_delete_cleanup_warning">Bazı artık fotoğraf dosyaları temizlenemedi; uygulama bunları sonraki depolama uzlaştırmasında yeniden temizlemeyi deneyecek.</string>
+    <string name="settings_delete_error_rollback">Silme ve otomatik geri alma işlemleri başarısız oldu. Uygulamayı kapatıp yeniden aç ve yeni veri eklemeden önce mevcut durumu kontrol et.</string>
+    <string name="settings_delete_error_generic">Tüm veriler silinemedi. Mevcut veriler korunmaya çalışıldı; yeniden denemeden önce uygulamayı kapatıp aç.</string>
     <string name="settings_about_title">Uygulama hakkında</string>
     <string name="settings_version">Sürüm %1$s · Yerel önizleme</string>
 

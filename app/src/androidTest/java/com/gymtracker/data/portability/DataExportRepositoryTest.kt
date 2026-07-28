@@ -69,6 +69,10 @@ class DataExportRepositoryTest {
         )
         settingsRepository.setThemeMode(ThemeMode.DARK)
         val destination = File(context.cacheDir, "export-${UUID.randomUUID()}.zip")
+        File(context.cacheDir, "data_exports/stale/partial.zip").apply {
+            parentFile?.mkdirs()
+            writeText("partial")
+        }
         val repository = repository(availableBytes = Long.MAX_VALUE)
 
         try {

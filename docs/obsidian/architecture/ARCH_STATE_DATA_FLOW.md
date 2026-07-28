@@ -2,7 +2,7 @@
 type: architecture
 status: current
 implementation_status: mixed
-verified_commit: 81cb7fe
+verified_commit: 4590168
 updated: 2026-07-20
 source_files:
   - app/src/main/java/com/gymtracker/ui/screens/home/HomeViewModel.kt
@@ -21,6 +21,8 @@ source_files:
   - app/src/main/java/com/gymtracker/data/settings/AppSettings.kt
   - app/src/main/java/com/gymtracker/ui/screens/settings/SettingsViewModel.kt
   - app/src/main/java/com/gymtracker/data/portability/DataExportRepository.kt
+  - app/src/main/java/com/gymtracker/data/portability/DataRestoreRepository.kt
+  - app/src/main/java/com/gymtracker/data/portability/DataDeletionRepository.kt
 tags: [gymtracker/architecture, gymtracker/state]
 ---
 
@@ -37,6 +39,8 @@ tags: [gymtracker/architecture, gymtracker/state]
 - Muscle Load: Home ile aynı takvim period Flow’u `flatMapLatest` ile completed-set Room Flow’una geçer; bu Flow `MeasurementDao.observeLatestWithWeight()` ile birleşir. Saf calculator sıfır kilolu setleri en güncel kişisel ölçümle, ölçüm yoksa açık 20 kg fallback ile hesaplayıp kaynak bilgisini loading/content/error state’e taşır.
 - Settings: singleton Preferences DataStore → typed `SettingsRepository` Flow → Activity ve Settings ViewModel state’i. `SYSTEM/LIGHT/DARK` tercihi uygulama temasına anında bağlanır ve recreation sonrasında korunur; davranışa bağlanmayan ayarlar kullanıcıya sunulmaz.
 - Data export: UI `CreateDocument` hedefi → `SettingsViewModel` tek-uçuş `Idle/Exporting/Success/Failure` state'i → `DataExportRepository`; Room snapshot tek transaction'da alınır, Preferences tema değeri eklenir, cache ZIP tamamlanır ve ancak sonra SAF hedefine kopyalanır. Typed düşük-alan/eksik-medya hataları UI metnine çevrilir.
+- Data restore: UI `OpenDocument` + geri alınamaz onay → `Idle/Restoring/Success/Failure` → strict reader/validator → staging + yeni yönetilen medya → atomik Room replace + tema → eski medya cleanup. DB/tema hatası eski snapshot ve yeni dosyalar için telafi edici rollback üretir.
+- Data deletion: kesin yerelleştirilmiş sözcük onayı → `Idle/Deleting/Success/Failure` → kullanıcı tablolarını temizleme + varsayılan program seed'i tek Room transaction'ında → tema `SYSTEM` → medya reconciliation. Üç portability işlemi tek mutex altında birbirini dışlar.
 - Bütün ana Compose ekranları `collectAsStateWithLifecycle()` kullanır.
 - Programdan gelen `WorkoutSet.isCompleted=false` satırları gerçek reps/kg mutation’ıyla tamamlanır; çözülmemiş planlı set varken finish reddedilir ve Muscle Load yalnız session + set tamamlandığında etkilenir.
 - Gün sınırı sabit 86.400.000 ms yerine `ZoneId` + takvim günü ile hesaplanır; tarihsel Istanbul DST unit testi vardır.
@@ -80,6 +84,6 @@ flowchart TD
 4. [[FEATURE_HOME]] — Clock injection; aktif-seans CTA entegrasyonu tamamlandı.
 5. [[FEATURE_MEASUREMENTS]] — validation/latest/history/trend, repository sınırı, SavedState period ve gerçek chart Flow’u tamamlandı.
 6. [[FEATURE_PROGRAMS]] — ilişkisel plan Flow’u, locked repository guard ve atomic program→planned-workout entegrasyonu tamamlandı.
-7. [[FEATURE_SETTINGS_DATA]] — typed DataStore theme tercihi, lifecycle state ve gerçek tema tüketimi tamamlandı; format v1 manuel export aktif, staged restore ve tüm veriyi silme sırada.
+7. [[FEATURE_SETTINGS_DATA]] — typed DataStore theme tercihi, format v1 export/staged restore, telafi edici rollback ve güçlü onaylı tüm-veri silme aktiftir; archive migrator ve gerçek süreç-kesilmesi fixture'ı sıradadır.
 
 Test eşleşmesi: [[TEST_MATRIX#ViewModel ve state]].

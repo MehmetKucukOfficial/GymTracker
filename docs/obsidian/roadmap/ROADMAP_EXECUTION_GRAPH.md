@@ -2,7 +2,7 @@
 type: roadmap
 status: current
 implementation_status: active
-verified_commit: 81cb7fe
+verified_commit: 4590168
 updated: 2026-07-20
 tags: [gymtracker/roadmap, gymtracker/workflow]
 ---
@@ -39,6 +39,7 @@ flowchart TD
     PH --> SD[PR 24 Settings + architecture foundation]
     SD --> DE[PR 25 Versioned manual data export]
     DE --> DR[PR 26 Staged restore + delete]
+    DR --> DG[PR 27 Design/golden/accessibility expansion]
 ```
 
 ## Birleştirme durumu
@@ -205,8 +206,8 @@ Kabul: hosted 37 JVM + 75 API 34 normal app instrumentation + 2 gerçek reboot f
 ## Sonraki dikey dilim
 
 1. PR25 format v1 manuel export tam cihaz/hosted kabulü, artifact denetimi ve merge
-2. PR26 staged/atomik restore ve güçlü onaylı tüm veriyi silme transaction dilimleri
-3. Photos/Load/Settings golden ve erişilebilirlik yayılımı
+2. PR26 staged/atomik restore ve güçlü onaylı tüm veriyi silme tam/hosted kabulü
+3. PR27 Photos/Load/Settings golden, loading/disabled ve erişilebilirlik yayılımı
 4. Production secret + Play internal-track smoke, branch protection, gerçek backup transport restore ve fiziksel cihaz performans kabulü
 
 ## PR 24 — Settings + architecture foundation
@@ -219,8 +220,15 @@ Kabul: hosted 40 JVM + 80 API 34 app + 2 reboot fazı + 4 process-death + 1 beş
 ## PR 25 — Versioned manual data export
 
 Node: [[FEATURE_SETTINGS_DATA]], [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]], [[ARCH_DATABASE]], [[TEST_MATRIX]].
-Durum: code baseline `e6ae602`, PR24 merge-integration head `81cb7fe`; `codex/data-export` dalında yerel kalite kapısı tamamlandı.
+Durum: code baseline `e6ae602`, integration head `59862eb`; GitHub PR #19 hosted run `29780305582` quality ve geniş cihaz işlerinde yeşil, artifact denetimi tamamlandı ve merge commit `1c3e193` ile `master`a alındı. Kaynak dal korundu.
 Çıktı: format v1/schema v9 typed ZIP; on bir Room tablosunun tek transaction snapshot'ı; tema tercihi; storage v1/v2 yönetilen ana/thumbnail medya; v0 metadata-only politikası; canonical-kök/path traversal/30 MB medya güvenliği; cache'te tamamla-sonra-SAF kopyası; düşük alan, eksik medya ve temp cleanup; Settings loading/success/error + legacy uyarısı; 385/385 TR/EN.
-Kabul: 42/42 JVM, hedefli 19/19 ve tam 85/85 API 34 cihaz testi, hedefli golden reboot sonrası 2/2 ve tam `ciQuality` başarılı. Hosted kabul, artifact denetimi ve merge sırada.
+Kabul: hosted 42 JVM + 85 app + 5 benchmark/process, reboot seed/verify 1+1, dört process-death ve beş Perfetto trace; 0 failure/error/skipped. Tam `ciQuality` ve yerel 85/85 de yeşil.
+
+## PR 26 — Staged restore + strong-confirm deletion
+
+Node: [[FEATURE_SETTINGS_DATA]], [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]], [[ARCH_DATABASE]], [[TEST_MATRIX]].
+Durum: `codex/data-restore` dalında uygulama tamamlanıyor; PR25 hosted/merge tabanı ve PR26 tam kabul kapısı bekleniyor.
+Çıktı: exact format v1/schema v9 strict JSON + enum/değer/ID/FK/path doğrulaması; giriş/tekil/toplam açılmış boyut ve CRC/uzunluk kapısı; yeni benzersiz yönetilen medya; tek transaction Room replace; DB/tema/dosya telafi rollback'i; ortak portability mutex'i ve stale cache cleanup; exact yerelleştirilmiş sözcüklü tüm-veri silme, varsayılan program katalog reset'i ve medya temizliği.
+Kabul: son `ciQuality` 48/48 JVM ile yeşil; reader 6/6; restore/delete/DAO/Settings/localization hedefli API 34 paketi 16/16; güncel restore 3/3; tam API 34 regresyonu 95/95. Hosted artifact ve gerçek süreç-kesilmesi fixture sonucu ayrıca kaydedilecek.
 
 Detaylı süre: [[GELISTIRME_MASTER_PLANI#18. Fazlar ve süre tahmini]]. Aktif durum: [[SESSION_HANDOFF]].

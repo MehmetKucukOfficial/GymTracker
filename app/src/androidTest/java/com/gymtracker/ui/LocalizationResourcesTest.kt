@@ -34,6 +34,8 @@ class LocalizationResourcesTest {
         assertEquals("Programs", english.getString(R.string.programs_title))
         assertEquals("Settings", english.getString(R.string.settings_title))
         assertEquals("Create backup", english.getString(R.string.settings_export_action))
+        assertEquals("Restore a backup", english.getString(R.string.settings_restore_title))
+        assertEquals("Delete all data", english.getString(R.string.settings_delete_title))
         assertEquals("Undo", english.getString(R.string.action_undo))
     }
 }

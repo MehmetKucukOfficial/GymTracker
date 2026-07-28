@@ -2,7 +2,7 @@
 type: risk-register
 status: current
 implementation_status: current
-verified_commit: 81cb7fe
+verified_commit: 4590168
 updated: 2026-07-20
 tags: [gymtracker/risk, gymtracker/quality]
 ---
@@ -28,6 +28,6 @@ tags: [gymtracker/risk, gymtracker/quality]
 | R15 | P2 | mitigated+++ | Uygulama geneli 385/385 TR/EN string kaynağı, adaptive shell, 840 dp+ Workout/Programs list-detail, ortak büyük-font top bar/Snackbar, Settings export loading/success/error, selected semantics ve altı kalıcı golden aktif; Photos/Load/Settings golden ve genel disabled/loading yayılımı açık | [[DESIGN_SYSTEM_GRAPH]] | design DoD |
 | R16 | P1 | mitigated-config | Protected environment, fail-fast secrets, geçici keystore, APK/AAB imza doğrulaması ve artifact kapısı tanımlı; gerçek production secret + Play internal-track smoke’u açık | [[ADR_009_SECRET_BACKED_RELEASES]] | production environment + release smoke |
 | R17 | P1 | partial+ | Baseline/Startup Profile ile Home/Workout ve 120-thumbnail grid macrobenchmark CUJ’ları üretildi; grid JSON + beş Perfetto trace CI artifact sözleşmesine eklendi. Emülatör yalnız karşılaştırma baseline’ı, fiziksel referans cihaz kabulü yapılmadı | [[PERFORMANCE_BASELINE]] | physical release benchmark |
-| R18 | P1 | partial+ | Manuel format v1 export; tek transaction snapshot, sürüm header'ı, yönetilen medya, legacy metadata-only, path/alan/temp güvenliği ve gerçek SAF dosya testiyle aktif. Staged doğrulamalı atomik restore ve güçlü onaylı tüm-veri silme henüz uygulanmadı; arşiv başarı metni restore garantisi değildir | [[FEATURE_SETTINGS_DATA]] | [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]] + restore/delete acceptance |
+| R18 | P1 | mitigated-core | Manuel format v1 export, exact schema v9 strict staged restore, ilişki/enum/ID/path/CRC/tekil+toplam boyut kapıları, yeni medya yayınlama, atomik Room replace, DB/tema/dosya telafi rollback'i, süreç-artığı cache temizliği ve kesin sözcüklü tüm-veri silme aktiftir. Hedefli API 34 paket 16/16; tam/hosted kabul ve gerçek süreç-kesilmesi zamanlama fixture'ı açık | [[FEATURE_SETTINGS_DATA]] | [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]] + full hosted/process-kill acceptance |
 
 Aktif risk durumu [[SESSION_HANDOFF]] içinde tutulur; çözülen risk silinmez, `resolved` ve commit ile işaretlenir.
