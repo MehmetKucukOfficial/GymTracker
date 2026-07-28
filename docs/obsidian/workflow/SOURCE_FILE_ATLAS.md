@@ -2,7 +2,7 @@
 type: atlas
 status: current
 implementation_status: active
-verified_commit: 7e9d4c0
+verified_commit: 32c7a4c
 updated: 2026-07-28
 tags: [gymtracker/workflow, gymtracker/source-map]
 ---
@@ -13,8 +13,9 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 
 | Dosya | Sorumluluk | Bağ |
 |---|---|---|
-| `.github/workflows/android-ci.yml` | PR/`master` quality + API 34 app/golden + gerçek photo reboot + grid benchmark + ayrı-process task-restoration CI ve artifact’ler | [[ARCH_BUILD_DI]], [[TEST_MATRIX]] |
+| `.github/workflows/android-ci.yml` | PR/`master` quality + API 34 app/golden + gerçek photo reboot + restore process-kill + grid benchmark + ayrı-process task-restoration CI ve artifact’ler | [[ARCH_BUILD_DI]], [[TEST_MATRIX]] |
 | `.github/scripts/photo-reboot-acceptance.sh` | 120-row photo fixture seed → gerçek `adb reboot`/boot-complete → dosya/metadata verify iki-faz host orkestrasyonu | [[FEATURE_PROGRESS_PHOTOS]], [[TEST_MATRIX]] |
+| `.github/scripts/restore-process-kill-acceptance.sh` | restore seed → medya sonrası/pre-commit checkpoint → gerçek target PID kill → yeni süreç veri/tema/medya/cache verify host orkestrasyonu | [[FEATURE_SETTINGS_DATA]], [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]], [[TEST_MATRIX]] |
 | `.github/workflows/android-release.yml` | protected production secret’larıyla signed APK/AAB üretim ve doğrulama | [[ADR_009_SECRET_BACKED_RELEASES]] |
 | `build.gradle.kts` | root plugin alias + tek `ciQuality` kapısı | [[ARCH_BUILD_DI]] |
 | `settings.gradle.kts` | repositories + `:app` + `:baselineprofile` | [[ARCH_BUILD_DI]] |
@@ -54,6 +55,7 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | `data/portability/DataExportRepository.kt` | alan preflight → cache'te tam arşiv → SAF hedefe kopya + cleanup | [[FEATURE_SETTINGS_DATA]] |
 | `data/portability/PortableArchiveReader.kt`, `PortableArchiveValidator.kt` | strict format/schema/JSON/enum/ID/FK/path + giriş/byte/CRC staging kapıları ve entity eşlemesi | [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]] |
 | `data/portability/DataRestoreRepository.kt` | staging → benzersiz medya yayınlama → Room/tema commit veya telafi rollback'i → eski medya cleanup | [[FEATURE_SETTINGS_DATA]] |
+| `data/portability/DataPortabilityEntryPoint.kt` | host-orchestrated kabulün aynı üretim Room/DataStore/archive/medya singleton’larına dar internal erişimi | [[FEATURE_SETTINGS_DATA]], [[TEST_MATRIX]] |
 | `data/portability/DataDeletionRepository.kt` | kullanıcı verisi + ayar + medya temizliği, varsayılan program reset'i ve rollback | [[FEATURE_SETTINGS_DATA]] |
 
 ## Domain
@@ -113,6 +115,7 @@ tags: [gymtracker/workflow, gymtracker/source-map]
 | `data/portability/PortableArchiveWriterTest.kt` | format v1, typed JSON, medya byte'ları, metadata-only legacy ve path-sızıntısı/eksik-medya kapısı |
 | `data/portability/DataPortabilityDaoTest.kt`, `DataExportRepositoryTest.kt` | 11 tablo snapshot/replace rollback, gerçek seçili dosyaya ZIP, düşük alan ve temp/target bütünlüğü |
 | `data/portability/PortableArchiveReaderTest.kt`, `DataRestoreRepositoryTest.kt`, `DataDeletionRepositoryTest.kt` | strict staging/CRC, export→restore + medya swap, bozuk arşivde koruma ve tüm-veri temizliği |
+| `data/portability/RestoreProcessKillAcceptanceTest.kt` | üç fazlı seed/pre-commit block/new-process verify; gerçek kill sonrası eski state ve artifact recovery |
 
 ## Nutrition
 

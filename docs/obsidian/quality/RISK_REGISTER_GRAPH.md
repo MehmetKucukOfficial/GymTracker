@@ -2,7 +2,7 @@
 type: risk-register
 status: current
 implementation_status: current
-verified_commit: 7e9d4c0
+verified_commit: 32c7a4c
 updated: 2026-07-28
 tags: [gymtracker/risk, gymtracker/quality]
 ---
@@ -28,6 +28,6 @@ tags: [gymtracker/risk, gymtracker/quality]
 | R15 | P2 | mitigated++++ | Uygulama geneli 415/415 TR/EN string kaynağı, adaptive shell, 840 dp+ Workout/Programs list-detail, ortak büyük-font top bar/Snackbar, selected semantics ve on kalıcı golden aktif. Photos saving, Muscle Load content/loading ve Settings restore-lock durumları light/dark, EN/TR ve %200 örnekleriyle korunur; genel disabled/loading yayılımı diğer ekranlarda açık | [[DESIGN_SYSTEM_GRAPH]] | design DoD |
 | R16 | P1 | mitigated-config | Protected environment, fail-fast secrets, geçici keystore, APK/AAB imza doğrulaması ve artifact kapısı tanımlı; gerçek production secret + Play internal-track smoke’u açık | [[ADR_009_SECRET_BACKED_RELEASES]] | production environment + release smoke |
 | R17 | P1 | partial+ | Baseline/Startup Profile ile Home/Workout ve 120-thumbnail grid macrobenchmark CUJ’ları üretildi; grid JSON + beş Perfetto trace CI artifact sözleşmesine eklendi. Emülatör yalnız karşılaştırma baseline’ı, fiziksel referans cihaz kabulü yapılmadı | [[PERFORMANCE_BASELINE]] | physical release benchmark |
-| R18 | P1 | mitigated-core+ | Manuel format v1 export, exact schema v9 strict staged restore, ilişki/enum/ID/path/CRC/tekil+toplam boyut kapıları, yeni medya yayınlama, atomik Room replace, DB/tema/dosya telafi rollback'i, süreç-artığı cache temizliği ve kesin sözcüklü tüm-veri silme aktiftir. PR26 hosted artifact’i 95 app + 5 benchmark/process, reboot 1+1 ve beş trace ile kabul edildi; yalnız gerçek restore süreç-kesilmesi zamanlama fixture'ı açık | [[FEATURE_SETTINGS_DATA]] | [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]] + process-kill acceptance |
+| R18 | P1 | mitigated++++ | Manuel format v1 export, exact schema v9 strict staged restore, ilişki/enum/ID/path/CRC/tekil+toplam boyut kapıları, yeni medya yayınlama, atomik Room replace, DB/tema/dosya telafi rollback'i, süreç-artığı cache temizliği ve kesin sözcüklü tüm-veri silme aktiftir. PR28 yerel host kabulü restore’u medya yayınından sonra/Room commit’inden önce gerçek PID kill ile keser; yeni süreç eski veri/tema/mevcut medyayı korur, iki orphan dosya ve yarım cache’i temizler. Hosted PR28 kabulü bekleniyor | [[FEATURE_SETTINGS_DATA]] | [[ADR_010_VERSIONED_MANUAL_DATA_PORTABILITY]] + process-kill acceptance |
 
 Aktif risk durumu [[SESSION_HANDOFF]] içinde tutulur; çözülen risk silinmez, `resolved` ve commit ile işaretlenir.
