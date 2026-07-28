@@ -2,7 +2,7 @@
 type: adr
 status: accepted
 implementation_status: current
-verified_commit: 729ecc6
+verified_commit: 74b6d82
 updated: 2026-07-28
 source_files:
   - app/src/main/java/com/gymtracker/data/portability/DataPortabilityDao.kt
@@ -65,6 +65,6 @@ GymTracker local-first çalışır. Room verisi ile uygulama tarafından yöneti
 - `RestoreProcessKillAcceptanceTest` + `restore-process-kill-acceptance.sh`: seed 1/1, gerçek pre-commit PID kill ve yeni süreç verify 1/1; eski veri/tema/medya korunması, iki orphan dosya ve yarım cache temizliği.
 - `DataDeletionRepositoryTest`: kullanıcı tabloları/tema/yönetilen medya temizliği ve varsayılan program kataloğunun tutarlı yeniden kurulması.
 - `DataPortabilityDaoTest`: geçersiz incoming FK yazımında transaction'ın eski veriyi geri getirmesi.
-- PR25 yerel kabulü 42 JVM + 85 cihaz; PR26 hedefli restore/delete/DAO/Settings/localization paketi 16/16. PR26 tam ve hosted kapıları kayda geçmeden nihai kabul iddiası yapılmaz.
+- PR25 yerel kabulü 42 JVM + 85 cihaz; PR26 hedefli restore/delete/DAO/Settings/localization paketi 16/16 ve tam hosted kapı başarılı. PR28 hosted run `30384849616` restore pre-commit PID kill + yeni süreç recovery kabulünü tam cihaz zinciri içinde doğrular.
 
 Bağlar: [[FEATURE_SETTINGS_DATA]], [[ARCH_DATABASE]], [[ARCH_STATE_DATA_FLOW]], [[CHANGE_IMPACT_MAP]], [[TEST_MATRIX]].

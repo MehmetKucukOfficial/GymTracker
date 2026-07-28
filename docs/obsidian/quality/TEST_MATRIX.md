@@ -2,7 +2,7 @@
 type: quality
 status: current
 implementation_status: mixed
-verified_commit: c376aa1
+verified_commit: 74b6d82
 updated: 2026-07-28
 tags: [gymtracker/quality, gymtracker/testing]
 ---
@@ -76,6 +76,7 @@ tags: [gymtracker/quality, gymtracker/testing]
 - PR27 hosted run `30375520329`: 100/100 app, 5/5 benchmark/process, reboot seed/verify 1+1 ve toplam 62.338.053 byte beş Perfetto trace; merge commit `7a79978`.
 - PR28 code baseline `32c7a4c`, CI-order head `b812bec`, final head `1e90848`: yerel `ciQuality` 48/48 JVM, temiz API 34 regresyonu 100/100 ve host seed/kill/verify başarılı. Hosted run `30384849616` artifact denetiminde app 100/100, reboot 1+1, benchmark/process 5/5, restore seed 1/1 → PID `3724` kill → verify 1/1 ve toplam 47.463.823 byte beş Perfetto trace doğrulandı. GitHub PR #22 merge commit `6083210` ile birleşti; kaynak dal korundu.
 - PR29 code baseline `729ecc6`: Android local transport seed 1/1; `backupnow` 310.784 byte ve package success; restore set token `1`; `pm clear`; `restoreFinished: 0`; verify 1/1. Room oturumu/koyu tema geri gelir, dışlanan ana/thumbnail byte’ları gelmez ve eksik managed metadata reconciliation ile kaldırılır. `ciQuality` 48/48 JVM, lint 0 hata; temiz normal API 34 paket 100/100.
+- PR29 final head `74b6d82`, hosted run `30389433873`: quality 8m31s, API 34 cihaz 24m45s; app 100/100, benchmark/process 5/5, reboot 1+1, restore-kill seed/PID `3752`/verify, Android transport seed 1/1 + package success/310.784 byte + token `1` + `restoreFinished: 0` + verify 1/1 ve toplam 50.783.405 byte beş Perfetto trace; 0 failure/error/skipped.
 
 ## Feature matrisi
 

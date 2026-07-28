@@ -2,7 +2,7 @@
 type: roadmap
 status: current
 implementation_status: active
-verified_commit: c376aa1
+verified_commit: 74b6d82
 updated: 2026-07-28
 tags: [gymtracker/roadmap, gymtracker/workflow]
 ---
@@ -209,7 +209,7 @@ Kabul: hosted 37 JVM + 75 API 34 normal app instrumentation + 2 gerçek reboot f
 2. Tamamlandı: PR26 staged/atomik restore ve güçlü onaylı tüm veriyi silme tam/hosted kabulü
 3. Tamamlandı: PR27 Photos/Load/Settings golden, loading/disabled ve erişilebilirlik yayılımı; hosted run `30375520329`, merge commit `7a79978`
 4. Tamamlandı: PR28 gerçek restore süreç-kesilmesi fixture’ı; hosted run `30384849616` artifact denetiminden geçti, GitHub PR #22 merge commit `6083210` ile birleşti
-5. Yerelde tamamlandı: PR29 gerçek Android local backup transport restore deneyi; code baseline `729ecc6`, integration head `c376aa1`; tam birleşik kalite kapısı ve yayın sırada
+5. Hosted kabul tamamlandı: PR29 gerçek Android local backup transport restore deneyi; final head `74b6d82`, run `30389433873`; GitHub PR #23 merge sırada
 6. Harici: production secret + Play internal-track smoke, branch protection ve fiziksel cihaz performans kabulü
 
 ## PR 24 — Settings + architecture foundation
@@ -250,8 +250,8 @@ Kabul: yerel `ciQuality` 48/48 JVM, lint 0 hata, minified release/profile; temiz
 ## PR 29 — Android backup transport acceptance
 
 Node: [[FEATURE_PROGRESS_PHOTOS]], [[FEATURE_SETTINGS_DATA]], [[ADR_004_PERSISTENT_PHOTO_STORAGE]], [[TEST_MATRIX]].
-Durum: code baseline `729ecc6`, integration head `c376aa1`, `codex/android-backup-transport` dalında; PR28 merge commit `6083210` `--no-ff` ile bütünleştirildi. Graph closeout, tam kalite kapısı, push/draft PR ve hosted kabul sırada.
+Durum: code baseline `729ecc6`, integration head `c376aa1`, final head `74b6d82`, `codex/android-backup-transport` dalında. GitHub PR #23 hosted run `30389433873` artifact denetiminden geçti; ready + merge commit sırada.
 Çıktı: gerçek Android `BackupManager` local transport seçimi; production APK’da Room + DataStore + yönetilen fotoğraf seed’i; `backupnow`; restore-set token; `pm clear`; transport restore; dışlanan `progress_photos/` byte’larının dönmediği ve managed metadata reconciliation’ının çalıştığı yeni süreç kanıtı.
-Kabul: seed 1/1; package backup success ve 310.784 byte; token `1`; `restoreFinished: 0`; verify 1/1; yerel `ciQuality` 48/48 JVM, lint 0 hata ve temiz normal API 34 paket 100/100.
+Kabul: hosted quality 8m31s ve cihaz 24m45s; app 100/100, benchmark/process 5/5, reboot 1+1, restore-kill seed/PID/verify, Android transport seed 1/1 + package backup success/310.784 byte + token `1` + `restoreFinished: 0` + verify 1/1; beş Perfetto trace/toplam 50.783.405 byte; 0 failure/error/skipped.
 
 Detaylı süre: [[GELISTIRME_MASTER_PLANI#18. Fazlar ve süre tahmini]]. Aktif durum: [[SESSION_HANDOFF]].

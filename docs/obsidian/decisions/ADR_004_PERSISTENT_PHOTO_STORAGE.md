@@ -4,7 +4,7 @@ adr: 4
 status: accepted
 implementation_status: current
 date: 2026-07-14
-verified_commit: 729ecc6
+verified_commit: 74b6d82
 updated: 2026-07-28
 tags: [gymtracker/decision, gymtracker/photos, gymtracker/risk/p0]
 ---
@@ -53,7 +53,7 @@ PR23 kararı: import veya optimizasyon başlamadan önce app-owned dizinin kulla
 - [x] EXIF orientation normalize edilir; bounded ana görsel + thumbnail ve dimension metadata üretilir.
 - [x] Bozuk decode, iki dosyalı DB rollback ve missing-thumbnail onarımı testlidir.
 - [x] Gerçek process death, host reboot, düşük alan ve metadata-only restore/reconciliation testleri.
-- [x] Gerçek Android local backup transport restore ve eksik-medya reconciliation deneyi.
+- [x] Gerçek Android local backup transport restore ve eksik-medya reconciliation deneyi; hosted run `30389433873` artifact denetiminden geçti.
 - [ ] Fiziksel cihaz performans kabulü.
 - [x] Legacy v0 yeniden seçim ve v1 isteğe bağlı yeniden optimizasyon UX’i.
 

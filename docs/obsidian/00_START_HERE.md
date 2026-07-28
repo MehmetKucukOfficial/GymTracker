@@ -3,7 +3,7 @@ aliases: [GymTracker Graph Start, Başlangıç]
 type: moc
 status: current
 implementation_status: mixed
-verified_commit: c376aa1
+verified_commit: 74b6d82
 updated: 2026-07-28
 tags: [gymtracker/moc, gymtracker/graph]
 ---
@@ -79,7 +79,7 @@ tags: [gymtracker/moc, gymtracker/graph]
 - PR26/GitHub PR #20 hosted run `29783838425` artifact denetiminden geçti ve merge commit `a370f82` ile `master`a alındı; kaynak dal korundu
 - PR27/GitHub PR #21 hosted run `30375520329` tamamen yeşil; artifact XML 100 app + 5 benchmark/process, reboot 1+1 ve beş trace gösteriyor; merge commit `7a79978`
 - PR28/GitHub PR #22 hosted run `30384849616` tamamen yeşil; artifact XML 100 app + 5 benchmark/process, reboot 1+1, restore seed/kill/verify ve beş trace gösteriyor; merge commit `6083210`
-- Yerelde PR29 `codex/android-backup-transport`; code baseline `729ecc6`, integration head `c376aa1`; gerçek local transport backup/clear/restore/reconciliation ve tam kalite kapıları yeşil
-- Dokümanlar: PR28 master kabulü ve PR29 backup transport bütünleştirmesiyle senkron
+- PR29/GitHub PR #23 hosted run `30389433873` tamamen yeşil; artifact XML 100 app + 5 benchmark/process, reboot 1+1, restore-kill, Android transport seed/backup/restore/verify ve beş trace gösteriyor; final head `74b6d82`
+- Dokümanlar: PR28 master kabulü ve PR29 hosted backup transport kabulüyle senkron
 - Son tam doğrulama: 2026-07-28
-- Aktif önerilen iş: birleşik PR29 ağacında tam kalite kapısını çalıştır, dalı yayınla, hosted transport artifact’lerini denetle ve merge commit ile birleştir
+- Aktif önerilen iş: PR29/GitHub PR #23’ü ready yap ve kaynak dalı koruyarak merge commit ile birleştir

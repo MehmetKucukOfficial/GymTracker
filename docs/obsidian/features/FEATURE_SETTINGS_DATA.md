@@ -2,7 +2,7 @@
 type: feature
 status: current
 implementation_status: active
-verified_commit: 729ecc6
+verified_commit: 74b6d82
 updated: 2026-07-28
 source_files:
   - app/src/main/java/com/gymtracker/data/settings/AppSettings.kt
@@ -79,8 +79,8 @@ tags: [gymtracker/feature, gymtracker/settings, gymtracker/data]
 - Geçen: PR26 tam API 34 regresyon paketi 95/95, 0 failure/error/skipped; altı kalıcı golden baseline dahil.
 - Geçen: PR26 hosted run `29783838425`; 95 app + 5 benchmark/process, reboot 1+1, dört process-death ve beş Perfetto trace, 0 failure/error/skipped; merge commit `a370f82`.
 - Geçen: PR27 English/light restore-lock golden’ı; restore sırasında export/restore/delete eylemlerinin disabled semantics ve piksel görünümü.
-- Geçen: PR28 host-orchestrated seed/kill/verify kabulü; medya yayınından sonra ve Room commit’inden önce hedef PID gerçekten öldürülür, yeni süreç eski Room/tema/mevcut fotoğrafı korur ve iki orphan medya + yarım restore cache’ini temizler.
-- Geçen: gerçek Android local backup transport Room/tema restore ve dışlanan fotoğraf-medya reconciliation kabulü.
+- Geçen: PR28 hosted run `30384849616`; medya yayınından sonra ve Room commit’inden önce hedef PID gerçekten öldürülür, yeni süreç eski Room/tema/mevcut fotoğrafı korur ve iki orphan medya + yarım restore cache’ini temizler.
+- Geçen: PR29 hosted run `30389433873`; gerçek Android local backup transport Room/tema restore ve dışlanan fotoğraf-medya reconciliation kabulü.
 - Bekleyen: davranışa bağlı diğer tercihler.
 
 Bağlar: [[ARCH_STATE_DATA_FLOW]], [[ARCH_DATABASE]], [[ARCH_NAVIGATION]], [[DESIGN_SYSTEM_GRAPH]], [[ROADMAP_EXECUTION_GRAPH]].

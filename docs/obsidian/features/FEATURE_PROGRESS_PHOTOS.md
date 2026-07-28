@@ -2,7 +2,7 @@
 type: feature
 status: current
 implementation_status: current
-verified_commit: 729ecc6
+verified_commit: 74b6d82
 updated: 2026-07-28
 source_files:
   - app/src/main/java/com/gymtracker/ui/screens/progress/ProgressScreen.kt
@@ -55,7 +55,7 @@ Yeni importlar için geçici URI, kontrolsüz büyük decode ve alan tükenirken
 ## Zorunlu testler
 
 - Geçen: başarılı import/EXIF dönüşümü/2048 ana görsel/512 thumbnail/dimension metadata, storage yeniden oluşturma, iki dosyalı delete ve DB rollback, 25 MB/48 MB rezerv/bozuk decode temizliği, orphan/missing-main/missing-thumbnail ve metadata-only restore reconciliation, v3→v9 ve v8→v9 satır koruma, v0 yeniden seçim, v1 yeniden optimizasyon, update rollback, kimlik/metadata koruma, light/dark/%200 font yükseltme eylemleri, kayıt sırasında çakışan mutation kilidi, Turkish dark/%200 kalıcı saving golden, 500 satırlı lazy-grid erişimi, gerçek host reboot sonrası 120 dosya çifti ve 120-row FrameTiming macrobenchmark.
-- Geçen: gerçek Android local backup transport seed/backup/`pm clear`/restore/reconciliation kabulü.
+- Geçen: gerçek Android local backup transport seed/backup/`pm clear`/restore/reconciliation kabulü; hosted run `30389433873` içinde package backup success/310.784 byte, token `1`, `restoreFinished: 0` ve verify 1/1.
 - Bekleyen: fiziksel cihaz performans kabulü.
 
 Bağlar: [[ARCH_DATABASE]], [[RISK_REGISTER_GRAPH#R2 — Fotoğraf URI kaybı]], [[SCREEN_BLUEPRINT_GRAPH#Fotoğraflar]].
